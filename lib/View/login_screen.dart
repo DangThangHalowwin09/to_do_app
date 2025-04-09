@@ -50,12 +50,12 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const Home_Screen(),
+          builder: (_) => const UserScreen(),
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Login Failed: $result'), // Show error message
+        content: Text(' Đăng nhập thất bại, nguyên nhân: $result'), // Show error message
       ));
     }
   }
@@ -67,82 +67,98 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0), // Add padding
-          child: Column(
-            children: [
-              //   Image.asset("assets/3094352.jpg"), // Display login screen image
-              const SizedBox(height: 20),
-              // Input for email
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Input for password
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isPasswordHidden = !isPasswordHidden;
-                      });
-                    },
-                    icon: Icon(
-                      isPasswordHidden
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    ),
-                  ),
-                ),
-                obscureText: true, // Hide password
-              ),
-              const SizedBox(height: 20),
-              // Login button or spinner
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _login, // Call login function
-                        child: const Text('Login'),
-                      ),
-                    ),
-
-              const SizedBox(height: 16),
-             /* Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Text(
-                    "Don't have an account? ",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const SignupScreen()),
-                      );
-                    },
-                    child: const Text(
-                      "Signup here",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0), // Add padding
+            child: Column(
+              children: [
+                   Image.asset("assets/icon_login.jpg"), // Display login screen image
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Đăng Nhập",
+                      style: TextStyle(fontSize: 24,
                         color: Colors.blue,
-                        letterSpacing: -1,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // Input for email
+                TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Input for password
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          isPasswordHidden = !isPasswordHidden;
+                        });
+                      },
+                      icon: Icon(
+                        isPasswordHidden
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                     ),
                   ),
-                ],
-              ),*/
-            ],
+                  obscureText: true, // Hide password
+                ),
+                const SizedBox(height: 20),
+                // Login button or spinner
+                _isLoading
+                    ? const CircularProgressIndicator()
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _login, // Call login function
+                          child: const Text('Đăng nhập'),
+                        ),
+                      ),
+          
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    const Text(
+                      "Liên hệ Admin nếu chưa có tài khoản!",
+                      style: TextStyle(fontSize: 15,
+                        color: Colors.blue,
+                      ),
+          
+                    ),
+                    /*InkWell(
+                      onTap: () {
+                        Navigator.pushReplacement(S
+                          context,
+                          MaterialPageRoute(builder: (_) => const SignupScreen()),
+                        );
+                      },
+                      child: const Text(
+                        "Signup here",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                          letterSpacing: -1,
+                        ),
+                      ),
+                    ),*/
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

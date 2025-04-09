@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_to_do_list/View/home_screen.dart';
 import '../Service/auth_service.dart';
-import 'login_screen.dart';
 
 
 class SignupScreen extends StatefulWidget {
@@ -44,16 +44,19 @@ class _SignupScreenState extends State<SignupScreen> {
     if (result == null) {
       // Signup successful: Navigate to LoginScreen with success message
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Signup Successful! Now Turn to Login'),
+        content: Text('Đăng ký thành công'),
       ));
-      Navigator.pushReplacement(
+      showActionDialog(context);
+      /*Navigator.pushReplacement(
+
+
         context,
         MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
+      );*/
     } else {
       // Signup failed: Show error message
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Signup Failed: $result'),
+        content: Text('Đăng ký thất bại nguyên nhân: $result'),
       ));
     }
   }
@@ -69,7 +72,7 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset("assets/6333204.jpg"), // Display an image at the top
+              Image.asset("assets/icon_login.jpg"), // Display an image at the top
               // Input for name
               TextField(
                 controller: _nameController,
@@ -136,17 +139,20 @@ class _SignupScreenState extends State<SignupScreen> {
                   : SizedBox(
                       width: double.infinity, // Button stretches across width
                       child: ElevatedButton(
-                        onPressed: _signup, // Call signup function
-                        child: const Text('Signup'),
+                        onPressed: () {
+                          _signup();
+                           // Gọi hàm khi nhấn
+                        },// Call signup function
+                        child: const Text(" Đăng ký "),
                       ),
                     ),
               const SizedBox(height: 10),
               // Navigation to LoginScreen
-              Row(
+              /*Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   const Text(
-                    "Already have an account? ",
+                    "Đã có tài khoản? Đăng nhập ",
                     style: TextStyle(fontSize: 18),
                   ),
                   InkWell(
@@ -157,7 +163,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       );
                     },
                     child: const Text(
-                      "Login here",
+                      "tại đây.",
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -166,11 +172,45 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                 ],
-              ),
+              ),*/
             ],
           ),
         ),
       ),
     );
   }
+}
+
+void showActionDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: const Text('Bạn đã đăng ký thành công tài khoản'),
+        content: const Text('Tiếp tục đăng ký tài khoản?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Đóng dialog
+              // Hành động đăng ký thêm ở đây, có thể không cần chuyển trang
+            },
+            child: const Text('Đăng ký thêm'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Đóng dialog
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => AdminScreen()),
+                    (route) => false,
+              );
+            },
+            child: const Text('Về trang Admin'),
+          ),
+        ],
+      );
+    },
+  );
 }

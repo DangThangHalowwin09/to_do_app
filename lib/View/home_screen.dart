@@ -7,7 +7,9 @@ import 'login_screen.dart';
 final AuthService _authService = AuthService();
 
 class AdminScreen extends StatelessWidget {
-  const AdminScreen({super.key});
+  const
+
+    AdminScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class AdminScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Admin Screen'),
         backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        foregroundColor: Colors.blue,
       ),
       body: Center(
         child: Column(
@@ -24,9 +26,11 @@ class AdminScreen extends StatelessWidget {
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+
                 children: [
-                  const Text('Welcome to the Admin! page'),
-                  const SizedBox(height: 10),
+                  const Text('Welcome to the Admin page!'),
+
+                  const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
                       _authService.signOut();
@@ -39,7 +43,7 @@ class AdminScreen extends StatelessWidget {
                     },
                     child: const Text("SignOut"),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
                       _authService.signOut();
@@ -52,7 +56,7 @@ class AdminScreen extends StatelessWidget {
                     },
                     child: const Text("Create new account"),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
@@ -63,7 +67,20 @@ class AdminScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("Task Screen"),
+                    child: const Text("My Task"),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const Home_Screen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Team Task"),
                   ),
                 ],
               ),
@@ -71,10 +88,10 @@ class AdminScreen extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      /*floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: const Icon(Icons.add),
-      ),
+      ),*/
     );
   }
 }
@@ -85,29 +102,63 @@ class UserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.blue,
       appBar: AppBar(title: const Text('User Screen'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.blue,
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Welcome User!'),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
 
-            ElevatedButton(
-              onPressed: () {
-                _authService.signOut();
-                print("signou successfuley");
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const LoginScreen(),
+                children: [
+                  const Text('Welcome to the User page!'),
+
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      _authService.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text("SignOut"),
                   ),
-                );
-              },
-              child: const Text("SignOut"),
+                  const SizedBox(height: 12),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const Home_Screen(),
+                        ),
+                      );
+                    },
+                    child: const Text("My Task"),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const Home_Screen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Team Task"),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
