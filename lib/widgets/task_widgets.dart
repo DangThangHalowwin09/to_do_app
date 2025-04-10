@@ -37,10 +37,8 @@ class _Task_WidgetState extends State<Task_Widget> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Row(
             children: [
-              // image
               imageee(),
               SizedBox(width: 25),
-              // title and subtitle
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +48,7 @@ class _Task_WidgetState extends State<Task_Widget> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          widget._note.title,
+                          convertMarkupToDisplayText(widget._note.title),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -70,11 +68,12 @@ class _Task_WidgetState extends State<Task_Widget> {
                       ],
                     ),
                     Text(
-                      widget._note.subtitle,
+                      convertMarkupToDisplayText(widget._note.subtitle),
                       style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.grey.shade400),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.grey.shade400,
+                      ),
                     ),
                     Spacer(),
                     edit_time()
@@ -173,5 +172,11 @@ class _Task_WidgetState extends State<Task_Widget> {
         ),
       ),
     );
+  }
+
+  /// Hàm xử lý từ markupText => @Tên
+  String convertMarkupToDisplayText(String text) {
+    final regex = RegExp(r'@\[\_\_.*?\_\_\]\(\_\_(.*?)\_\_\)');
+    return text.replaceAllMapped(regex, (match) => "@${match.group(1)}");
   }
 }
