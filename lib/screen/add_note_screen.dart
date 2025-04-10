@@ -1,101 +1,145 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_to_do_list/const/colors.dart';
 import 'package:flutter_to_do_list/data/firestor.dart';
 
-class Add_creen extends StatefulWidget {
-  const Add_creen({super.key});
+final GlobalKey<FlutterMentionsState> mentionKeyNew = GlobalKey<FlutterMentionsState>();
+final GlobalKey<FlutterMentionsState> subtitleMentionKeyNew = GlobalKey<FlutterMentionsState>();
+
+class AddTaskScreenNew extends StatefulWidget {
+  const AddTaskScreenNew({super.key});
 
   @override
-  State<Add_creen> createState() => _Add_creenState();
+  State<AddTaskScreenNew> createState() => _AddTaskScreenNewState();
 }
 
-class _Add_creenState extends State<Add_creen> {
-  final title = TextEditingController();
-  final subtitle = TextEditingController();
+class _AddTaskScreenNewState extends State<AddTaskScreenNew> {
+  List<Map<String, dynamic>> mentionUsers = [];
+  int selectedImageIndex = 0;
 
-  FocusNode _focusNode1 = FocusNode();
-  FocusNode _focusNode2 = FocusNode();
-  int indexx = 0;
+  @override
+  void initState() {
+    super.initState();
+    fetchUsersFromFirestore();
+  }
+
+  Future<void> fetchUsersFromFirestore() async {
+    final snapshot = await FirebaseFirestore.instance.collection('users').get();
+    setState(() {
+      mentionUsers = snapshot.docs.map((doc) {
+        final data = doc.data();
+        return {
+          'id': doc.id,
+          'display': data['name'] ?? 'No Name',
+        };
+      }).toList();
+    });
+  }
+
+  void _handleAddTask() {
+    final title = mentionKeyNew.currentState?.controller?.markupText ?? '';
+    final subtitle = subtitleMentionKeyNew.currentState?.controller?.markupText ?? '';
+
+    Firestore_Datasource().AddNote(subtitle, title, selectedImageIndex);
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: backgroundColors,
-      body: SafeArea(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 1,
+        centerTitle: true,
+        title: const Text("Add New Task", style: TextStyle(color: Colors.black)),
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            title_widgets(),
-            SizedBox(height: 20),
-            subtite_wedgite(),
-            SizedBox(height: 20),
-            imagess(),
-            SizedBox(height: 20),
-            button()
+            _buildMentionInput(
+              key: mentionKeyNew,
+              hintText: 'Enter title',
+              maxLines: 2,
+            ),
+            const SizedBox(height: 16),
+            _buildMentionInput(
+              key: subtitleMentionKeyNew,
+              hintText: 'Enter subtitle',
+              maxLines: 5,
+            ),
+            const SizedBox(height: 20),
+            _buildImageSelector(width),
+            const SizedBox(height: 20),
+            _buildActionButtons()
           ],
         ),
       ),
     );
   }
 
-  Widget button() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: custom_green,
-            minimumSize: Size(170, 48),
-          ),
-          onPressed: () {
-            Firestore_Datasource().AddNote(subtitle.text, title.text, indexx);
-            Navigator.pop(context);
-          },
-          child: Text('add task'),
+  Widget _buildMentionInput({
+    required GlobalKey<FlutterMentionsState> key,
+    required String hintText,
+    required int maxLines,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+      ),
+      child: FlutterMentions(
+        key: key,
+        style: const TextStyle(fontSize: 16),
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          hintText: hintText,
+          border: InputBorder.none,
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            minimumSize: Size(170, 48),
+        maxLines: maxLines,
+        minLines: 1,
+        mentions: [
+          Mention(
+            trigger: "@",
+            style: const TextStyle(color: Colors.blue),
+            data: mentionUsers,
+            suggestionBuilder: (data) => ListTile(title: Text(data['display'])),
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Cancel'),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Container imagess() {
-    return Container(
-      height: 180,
+  Widget _buildImageSelector(double width) {
+    return SizedBox(
+      height: 140,
       child: ListView.builder(
-        itemCount: 4,
         scrollDirection: Axis.horizontal,
+        itemCount: 4,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () {
-              setState(() {
-                indexx = index;
-              });
-            },
-            child: Padding(
-              padding: EdgeInsets.only(left: index == 0 ? 7 : 0),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    width: 2,
-                    color: indexx == index ? custom_green : Colors.grey,
-                  ),
+            onTap: () => setState(() => selectedImageIndex = index),
+            child: Container(
+              width: width * 0.35,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: selectedImageIndex == index ? custom_green : Colors.grey.shade300,
+                  width: 2,
                 ),
-                width: 140,
-                margin: EdgeInsets.all(8),
-                child: Column(
-                  children: [
-                    Image.asset('images/${index}.png'),
-                  ],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  'images/$index.png',
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -105,74 +149,35 @@ class _Add_creenState extends State<Add_creen> {
     );
   }
 
-  Widget title_widgets() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: TextField(
-          controller: title,
-          focusNode: _focusNode1,
-          style: TextStyle(fontSize: 18, color: Colors.black),
-          decoration: InputDecoration(
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              hintText: 'title',
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: Color(0xffc5c5c5),
-                  width: 2.0,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: custom_green,
-                  width: 2.0,
-                ),
-              )),
-        ),
-      ),
-    );
-  }
-
-  Padding subtite_wedgite() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: TextField(
-          maxLines: 3,
-          controller: subtitle,
-          focusNode: _focusNode2,
-          style: TextStyle(fontSize: 18, color: Colors.black),
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            hintText: 'subtitle',
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: Color(0xffc5c5c5),
-                width: 2.0,
-              ),
+  Widget _buildActionButtons() {
+    return Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.check),
+            onPressed: _handleAddTask,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: custom_green,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: custom_green,
-                width: 2.0,
-              ),
-            ),
+            label: const Text("Add Task", style: TextStyle(fontSize: 16)),
           ),
         ),
-      ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: ElevatedButton.icon(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            label: const Text("Cancel", style: TextStyle(fontSize: 16)),
+          ),
+        ),
+      ],
     );
   }
 }

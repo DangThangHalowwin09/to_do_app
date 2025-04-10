@@ -77,7 +77,7 @@ class _Home_ScreenState extends State<Home_Screen> {
                 ),
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => Add_creen(),
+                    builder: (context) => AddTaskScreenNew(),
                   ));
                 },
                 child: const Text(
