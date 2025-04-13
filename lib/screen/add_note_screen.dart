@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_to_do_list/const/colors.dart';
 import 'package:flutter_to_do_list/data/firestor.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 final GlobalKey<FlutterMentionsState> mentionKeyNew = GlobalKey<FlutterMentionsState>();
 final GlobalKey<FlutterMentionsState> subtitleMentionKeyNew = GlobalKey<FlutterMentionsState>();
@@ -37,13 +39,77 @@ class _AddTaskScreenNewState extends State<AddTaskScreenNew> {
     });
   }
 
-  void _handleAddTask() {
-    final title = mentionKeyNew.currentState?.controller?.markupText ?? '';
-    final subtitle = subtitleMentionKeyNew.currentState?.controller?.markupText ?? '';
+  void _handleAddTask() async {
+    final titleMarkup = mentionKeyNew.currentState?.controller?.markupText ?? '';
+    final subtitleMarkup = subtitleMentionKeyNew.currentState?.controller?.markupText ?? '';
 
-    Firestore_Datasource().AddNote(subtitle, title, selectedImageIndex);
+    await Firestore_Datasource().AddNote(subtitleMarkup, titleMarkup, selectedImageIndex);
+
+    // Extract IDs và gửi push
+    final mentionedUserIds = [
+      ...extractMentionedUserIds(titleMarkup),
+      ...extractMentionedUserIds(subtitleMarkup),
+    ].toSet().toList();
+
+    if (mentionedUserIds.isNotEmpty) {
+      await sendMentionNotification(mentionedUserIds, 'Bạn được nhắc đến trong một task mới!');
+    }
+
     Navigator.pop(context);
   }
+
+  List<String> extractMentionedUserIds(String markupText) {
+    final regex = RegExp(r'@\[\_\_(.*?)\_\_\]\(\_\_.*?\_\_\)');
+    return regex.allMatches(markupText).map((m) => m.group(1)!).toList();
+  }
+
+ /* Future<void> sendMentionNotification(List<String> userIds, String message) async {
+    for (final userId in userIds) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final fcmToken = doc.data()?['fcmToken'];
+      if (fcmToken != null) {
+        await FirebaseFirestore.instance.collection('notifications').add({
+          'token': fcmToken,
+          'message': message,
+          'sentAt': FieldValue.serverTimestamp(),
+        });
+      }
+    }
+  }*/
+
+  Future<void> sendMentionNotification(List<String> userIds, String message) async {
+    const serverKey = 'AAAA...YOUR_SERVER_KEY_HERE...'; // 🔐 Thay YOUR_SERVER_KEY_HERE bằng FCM Server key của bạn
+
+    for (final userId in userIds) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final fcmToken = doc.data()?['fcmToken'];
+
+      if (fcmToken != null) {
+        final body = {
+          'to': fcmToken,
+          'notification': {
+            'title': 'Mention Alert',
+            'body': message,
+          },
+          'data': {
+            'click_action': 'FLUTTER_NOTIFICATION_CLICK',
+            'id': '1',
+            'status': 'done'
+          }
+        };
+
+        await http.post(
+          Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'key=$serverKey',
+          },
+          body: json.encode(body),
+        );
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

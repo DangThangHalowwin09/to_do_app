@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/signup_screen.dart';
 import 'package:flutter_to_do_list/screen/home.dart';
 import '../Service/auth_service.dart';
+import '../screen/statistics_screen.dart';
 import 'login_screen.dart';
 
 final AuthService _authService = AuthService();
@@ -152,6 +153,19 @@ class UserScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Home_Screen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Team Task"),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const StatisticsScreen(),
                         ),
                       );
                     },
