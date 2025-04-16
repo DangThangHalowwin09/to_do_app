@@ -17,7 +17,7 @@ class AdminScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.blue,
       appBar: AppBar(
-        title: const Text('Admin Screen'),
+        title: const Text('Màn hình Admin'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.blue,
       ),
@@ -29,7 +29,7 @@ class AdminScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
 
                 children: [
-                  const Text('Welcome to the Admin page!'),
+                  const Text('Chào mừng bạn đến với trang Admin!'),
 
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -42,7 +42,7 @@ class AdminScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("SignOut"),
+                    child: const Text("Đăng Xuất"),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -55,7 +55,21 @@ class AdminScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("Create new account"),
+                    child: const Text("Đăng ký tài khoản"),
+                  ),
+                  const SizedBox(height: 12),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const Home_Screen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Nhiệm vụ Phòng IT"),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -68,7 +82,7 @@ class AdminScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("My Task"),
+                    child: const Text("Tất cả nhiệm vụ"),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -81,7 +95,20 @@ class AdminScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("Team Task"),
+                    child: const Text("Nhiệm vụ Phần Cứng"),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const Home_Screen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Nhiệm vụ Phần Mềm"),
                   ),
                 ],
               ),
@@ -104,7 +131,7 @@ class UserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue,
-      appBar: AppBar(title: const Text('User Screen'),
+      appBar: AppBar(title: const Text('Màn hình nhân viên'),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.blue,
       ),
@@ -116,7 +143,7 @@ class UserScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
 
                 children: [
-                  const Text('Welcome to the User page!'),
+                  const Text('Chào mình đến với màn hình IT!'),
 
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -129,7 +156,7 @@ class UserScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("SignOut"),
+                    child: const Text("Đăng Xuất"),
                   ),
                   const SizedBox(height: 12),
 
@@ -143,7 +170,7 @@ class UserScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("My Task"),
+                    child: const Text("Nhiệm vụ phòng IT"),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -156,7 +183,7 @@ class UserScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("Team Task"),
+                    child: const Text("Nhiệm vụ"),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(

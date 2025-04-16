@@ -125,7 +125,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     _selectedRole = newValue!; // Update role selection
                   });
                 },
-                items: ['Admin', 'User'].map((role) {
+                items: ['Admin', 'User', 'Nhân viên phần cứng', 'Nhân viên phần mềm', 'Y bác sỹ'].map((role) {
                   return DropdownMenuItem(
                     value: role,
                     child: Text(role),

@@ -53,13 +53,37 @@ class _LoginScreenState extends State<LoginScreen> {
           builder: (_) => const UserScreen(),
         ),
       );
-    } else {
+    }
+    else if (result ==  'Nhân viên phần cứng') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const UserScreen(),
+        ),
+      );
+    }
+    else if (result == 'Nhân viên phần mềm') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const UserScreen(),
+        ),
+      );
+    }
+    else if (result == 'Y bác sỹ') {
+      Navigator.pushReplacement(  
+        context,
+        MaterialPageRoute(
+          builder: (_) => const UserScreen(),
+        ),
+      );
+    }
+    else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(' Đăng nhập thất bại, nguyên nhân: $result'), // Show error message
       ));
     }
   }
-
   bool isPasswordHidden = true;
 
   @override
