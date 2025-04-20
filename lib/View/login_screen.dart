@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     }
     else if (result == 'Y bác sỹ') {
-      Navigator.pushReplacement(  
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => const UserScreen(),

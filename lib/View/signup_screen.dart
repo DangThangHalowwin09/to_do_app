@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/home_screen.dart';
 import '../Service/auth_service.dart';
+import 'login_screen.dart';
 
 
 class SignupScreen extends StatefulWidget {
@@ -147,8 +148,9 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
               const SizedBox(height: 10),
+
               // Navigation to LoginScreen
-              /*Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   const Text(
@@ -172,7 +174,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                 ],
-              ),*/
+              ),
             ],
           ),
         ),
