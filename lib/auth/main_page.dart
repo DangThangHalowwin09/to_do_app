@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/auth/auth_page.dart';
-import 'package:flutter_to_do_list/screen/home.dart';
+import 'package:flutter_to_do_list/screen/task_screen.dart';
 
 class Main_Page extends StatelessWidget {
   const Main_Page({super.key});

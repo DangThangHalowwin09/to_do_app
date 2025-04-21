@@ -3,20 +3,20 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_to_do_list/View/login_screen.dart';
 import 'package:flutter_to_do_list/const/colors.dart';
 import 'package:flutter_to_do_list/screen/add_note_screen.dart';
-import 'package:flutter_to_do_list/widgets/stream_note.dart';
+import 'package:flutter_to_do_list/widgets/all_stream_note.dart';
 
-import '../View/home_screen.dart';
+import '../View/all_welcome_screens.dart';
 
-class Home_Screen extends StatefulWidget {
-  const Home_Screen({super.key});
+class Global_Task_Screen extends StatefulWidget {
+  const Global_Task_Screen({super.key});
 
   @override
-  State<Home_Screen> createState() => _Home_ScreenState();
+  State<Global_Task_Screen> createState() => _Global_Task_Screen();
 }
 
 bool show = true;
 
-class _Home_ScreenState extends State<Home_Screen> {
+class _Global_Task_Screen extends State<Global_Task_Screen> {
   bool show = true;
 
   @override
@@ -44,7 +44,7 @@ class _Home_ScreenState extends State<Home_Screen> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  Stream_note(false),
+                  Stream_personal_note(false),
                   const SizedBox(height: 16),
                   Text(
                     'isDone',
@@ -55,7 +55,7 @@ class _Home_ScreenState extends State<Home_Screen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Stream_note(true),
+                  Stream_personal_note(true),
                   const SizedBox(height: 80), // Để tránh đè lên nút dưới
                 ],
               ),
