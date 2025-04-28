@@ -5,6 +5,7 @@ import 'login_screen.dart';
 
 
 class SignupScreen extends StatefulWidget {
+  //final VoidCallback show;
   const SignupScreen({super.key});
 
   @override
@@ -45,7 +46,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (result == null) {
       // Signup successful: Navigate to LoginScreen with success message
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Đăng ký thành công'),
+        content: Text('Tạo thành công'),
       ));
       showActionDialog(context);
       /*Navigator.pushReplacement(

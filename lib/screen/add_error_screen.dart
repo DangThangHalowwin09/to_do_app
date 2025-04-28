@@ -2,21 +2,21 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:flutter_to_do_list/const/colors.dart';
-import 'package:flutter_to_do_list/data/firestor.dart';
+import 'package:flutter_to_do_list/data/firestore.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 final GlobalKey<FlutterMentionsState> mentionKeyNew = GlobalKey<FlutterMentionsState>();
 final GlobalKey<FlutterMentionsState> subtitleMentionKeyNew = GlobalKey<FlutterMentionsState>();
 
-class AddTaskScreenNew extends StatefulWidget {
-  const AddTaskScreenNew({super.key});
+class AddNewErrorScreen extends StatefulWidget {
+  const AddNewErrorScreen({super.key});
 
   @override
-  State<AddTaskScreenNew> createState() => _AddTaskScreenNewState();
+  State<AddNewErrorScreen> createState() => _AddNewErrorScreenState();
 }
 
-class _AddTaskScreenNewState extends State<AddTaskScreenNew> {
+class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
   List<Map<String, dynamic>> mentionUsers = [];
   int selectedImageIndex = 0;
 
@@ -39,11 +39,22 @@ class _AddTaskScreenNewState extends State<AddTaskScreenNew> {
     });
   }
 
-  void _handleAddTask() async {
+  void _handleAddTask() async{
     final titleMarkup = mentionKeyNew.currentState?.controller?.markupText ?? '';
     final subtitleMarkup = subtitleMentionKeyNew.currentState?.controller?.markupText ?? '';
 
-    await Firestore_Datasource().AddNote(subtitleMarkup, titleMarkup, selectedImageIndex);
+    await Firestore_Datasource().AddError_ForDoctor(subtitleMarkup, titleMarkup, "name", "address");
+    Navigator.pop(context);
+  }
+
+  void _handleAddTaskWithNotification() async {
+    final titleMarkup = mentionKeyNew.currentState?.controller?.markupText ?? '';
+    final subtitleMarkup = subtitleMentionKeyNew.currentState?.controller?.markupText ?? '';
+
+
+    await Firestore_Datasource().AddError_ForDoctor(subtitleMarkup, titleMarkup, "name", "address");
+
+    //await Firestore_Datasource().AddNote(subtitleMarkup, titleMarkup, selectedImageIndex);
 
     // Extract IDs và gửi push
     final mentionedUserIds = [
@@ -63,19 +74,7 @@ class _AddTaskScreenNewState extends State<AddTaskScreenNew> {
     return regex.allMatches(markupText).map((m) => m.group(1)!).toList();
   }
 
- /* Future<void> sendMentionNotification(List<String> userIds, String message) async {
-    for (final userId in userIds) {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-      final fcmToken = doc.data()?['fcmToken'];
-      if (fcmToken != null) {
-        await FirebaseFirestore.instance.collection('notifications').add({
-          'token': fcmToken,
-          'message': message,
-          'sentAt': FieldValue.serverTimestamp(),
-        });
-      }
-    }
-  }*/
+
 
   Future<void> sendMentionNotification(List<String> userIds, String message) async {
     const serverKey = 'AAAA...YOUR_SERVER_KEY_HERE...'; // 🔐 Thay YOUR_SERVER_KEY_HERE bằng FCM Server key của bạn
@@ -221,13 +220,13 @@ class _AddTaskScreenNewState extends State<AddTaskScreenNew> {
         Expanded(
           child: ElevatedButton.icon(
             icon: const Icon(Icons.check),
-            onPressed: _handleAddTask,
+            onPressed: _handleAddTaskWithNotification,
             style: ElevatedButton.styleFrom(
               backgroundColor: custom_green,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            label: const Text("Add Task", style: TextStyle(fontSize: 16)),
+            label: const Text("Báo lỗi", style: TextStyle(fontSize: 16)),
           ),
         ),
         const SizedBox(width: 16),
@@ -240,7 +239,7 @@ class _AddTaskScreenNewState extends State<AddTaskScreenNew> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            label: const Text("Cancel", style: TextStyle(fontSize: 16)),
+            label: const Text("Hủy", style: TextStyle(fontSize: 16)),
           ),
         ),
       ],

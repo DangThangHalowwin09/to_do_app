@@ -1,9 +1,20 @@
-class Note {
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class Error {
   String id;
-  String subtitle;
-  String title;
-  String time;
-  int image;
-  bool isDon;
-  Note(this.id, this.subtitle, this.time, this.image, this.title, this.isDon);
+  String errorTitle;
+  String clarifyTitle;
+  String name;
+  String address;
+  Timestamp timeErrorStart;
+  List<int>  idStaff;
+  bool isTakeOver;
+  Timestamp timeTakeOver;
+  bool isDone;
+  Timestamp timeDone;
+  String note;
+
+  Error(this.id, this.errorTitle, this.clarifyTitle,
+      this.name, this.address, this.timeErrorStart, this.idStaff,
+      this.isTakeOver, this.timeTakeOver, this.isDone, this.timeDone, this.note);
 }

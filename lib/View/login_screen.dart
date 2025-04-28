@@ -1,7 +1,7 @@
 // This screen handles user login with email and password
 import 'package:flutter/material.dart';
-import 'package:flutter_to_do_list/screen/task_screen.dart';
 import '../Service/auth_service.dart';
+import '../data/auth_data.dart';
 import 'all_welcome_screens.dart';
 
 
@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // Login function to handle user authentication
   void _login() async {
+    AuthenticationRemote().login(_emailController.text, _passwordController.text);
     setState(() {
       _isLoading = true; // Show spinner
       
@@ -78,11 +79,23 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(' Đăng nhập thất bại, nguyên nhân: $result'), // Show error message
-      ));
-    }
+   else {
+  ScaffoldMessenger.of(context).showSnackBar(
+  SnackBar(
+  backgroundColor: Colors.black,
+  behavior: SnackBarBehavior.floating,
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  content: Row(
+  children: [
+  Icon(Icons.error_outline, color: Colors.red),
+  const SizedBox(width: 8),
+  Expanded(child: Text('${translateError(result ?? 'Firebase return null')}')),
+  ],
+  ),
+  duration: Duration(seconds: 4),
+  ),
+  );
+  }
   }
   bool isPasswordHidden = true;
 
@@ -187,5 +200,13 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+}
+String translateError(String errorCode) {
+  switch (errorCode) {
+    case 'Firebase return null':
+      return 'Firebase return null string, hãy liên hệ IT';
+    default:
+      return 'Đăng nhập thất bại, kiểm tra tài khoản hoặc liên hệ với IT, tên lỗi: $errorCode';
   }
 }

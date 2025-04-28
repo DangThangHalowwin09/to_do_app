@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_to_do_list/View/login_screen.dart';
 import 'package:flutter_to_do_list/const/colors.dart';
-import 'package:flutter_to_do_list/screen/add_note_screen.dart';
-import 'package:flutter_to_do_list/widgets/all_stream_note.dart';
-
+import 'package:flutter_to_do_list/screen/add_error_screen.dart';
+import 'package:flutter_to_do_list/widgets/get_stream_error.dart';
 import '../View/all_welcome_screens.dart';
+import '../data/user_info_service.dart';
 
 class Global_Task_Screen extends StatefulWidget {
   const Global_Task_Screen({super.key});
@@ -44,10 +44,19 @@ class _Global_Task_Screen extends State<Global_Task_Screen> {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  Stream_personal_note(false),
+                  Text(
+                    'Lỗi chưa xử lý',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey.shade500,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  Stream_global_note(false),
                   const SizedBox(height: 16),
                   Text(
-                    'isDone',
+                    'Lỗi đã xử lý',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey.shade500,
@@ -55,7 +64,8 @@ class _Global_Task_Screen extends State<Global_Task_Screen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Stream_personal_note(true),
+                  //Stream_personal_note(true),
+                  Stream_global_note(true),
                   const SizedBox(height: 80), // Để tránh đè lên nút dưới
                 ],
               ),
@@ -76,12 +86,33 @@ class _Global_Task_Screen extends State<Global_Task_Screen> {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AddTaskScreenNew(),
-                  ));
+                  print(UserInfoService().role.toString() == "Y bác sỹ" + "22222222222");
+                  if (UserInfoService().role == "Y bác sỹ") {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => AddNewErrorScreen(),
+                      ),
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Thông báo'),
+                        content: Text('Chỉ cho phép y bác sỹ thêm lỗi.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Đóng hộp thoại
+                            },
+                            child: Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 },
                 child: const Text(
-                  "Add task",
+                  "Báo hỏng",
                   style: TextStyle(fontSize: 16, color: Colors.white),
                 ),
               ),

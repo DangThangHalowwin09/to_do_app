@@ -1,21 +1,40 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/const/colors.dart';
-import 'package:flutter_to_do_list/data/firestor.dart';
 import 'package:flutter_to_do_list/model/notes_model.dart';
 import 'package:flutter_to_do_list/screen/edit_screen.dart';
+import 'package:intl/intl.dart';
 
-class Task_Widget extends StatefulWidget {
-  Note _note;
-  Task_Widget(this._note, {super.key});
+import '../data/firestore.dart';
+
+class Error_Widget extends StatefulWidget {
+  Error _error;
+  Error_Widget(this._error, {super.key});
 
   @override
-  State<Task_Widget> createState() => _Task_WidgetState();
+  State<Error_Widget> createState() => _Error_WidgetState();
 }
 
-class _Task_WidgetState extends State<Task_Widget> {
+
+class _Error_WidgetState extends State<Error_Widget> {
+  String? currentUserRole;
   @override
+  void initState(){
+    super.initState();
+    getUserRole();
+  }
+  Future<void> getUserRole() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      setState(() {
+        currentUserRole = doc.data()?['role'];
+      });
+    }
+  }
   Widget build(BuildContext context) {
-    bool isDone = widget._note.isDon;
+    bool isDone = widget._error.isDone;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: Container(
@@ -48,7 +67,7 @@ class _Task_WidgetState extends State<Task_Widget> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          convertMarkupToDisplayText(widget._note.title),
+                          convertMarkupToDisplayText(widget._error.errorTitle),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -61,14 +80,13 @@ class _Task_WidgetState extends State<Task_Widget> {
                             setState(() {
                               isDone = !isDone;
                             });
-                            Firestore_Datasource()
-                                .isdone(widget._note.id, isDone);
+                            Firestore_Datasource().isDone_Error(widget._error.id, isDone);
                           },
                         )
                       ],
                     ),
                     Text(
-                      convertMarkupToDisplayText(widget._note.subtitle),
+                      convertMarkupToDisplayText(widget._error.clarifyTitle),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
@@ -106,10 +124,10 @@ class _Task_WidgetState extends State<Task_Widget> {
               ),
               child: Row(
                 children: [
-                  Image.asset('images/icon_time.png'),
+                  //Image.asset('images/icon_time.png'),
                   SizedBox(width: 10),
                   Text(
-                    widget._note.time,
+                    DateFormat('HH:mm').format(widget._error.timeErrorStart.toDate()),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
@@ -121,11 +139,15 @@ class _Task_WidgetState extends State<Task_Widget> {
             ),
           ),
           SizedBox(width: 20),
+
           GestureDetector(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => Edit_Screen(widget._note),
-              ));
+                builder: (context) => currentUserRole == 'Y bác sỹ' ? Edit_Screen(widget._error) :
+                Edit_Screen_ForIT(widget._error),
+              ))
+
+              ;
             },
             child: Container(
               width: 90,
@@ -155,6 +177,7 @@ class _Task_WidgetState extends State<Task_Widget> {
               ),
             ),
           ),
+
         ],
       ),
     );
@@ -167,7 +190,7 @@ class _Task_WidgetState extends State<Task_Widget> {
       decoration: BoxDecoration(
         color: Colors.white,
         image: DecorationImage(
-          image: AssetImage('images/${widget._note.image}.png'),
+          image: AssetImage('images/1.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -180,3 +203,4 @@ class _Task_WidgetState extends State<Task_Widget> {
     return text.replaceAllMapped(regex, (match) => "@${match.group(1)}");
   }
 }
+
