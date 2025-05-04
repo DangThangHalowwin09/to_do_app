@@ -22,9 +22,9 @@ class UserInfoService {
         name = data['name'];
         email = data['email'];
       }
-      print("333333333333" + role.toString());
+
     } catch (e) {
-      print('Lỗi khi lấy thông tin người dùng: $e');
+
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/signup_screen.dart';
 import '../Service/auth_service.dart';
+import '../screen/blog_screen.dart';
 import '../screen/statistics_screen.dart';
 import 'all_errors_screen.dart';
 import 'login_screen.dart';
@@ -76,7 +77,7 @@ class AdminScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -90,7 +91,7 @@ class AdminScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -103,7 +104,7 @@ class AdminScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -116,7 +117,7 @@ class AdminScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -129,7 +130,7 @@ class AdminScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -191,7 +192,7 @@ class UserScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -204,7 +205,7 @@ class UserScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -276,7 +277,7 @@ class DoctorScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -290,10 +291,10 @@ class DoctorScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const BlogScreen(),
                         ),
                       );
                     },
@@ -303,10 +304,10 @@ class DoctorScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const BlogScreen(),
                         ),
                       );
                     },
@@ -316,7 +317,7 @@ class DoctorScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -374,7 +375,7 @@ class HardwareScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -389,7 +390,7 @@ class HardwareScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -402,7 +403,7 @@ class HardwareScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -461,7 +462,7 @@ class SoftwareScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -475,7 +476,7 @@ class SoftwareScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),
@@ -488,7 +489,7 @@ class SoftwareScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       //_authService.signOut();
-                      Navigator.pushReplacement(
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const Global_Task_Screen(),

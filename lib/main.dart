@@ -4,14 +4,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/login_screen.dart';
 import 'package:flutter_to_do_list/firebase_options.dart';
-import 'package:flutter_portal/flutter_portal.dart'; //
+import 'package:flutter_portal/flutter_portal.dart';
+
+import 'View/all_welcome_screens.dart';
+import 'View/signup_screen.dart'; //
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  /*FirebaseMessaging messaging = FirebaseMessaging.instance;
   await messaging.requestPermission();
 
   // Lưu FCM token khi vào app
@@ -21,7 +24,7 @@ void main() async {
     FirebaseFirestore.instance.collection('users').doc(userId).update({
       'fcmToken': token,
     });
-  }
+  }*/
 
   runApp(
     Portal( // 👈 bọc Portal ở đây

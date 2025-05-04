@@ -155,9 +155,7 @@ class _Global_Task_Screen extends State<Global_Task_Screen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap, // Thu nhỏ vùng chạm
                   ),
                   onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => AdminScreen(),
-                    ));
+                    Navigator.pop(context); // Trở về trang trước đó
                   },
                   child: const Text(
                     "Back",
