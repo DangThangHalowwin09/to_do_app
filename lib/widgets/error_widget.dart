@@ -36,7 +36,7 @@ class _Error_WidgetState extends State<Error_Widget> {
   Widget build(BuildContext context) {
     bool isDone = widget._error.isDone;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       child: Container(
         width: double.infinity,
         height: 130,
@@ -67,7 +67,7 @@ class _Error_WidgetState extends State<Error_Widget> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          convertMarkupToDisplayText(widget._error.errorTitle),
+                          convertMarkupToDisplayText(widget._error.errorTitle, 15),
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -86,7 +86,7 @@ class _Error_WidgetState extends State<Error_Widget> {
                       ],
                     ),
                     Text(
-                      convertMarkupToDisplayText(widget._error.clarifyTitle),
+                      convertMarkupToDisplayText(widget._error.clarifyTitle, 20),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
@@ -161,19 +161,23 @@ class _Error_WidgetState extends State<Error_Widget> {
                   horizontal: 12,
                   vertical: 6,
                 ),
-                child: Row(
-                  children: [
-                    Image.asset('images/icon_edit.png'),
-                    SizedBox(width: 10),
-                    Text(
-                      'edit',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                child: Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Image.asset('images/icon_edit.png'),
+                      SizedBox(width: 10),
+                      Text(
+                        'Sửa',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+              ),
               ),
             ),
           ),
@@ -198,9 +202,15 @@ class _Error_WidgetState extends State<Error_Widget> {
   }
 
   /// Hàm xử lý từ markupText => @Tên
-  String convertMarkupToDisplayText(String text) {
+  String convertMarkupToDisplayText(String text, int amount) {
     final regex = RegExp(r'@\[\_\_.*?\_\_\]\(\_\_(.*?)\_\_\)');
-    return text.replaceAllMapped(regex, (match) => "@${match.group(1)}");
+    String converted = text.replaceAllMapped(regex, (match) => "@${match.group(1)}");
+
+    if (converted.length <= amount) {
+      return converted;
+    } else {
+      return converted.substring(0, amount - 3) + '...';
+    }
   }
 }
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/signup_screen.dart';
+import 'package:flutter_to_do_list/View/task_screen.dart';
+import 'package:flutter_to_do_list/View/update_profile_screen.dart';
 import '../Service/auth_service.dart';
 import '../screen/blog_screen.dart';
 import '../screen/statistics_screen.dart';
@@ -73,6 +75,20 @@ class AdminScreen extends StatelessWidget {
                 child: const Text("Nhiệm vụ cá nhân"),
               ),*/
 
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const TaskScreen(),
+
+                        ),
+                      );
+                    },
+                    child: const Text("Nhiệm vụ phòng IT"),
+                  ),
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
@@ -195,7 +211,7 @@ class UserScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const TaskScreen(),
                         ),
                       );
                     },
@@ -298,7 +314,7 @@ class DoctorScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("Tips sửa lỗi Phần Cứng"),
+                    child: const Text("Mẹo sửa lỗi Phần Cứng"),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -311,7 +327,7 @@ class DoctorScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("Tips sửa lỗi Phần Mềm"),
+                    child: const Text("Mẹo sửa lỗi Phần Mềm"),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -355,7 +371,7 @@ class HardwareScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
 
                 children: [
-                  const Text('Chào mình đến với màn hình báo lỗi cho y bác sỹ!'),
+                  const Text('Chào mừng đến với màn hình nhân viên phần cứng!'),
 
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -378,7 +394,7 @@ class HardwareScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const TaskScreen(),
                         ),
                       );
                     },
@@ -397,7 +413,21 @@ class HardwareScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: const Text("Tips sửa lỗi Phần Cứng"),
+                    child: const Text("Lỗi các phòng ban"),
+                  ),
+
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const BlogScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Mẹo sửa lỗi Phần Cứng"),
                   ),
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -406,13 +436,25 @@ class HardwareScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const UpdateProfileScreen(),
                         ),
                       );
                     },
-                    child: const Text("Tips sửa lỗi Phần Mềm"),
+                    child: const Text("Chỉnh sửa thông tin cá nhân"),
                   ),
-
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const UpdateProfileScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Lịch trực phòng IT"),
+                  ),
                 ],
               ),
             ),
@@ -442,7 +484,7 @@ class SoftwareScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
 
                 children: [
-                  const Text('Chào mừng đến với màn hình báo lỗi phần mềm!'),
+                  const Text('Chào mừng đến với màn hình nhân viên phần mềm!'),
 
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -456,6 +498,20 @@ class SoftwareScreen extends StatelessWidget {
                       );
                     },
                     child: const Text("Đăng Xuất"),
+                  ),
+                  const SizedBox(height: 12),
+
+                  ElevatedButton(
+                    onPressed: () {
+                      //_authService.signOut();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const TaskScreen(),
+                        ),
+                      );
+                    },
+                    child: const Text("Nhiệm vụ phòng IT"),
                   ),
                   const SizedBox(height: 12),
 
@@ -479,12 +535,26 @@ class SoftwareScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const BlogScreen(),
                         ),
                       );
                     },
-                    child: const Text("Tips sửa lỗi Phần Cứng"),
+                    child: const Text("Mẹo sửa lỗi Phần Mềm"),
                   ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  //_authService.signOut();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const UpdateProfileScreen(),
+                    ),
+                  );
+                },
+                child: const Text("Chỉnh sửa thông tin cá nhân"),
+              ),
+
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
@@ -492,11 +562,11 @@ class SoftwareScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const UpdateProfileScreen(),
                         ),
                       );
                     },
-                    child: const Text("Tips sửa lỗi Phần Mềm"),
+                    child: const Text("Lịch trực phòng IT"),
                   ),
                 ],
               ),
