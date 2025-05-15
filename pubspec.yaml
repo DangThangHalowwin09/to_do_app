@@ -45,6 +45,7 @@ dependencies:
   intl: ^0.18.1
   image_picker: ^1.1.2
   firebase_storage: ^12.4.5
+  flutter_launcher_icons: ^0.14.3
 
 
 dev_dependencies:
@@ -101,3 +102,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon_login.jpg"  # icon gốc (512x512 trở lên)
