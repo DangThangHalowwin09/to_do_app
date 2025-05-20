@@ -7,16 +7,16 @@ import 'package:flutter_to_do_list/widgets/get_stream_error.dart';
 import '../View/all_welcome_screens.dart';
 import '../data/user_info_service.dart';
 
-class Global_Task_Screen extends StatefulWidget {
-  const Global_Task_Screen({super.key});
+class Error_Screen extends StatefulWidget {
+  const Error_Screen({super.key});
 
   @override
-  State<Global_Task_Screen> createState() => _Global_Task_Screen();
+  State<Error_Screen> createState() => _Error_Screen();
 }
 
 bool show = true;
 
-class _Global_Task_Screen extends State<Global_Task_Screen> {
+class _Error_Screen extends State<Error_Screen> {
   bool show = true;
 
   @override

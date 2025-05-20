@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/all_welcome_screens.dart';
 import '../Service/auth_service.dart';
-import 'login_screen.dart';
 
 
 class SignupScreen extends StatefulWidget {
@@ -150,23 +149,20 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
               const SizedBox(height: 10),
 
-              // Navigation to LoginScreen
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   const Text(
-                    "Đã có tài khoản? Đăng nhập ",
+                    "Huỷ đăng ký. Về ",
                     style: TextStyle(fontSize: 18),
                   ),
                   InkWell(
                     onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LoginScreen()),
-                      );
+                      Navigator.pop(context);
                     },
                     child: const Text(
-                      "tại đây.",
+                      " trang Admin.",
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

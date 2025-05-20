@@ -50,8 +50,8 @@ class AdminScreen extends StatelessWidget {
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () {
-                      _authService.signOut();
-                      Navigator.pushReplacement(
+                      //_authService.signOut();
+                      Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => const SignupScreen(),
@@ -60,20 +60,7 @@ class AdminScreen extends StatelessWidget {
                     },
                     child: const Text("Đăng ký tài khoản"),
                   ),
-             /* const SizedBox(height: 12),
 
-              ElevatedButton(
-                onPressed: () {
-                  //_authService.signOut();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const Home_Screen(),
-                    ),
-                  );
-                },
-                child: const Text("Nhiệm vụ cá nhân"),
-              ),*/
 
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -96,7 +83,7 @@ class AdminScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
 
                         ),
                       );
@@ -110,7 +97,7 @@ class AdminScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
                         ),
                       );
                     },
@@ -123,7 +110,7 @@ class AdminScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
                         ),
                       );
                     },
@@ -136,7 +123,7 @@ class AdminScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
                         ),
                       );
                     },
@@ -149,7 +136,7 @@ class AdminScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
                         ),
                       );
                     },
@@ -224,7 +211,7 @@ class UserScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
                         ),
                       );
                     },
@@ -296,7 +283,7 @@ class DoctorScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
                         ),
                       );
                     },
@@ -336,7 +323,7 @@ class DoctorScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
                         ),
                       );
                     },
@@ -409,7 +396,7 @@ class HardwareScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
                         ),
                       );
                     },
@@ -521,7 +508,7 @@ class SoftwareScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const Global_Task_Screen(),
+                          builder: (_) => const Error_Screen(),
                         ),
                       );
                     },
