@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/const/colors.dart';
 import 'package:flutter_to_do_list/data/firestore.dart';
-import 'package:flutter_to_do_list/model/notes_model.dart';
+import 'package:flutter_to_do_list/model/model.dart';
 
 class Edit_Screen extends StatefulWidget {
   Error _error;
@@ -60,8 +60,8 @@ class _Edit_ScreenState extends State<Edit_Screen> {
            /* Firestore_Datasource().Update_Note(
                 widget._note.id, indexx, title!.text, subtitle!.text);*/
 
-            Firestore_Datasource().Update_Error_ForDoctor(
-                widget._error.id,title!.text, subtitle!.text, "name", "address");
+           // Firestore_Datasource().Update_Error_ForDoctor(
+             //   widget._error.id,title!.text, subtitle!.text, "name", "address");
 
             Navigator.pop(context);
           },
@@ -230,8 +230,8 @@ class _Edit_Screen_ForITState extends State<Edit_Screen_ForIT> {
             minimumSize: Size(170, 48),
           ),
           onPressed: () {
-            Firestore_Datasource().Update_TakeOverError_ForIT(
-                widget._error.id, [] , true);
+            //Firestore_Datasource().Update_TakeOverError_ForIT(
+              //  widget._error.id, [] , true);
             Navigator.pop(context);
           },
           child: Text('Báo lỗi'),

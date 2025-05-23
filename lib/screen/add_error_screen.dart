@@ -18,7 +18,6 @@ class AddNewErrorScreen extends StatefulWidget {
 
 class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
   List<Map<String, dynamic>> mentionUsers = [];
-  int selectedImageIndex = 0;
 
   @override
   void initState() {
@@ -39,31 +38,27 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
     });
   }
 
-  void _handleAddTask() async{
-    final titleMarkup = mentionKeyNew.currentState?.controller?.markupText ?? '';
-    final subtitleMarkup = subtitleMentionKeyNew.currentState?.controller?.markupText ?? '';
-
-    await Firestore_Datasource().AddError_ForDoctor(subtitleMarkup, titleMarkup, "name", "address");
-    Navigator.pop(context);
-  }
-
   void _handleAddTaskWithNotification() async {
     final titleMarkup = mentionKeyNew.currentState?.controller?.markupText ?? '';
     final subtitleMarkup = subtitleMentionKeyNew.currentState?.controller?.markupText ?? '';
 
+    /*await Firestore_Datasource().AddError_ForDoctor(
+      subtitleMarkup,
+      titleMarkup,
+      "name",
+      "address",
+    );*/
 
-    await Firestore_Datasource().AddError_ForDoctor(subtitleMarkup, titleMarkup, "name", "address");
-
-    //await Firestore_Datasource().AddNote(subtitleMarkup, titleMarkup, selectedImageIndex);
-
-    // Extract IDs và gửi push
     final mentionedUserIds = [
       ...extractMentionedUserIds(titleMarkup),
       ...extractMentionedUserIds(subtitleMarkup),
     ].toSet().toList();
 
     if (mentionedUserIds.isNotEmpty) {
-      await sendMentionNotification(mentionedUserIds, 'Bạn được nhắc đến trong một task mới!');
+      await sendMentionNotification(
+        mentionedUserIds,
+        'Bạn được nhắc đến trong một task mới!',
+      );
     }
 
     Navigator.pop(context);
@@ -74,10 +69,8 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
     return regex.allMatches(markupText).map((m) => m.group(1)!).toList();
   }
 
-
-
   Future<void> sendMentionNotification(List<String> userIds, String message) async {
-    const serverKey = 'AAAA...YOUR_SERVER_KEY_HERE...'; // 🔐 Thay YOUR_SERVER_KEY_HERE bằng FCM Server key của bạn
+    const serverKey = 'AAAA...YOUR_SERVER_KEY_HERE...'; // 🔐 Replace with your FCM Server Key
 
     for (final userId in userIds) {
       final doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
@@ -93,7 +86,7 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
           'data': {
             'click_action': 'FLUTTER_NOTIFICATION_CLICK',
             'id': '1',
-            'status': 'done'
+            'status': 'done',
           }
         };
 
@@ -109,40 +102,76 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: backgroundColors,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
         centerTitle: true,
-        title: const Text("Add New Task", style: TextStyle(color: Colors.black)),
+        title: const Text("Thêm lỗi mới", style: TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildMentionInput(
-              key: mentionKeyNew,
-              hintText: 'Enter title',
-              maxLines: 2,
-            ),
-            const SizedBox(height: 16),
-            _buildMentionInput(
-              key: subtitleMentionKeyNew,
-              hintText: 'Enter subtitle',
-              maxLines: 5,
-            ),
-            const SizedBox(height: 20),
-            _buildImageSelector(width),
-            const SizedBox(height: 20),
-            _buildActionButtons()
-          ],
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("Tiêu đề", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              _buildMentionInput(
+                key: mentionKeyNew,
+                hintText: 'Nhập tiêu đề lỗi...',
+                maxLines: 2,
+              ),
+              const SizedBox(height: 16),
+              const Text("Mô tả", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              _buildMentionInput(
+                key: subtitleMentionKeyNew,
+                hintText: 'Nhập mô tả chi tiết...',
+                maxLines: 5,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.check),
+                      onPressed: _handleAddTaskWithNotification,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: custom_green,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      label: const Text("Báo lỗi", style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      label: const Text("Hủy", style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -155,9 +184,9 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        border: Border.all(color: Colors.grey.shade300),
       ),
       child: FlutterMentions(
         key: key,
@@ -178,71 +207,6 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildImageSelector(double width) {
-    return SizedBox(
-      height: 140,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 4,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () => setState(() => selectedImageIndex = index),
-            child: Container(
-              width: width * 0.35,
-              margin: const EdgeInsets.symmetric(horizontal: 8),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: selectedImageIndex == index ? custom_green : Colors.grey.shade300,
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  'images/$index.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Row(
-      children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.check),
-            onPressed: _handleAddTaskWithNotification,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: custom_green,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            label: const Text("Báo lỗi", style: TextStyle(fontSize: 16)),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            label: const Text("Hủy", style: TextStyle(fontSize: 16)),
-          ),
-        ),
-      ],
     );
   }
 }

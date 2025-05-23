@@ -7,7 +7,7 @@ class Error {
   String name;
   String address;
   Timestamp timeErrorStart;
-  List<int>  idStaff;
+  String  nameStaff;
   bool isTakeOver;
   Timestamp timeTakeOver;
   bool isDone;
@@ -15,6 +15,6 @@ class Error {
   String note;
 
   Error(this.id, this.errorTitle, this.clarifyTitle,
-      this.name, this.address, this.timeErrorStart, this.idStaff,
+      this.name, this.address, this.timeErrorStart, this.nameStaff,
       this.isTakeOver, this.timeTakeOver, this.isDone, this.timeDone, this.note);
 }

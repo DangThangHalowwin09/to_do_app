@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/const/colors.dart';
-import 'package:flutter_to_do_list/model/notes_model.dart';
+import 'package:flutter_to_do_list/model/model.dart';
 import 'package:flutter_to_do_list/screen/edit_screen.dart';
 import 'package:intl/intl.dart';
 

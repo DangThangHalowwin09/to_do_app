@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_to_do_list/model/notes_model.dart';
+import 'package:flutter_to_do_list/model/model.dart';
 import 'package:uuid/uuid.dart';
 
 class Firestore_Datasource {
@@ -21,9 +21,12 @@ class Firestore_Datasource {
     }
   }
 
-
-
-  Future<bool> AddError_ForDoctor(String errorTitle, String clarifyTitle, String name, String address) async {
+  Future<bool> AddError_ForDoctor(
+      String errorTitle,
+      String clarifyTitle,
+      String name,
+      String address,
+      Timestamp timeErrorStart) async {
     try {
       var uuid = Uuid().v4();
       await _firestore.collection('errors').doc(uuid).set({
@@ -32,9 +35,9 @@ class Firestore_Datasource {
         'clarifyTitle': clarifyTitle,
         'name': name,
         'address': address,
-        'timeErrorStart': FieldValue.serverTimestamp(),
+        'timeErrorStart': timeErrorStart,
         'isDone': false,
-        'idStaff': [],
+        'nameStaff': '',
         'isTakeOver': false,
         'timeTakeOver': null,
         'timeDone': null,
@@ -47,11 +50,11 @@ class Firestore_Datasource {
     }
   }
 
-
-  Future<bool> Update_TakeOverError_ForIT(String uuid, List<int> idStaff, bool isTakeOver) async {
+  Future<bool> Update_TakeOverError_ForIT(
+      String uuid, String nameStaff, bool isTakeOver) async {
     try {
       await _firestore.collection('errors').doc(uuid).update({
-        'idStaff': idStaff, // ✅ dùng List<int>
+        'nameStaff': nameStaff,
         'isTakeOver': isTakeOver,
         'timeTakeOver': FieldValue.serverTimestamp(),
       });
@@ -62,15 +65,10 @@ class Firestore_Datasource {
     }
   }
 
-
-  Future<bool> AddError_Complete_ForIT(String uuid, bool isDone, Timestamp timeDone, String note) async {
+  Future<bool> AddError_Complete_ForIT(
+      String uuid, bool isDone, Timestamp timeDone, String note) async {
     try {
-      //var uuid = Uuid().v4();
-      //DateTime data = new DateTime.now();
-      await _firestore
-          .collection('errors')
-          .doc(uuid)
-          .set({
+      await _firestore.collection('errors').doc(uuid).update({
         'isDone': true,
         'timeDone': FieldValue.serverTimestamp(),
         'note': note,
@@ -87,13 +85,13 @@ class Firestore_Datasource {
       final notesList = snapshot.data!.docs.map<Error>((doc) {
         final data = doc.data() as Map<String, dynamic>;
         return Error(
-          doc.id, // lấy ID tài liệu
+          doc.id,
           data['errorTitle'] ?? '',
           data['clarifyTitle'] ?? '',
           data['name'] ?? '',
           data['address'] ?? '',
           data['timeErrorStart'] as Timestamp? ?? Timestamp.now(),
-          List<int>.from((data['idStaff'] ?? []).cast<int>()), // ép kiểu rõ ràng
+          data['nameStaff'] ?? '',
           data['isTakeOver'] ?? false,
           data['timeTakeOver'] as Timestamp? ?? Timestamp.now(),
           data['isDone'] ?? false,
@@ -137,17 +135,24 @@ class Firestore_Datasource {
   }
 
   Future<bool> Update_Error_ForDoctor(
-      String uuid, String errorTitle, String clarifyTitle, String name, String address) async {
+      String uuid,
+      String errorTitle,
+      String clarifyTitle,
+      String name,
+      String address,
+      Timestamp timeErrorStart,
+      ) async {
     try {
       final doc = await _firestore.collection('errors').doc(uuid).get();
 
-      // Lấy lại các field quan trọng để không mất
       final currentData = doc.data()!;
       bool currentIsDone = currentData['isDone'] ?? false;
-      List<int> currentIdStaff = List<int>.from(currentData['idStaff'] ?? []);
+      String currentNameStaff = currentData['nameStaff'] ?? '';
       bool currentIsTakeOver = currentData['isTakeOver'] ?? false;
-      Timestamp currentTimeTakeOver = currentData['timeTakeOver'] ?? Timestamp.now();
-      Timestamp currentTimeDone = currentData['timeDone'] ?? Timestamp.now();
+      Timestamp currentTimeTakeOver =
+          currentData['timeTakeOver'] ?? Timestamp.now();
+      Timestamp currentTimeDone =
+          currentData['timeDone'] ?? Timestamp.now();
       String note = currentData['note'] ?? "";
 
       await _firestore.collection('errors').doc(uuid).update({
@@ -155,11 +160,9 @@ class Firestore_Datasource {
         'clarifyTitle': clarifyTitle,
         'name': name,
         'address': address,
-        'timeErrorStart': FieldValue.serverTimestamp(),
-
-        // Giữ lại các field quan trọng
+        'timeErrorStart': timeErrorStart,
         'isDone': currentIsDone,
-        'idStaff': currentIdStaff,
+        'nameStaff': currentNameStaff,
         'isTakeOver': currentIsTakeOver,
         'timeTakeOver': currentTimeTakeOver,
         'timeDone': currentTimeDone,
@@ -176,11 +179,7 @@ class Firestore_Datasource {
   Future<bool> Update_CompleteError_ForIT(
       String uuid, bool isDone, String note) async {
     try {
-      //DateTime data = new DateTime.now();
-      await _firestore
-          .collection('errors')
-          .doc(uuid)
-          .update({
+      await _firestore.collection('errors').doc(uuid).update({
         'isDone': true,
         'timeDone': FieldValue.serverTimestamp(),
         'note': note,
@@ -194,10 +193,7 @@ class Firestore_Datasource {
 
   Future<bool> delete_Error(String uuid) async {
     try {
-      await _firestore
-          .collection('errors')
-          .doc(uuid)
-          .delete();
+      await _firestore.collection('errors').doc(uuid).delete();
       return true;
     } catch (e) {
       print(e);
