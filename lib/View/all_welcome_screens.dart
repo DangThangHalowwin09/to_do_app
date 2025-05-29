@@ -11,147 +11,164 @@ import 'login_screen.dart';
 final AuthService _authService = AuthService();
 
 class AdminScreen extends StatelessWidget {
-  const
-
-    AdminScreen({super.key});
+  const AdminScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Màn hình Admin'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.blue,
+        backgroundColor: const Color(0xFF3A4C7A),
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                children: [
-                  const Text('Chào mừng bạn đến với trang Admin!'),
-
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      _authService.signOut();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const LoginScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Đăng Xuất"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SignupScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Đăng ký tài khoản"),
-                  ),
-
-
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const TaskScreen(),
-
-                        ),
-                      );
-                    },
-                    child: const Text("Nhiệm vụ phòng IT"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ErrorScreen(),
-
-                        ),
-                      );
-                    },
-                    child: const Text("Tất cả các lỗi"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ErrorScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Nhiệm vụ Phần Cứng"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ErrorScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Nhiệm vụ Phần Mềm"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ErrorScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Các bảng thống kê"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ErrorScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Quản lý thông tin nhân viên"),
-                  ),
-                ],
-              ),
+      body: Column(
+        children: [
+          Container(
+            color: const Color(0xFF3A4C7A),
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'ADMIN',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Chào mừng bạn đến với trang Admin!',
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: GridView.count(
+              padding: const EdgeInsets.all(16),
+              crossAxisCount: 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              children: [
+                _buildGridItem(
+                  icon: Icons.logout,
+                  label: 'Đăng Xuất',
+                  iconColor: Colors.red,
+                  onTap: () {
+                    _authService.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.person_add,
+                  label: 'Đăng ký',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SignupScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.task,
+                  label: 'NV phòng',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TaskScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.error,
+                  label: 'Tất cả các lỗi',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.computer,
+                  label: 'NV P.Cứng',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.code,
+                  label: 'NV P.Mềm',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.bar_chart,
+                  label: 'Thống kê',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.people,
+                  label: 'Nhân viên',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-      /*floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.add),
-      ),*/
+    );
+  }
+
+  Widget _buildGridItem({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color iconColor = Colors.blue,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 28, color: iconColor),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -162,84 +179,408 @@ class UserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
-      appBar: AppBar(title: const Text('Màn hình nhân viên'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.blue,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Màn hình nhân viên'),
+        backgroundColor: const Color(0xFF3A4C7A),
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                children: [
-                  const Text('Chào mình đến với màn hình IT!'),
-
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      _authService.signOut();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const LoginScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Đăng Xuất"),
-                  ),
-                  const SizedBox(height: 12),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const TaskScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Nhiệm vụ phòng IT"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ErrorScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Nhiệm vụ"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const StatisticsScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Team Task"),
-                  ),
-                ],
-              ),
+      body: Column(
+        children: [
+          Container(
+            color: const Color(0xFF3A4C7A),
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'NHÂN VIÊN',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Chào mừng đến với màn hình IT!',
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: GridView.count(
+              padding: const EdgeInsets.all(16),
+              crossAxisCount: 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              children: [
+                _buildGridItem(
+                  icon: Icons.logout,
+                  label: 'Đăng Xuất',
+                  iconColor: Colors.red,
+                  onTap: () {
+                    _authService.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.task,
+                  label: 'Nhiệm vụ phòng IT',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TaskScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.error,
+                  label: 'Nhiệm vụ',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.group,
+                  label: 'Team Task',
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const StatisticsScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGridItem({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color iconColor = Colors.blue,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 28, color: iconColor),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
 }
 
+class HardwareScreen extends StatelessWidget {
+  const HardwareScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Màn hình nhần viên phần cứng'),
+        backgroundColor: const Color(0xFF3A4C7A),
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          Container(
+            color: const Color(0xFF3A4C7A),
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'NHÂN VIÊN PHẦN CỨNG',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Chào mừng đến với màn hình nhân viên phần cứng!',
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.count(
+              padding: const EdgeInsets.all(16),
+              crossAxisCount: 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              children: [
+                _buildGridItem(
+                  icon: Icons.logout,
+                  label: 'Đăng Xuất',
+                  iconColor: Colors.red,
+                  onTap: () {
+                    _authService.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.task,
+                  label: 'NV phòng',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TaskScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.error,
+                  label: 'Lỗi PC',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.build,
+                  label: 'Mẹo PC',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const BlogScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.person,
+                  label: 'Cập nhật TK',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.calendar_today,
+                  label: 'Lịch trực',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGridItem({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color iconColor = Colors.blue,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 28, color: iconColor),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SoftwareScreen extends StatelessWidget {
+  const SoftwareScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Báo lỗi phần mềm'),
+        backgroundColor: const Color(0xFF3A4C7A),
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          Container(
+            color: const Color(0xFF3A4C7A),
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'NHÂN VIÊN PHẦN MỀM',
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                SizedBox(height: 12),
+                Text(
+                  'Chào mừng đến với màn hình nhân viên phần mềm!',
+                  style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.count(
+              padding: const EdgeInsets.all(16),
+              crossAxisCount: 4,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              children: [
+                _buildGridItem(
+                  icon: Icons.logout,
+                  label: 'Đăng Xuất',
+                  iconColor: Colors.red,
+                  onTap: () {
+                    _authService.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.task,
+                  label: 'Việc phòng IT',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const TaskScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.error,
+                  label: 'Lỗi PM',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.code,
+                  label: 'Mẹo PM',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const BlogScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.person,
+                  label: 'Cập nhật TK',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.calendar_today,
+                  label: 'Lịch trực',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGridItem({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color iconColor = Colors.blue,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(0.1),
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, size: 28, color: iconColor),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class DoctorScreen extends StatelessWidget {
   const DoctorScreen({super.key});
@@ -361,236 +702,6 @@ class DoctorScreen extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ],
-      ),
-    );
-  }
-}
-
-// Thay bằng service bạn thực tế đang dùng
-//final _authService = AuthService();
-
-
-class HardwareScreen extends StatelessWidget {
-  const HardwareScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue,
-      appBar: AppBar(title: const Text('Màn hình báo lỗi cho y bác sỹ'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.blue,
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                children: [
-                  const Text('Chào mừng đến với màn hình nhân viên phần cứng!'),
-
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      _authService.signOut();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const LoginScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Đăng Xuất"),
-                  ),
-                  const SizedBox(height: 12),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const TaskScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Nhiệm vụ phòng IT"),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ErrorScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Lỗi các phòng ban"),
-                  ),
-
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const BlogScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Mẹo sửa lỗi Phần Cứng"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const UpdateProfileScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Chỉnh sửa thông tin cá nhân"),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const UpdateProfileScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Lịch trực phòng IT"),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class SoftwareScreen extends StatelessWidget {
-  const SoftwareScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue,
-      appBar: AppBar(title: const Text('Báo lỗi phần mềm'),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.blue,
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-
-                children: [
-                  const Text('Chào mừng đến với màn hình nhân viên phần mềm!'),
-
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      _authService.signOut();
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const LoginScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Đăng Xuất"),
-                  ),
-                  const SizedBox(height: 12),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const TaskScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Nhiệm vụ phòng IT"),
-                  ),
-                  const SizedBox(height: 12),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ErrorScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Báo lỗi phần mềm"),
-                  ),
-                  const SizedBox(height: 12),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const BlogScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Mẹo sửa lỗi Phần Mềm"),
-                  ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () {
-                  //_authService.signOut();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const UpdateProfileScreen(),
-                    ),
-                  );
-                },
-                child: const Text("Chỉnh sửa thông tin cá nhân"),
-              ),
-
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      //_authService.signOut();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const UpdateProfileScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text("Lịch trực phòng IT"),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
