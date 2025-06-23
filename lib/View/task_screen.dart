@@ -18,6 +18,7 @@ class _TaskScreenState extends State<TaskScreen> {
   String? currentUserRole;
   String? currentUserId;
 
+  String? currentUserName;
   @override
   void initState() {
     super.initState();
@@ -32,6 +33,7 @@ class _TaskScreenState extends State<TaskScreen> {
         setState(() {
           currentUserId = user.uid;
           currentUserRole = snapshot['role'];
+          currentUserName = snapshot['name'];
         });
       }
     }

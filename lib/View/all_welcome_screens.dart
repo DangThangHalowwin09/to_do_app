@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/signup_screen.dart';
 import 'package:flutter_to_do_list/View/task_screen.dart';
@@ -12,6 +13,7 @@ final AuthService _authService = AuthService();
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +78,7 @@ class AdminScreen extends StatelessWidget {
                 ),
                 _buildGridItem(
                   icon: Icons.task,
-                  label: 'NV phòng',
+                  label: 'Giao việc',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -86,7 +88,7 @@ class AdminScreen extends StatelessWidget {
                 ),
                 _buildGridItem(
                   icon: Icons.error,
-                  label: 'Tất cả các lỗi',
+                  label: 'Báo lỗi',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -304,7 +306,7 @@ class HardwareScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Màn hình nhần viên phần cứng'),
+        title: const Text('Màn hình nhân viên phần cứng'),
         backgroundColor: const Color(0xFF3A4C7A),
         foregroundColor: Colors.white,
         centerTitle: true,
@@ -352,7 +354,7 @@ class HardwareScreen extends StatelessWidget {
                 ),
                 _buildGridItem(
                   icon: Icons.task,
-                  label: 'NV phòng',
+                  label: 'Nhiệm vụ',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -362,7 +364,7 @@ class HardwareScreen extends StatelessWidget {
                 ),
                 _buildGridItem(
                   icon: Icons.error,
-                  label: 'Lỗi PC',
+                  label: 'Báo lỗi',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -382,7 +384,7 @@ class HardwareScreen extends StatelessWidget {
                 ),
                 _buildGridItem(
                   icon: Icons.person,
-                  label: 'Cập nhật TK',
+                  label: 'Tài khoản',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -393,6 +395,16 @@ class HardwareScreen extends StatelessWidget {
                 _buildGridItem(
                   icon: Icons.calendar_today,
                   label: 'Lịch trực',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.inventory_2,
+                  label: 'Kho',
                   onTap: () {
                     Navigator.push(
                       context,
