@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-    else if (result ==  'Nhân viên phần cứng') {
+    else if (result ==  'Tổ phần cứng') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-    else if (result == 'Nhân viên phần mềm') {
+    else if (result == 'Tổ phần mềm') {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

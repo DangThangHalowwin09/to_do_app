@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import '../Service/upload_service.dart'; // hàm upload ảnh lên Firebase Storage
+import '../Service/upload_service.dart'; // Hàm upload ảnh lên Firebase Storage
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
@@ -20,6 +20,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   final currentUser = FirebaseAuth.instance.currentUser;
 
+  String? _role;
+  List<String> _areas = [];
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +38,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       _nameController.text = data['name'] ?? '';
       _bioController.text = data['bio'] ?? '';
       _numberController.text = data['number'] ?? '';
+      _role = data['role'] ?? '';
+      _areas = List<String>.from(data['areas'] ?? []);
       setState(() {});
     }
   }
@@ -55,7 +60,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     String? imageUrl;
 
     if (_image != null) {
-      imageUrl = await UploadService.uploadImage(_image!); // hàm upload trả về URL
+      imageUrl = await UploadService.uploadImage(_image!);
     }
 
     await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).set({
@@ -66,15 +71,16 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     }, SetOptions(merge: true));
 
     setState(() => _loading = false);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Đã cập nhật thành công')));
+    ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đã cập nhật thành công')));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Cập nhật thông tin cá nhân')),
+      appBar: AppBar(title: const Text('Cập nhật thông tin cá nhân')),
       body: _loading
-          ? Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())
           : Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -85,28 +91,62 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 child: CircleAvatar(
                   radius: 50,
                   backgroundImage: _image != null ? FileImage(_image!) : null,
-                  child: _image == null ? Icon(Icons.add_a_photo, size: 30) : null,
+                  child: _image == null ? const Icon(Icons.add_a_photo, size: 30) : null,
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: _nameController,
-                decoration: InputDecoration(labelText: 'Tên'),
+                decoration: const InputDecoration(labelText: 'Tên'),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               TextField(
                 controller: _numberController,
-                maxLines: 4,
-                decoration: InputDecoration(labelText: 'number'),
+                maxLines: 1,
+                decoration: const InputDecoration(labelText: 'Số điện thoại'),
               ),
               TextField(
                 controller: _bioController,
                 maxLines: 4,
-                decoration: InputDecoration(labelText: 'Giới thiệu bản thân'),
+                decoration: const InputDecoration(labelText: 'Giới thiệu bản thân'),
               ),
+              const SizedBox(height: 20),
+              if (_role != null) ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Thành viên: $_role',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+              if (_role == 'Tổ phần cứng') ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(
+                    'Các khu vực đảm nhiệm:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _areas
+                      .map((area) => Row(
+                    children: [
+                      const Icon(Icons.location_on, size: 16, color: Colors.blueGrey),
+                      const SizedBox(width: 6),
+                      Text(area),
+                    ],
+                  ))
+                      .toList(),
+                ),
+                const SizedBox(height: 20),
+              ],
               ElevatedButton(
                 onPressed: _saveProfile,
-                child: Text('Lưu'),
+                child: const Text('Lưu'),
               ),
             ],
           ),
@@ -114,4 +154,5 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       ),
     );
   }
+
 }

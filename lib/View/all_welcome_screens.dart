@@ -6,8 +6,10 @@ import 'package:flutter_to_do_list/View/update_profile_screen.dart';
 import '../Service/auth_service.dart';
 import '../screen/blog_screen.dart';
 import '../screen/statistics_screen.dart';
+import 'area_manager_screen.dart';
 import 'error_screen.dart';
 import 'login_screen.dart';
+import 'member_manager_screen.dart';
 
 final AuthService _authService = AuthService();
 
@@ -96,7 +98,7 @@ class AdminScreen extends StatelessWidget {
                     );
                   },
                 ),
-                _buildGridItem(
+                /*_buildGridItem(
                   icon: Icons.computer,
                   label: 'NV P.Cứng',
                   onTap: () {
@@ -115,7 +117,7 @@ class AdminScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const ErrorScreen()),
                     );
                   },
-                ),
+                ),*/
                 _buildGridItem(
                   icon: Icons.bar_chart,
                   label: 'Thống kê',
@@ -132,7 +134,17 @@ class AdminScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                      MaterialPageRoute(builder: (_) => const MembersScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.domain,
+                  label: 'Khu vực',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const AreaManagerScreen()),
                     );
                   },
                 ),

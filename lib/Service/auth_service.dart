@@ -13,6 +13,7 @@ class AuthService {
     required String email,
     required String password,
     required String role,
+    required List<String>? areas,
   }) async {
     try {
       // Create user in Firebase Authentication with email and password
@@ -27,6 +28,8 @@ class AuthService {
         'name': name.trim(),
         'email': email.trim(),
         'role': role, // Role determines if user is Admin or User
+        'areas':  areas ?? [],
+        'createAt': FieldValue.serverTimestamp(),
       });
 
       return null; // Success: no error message
