@@ -221,12 +221,12 @@ class _ErrorDetailScreenState extends State<ErrorDetailScreen> {
             if (data['isDone'] == true && timeDone != null)
               Text('Thời gian hoàn thành: ${dateFormat.format(timeDone)}'),
             SizedBox(height: 16),
-            if ((currentUserRole == 'Admin' || currentUserRole == 'Nhân viên phần mềm' || currentUserRole == 'Nhân viên phần cứng') && data['isTakeOver'] == false)
+            if ((currentUserRole == 'Admin' || currentUserRole == 'Tổ phần mềm' || currentUserRole == 'Tổ phần cứng') && data['isTakeOver'] == false)
               ElevatedButton(
                 onPressed: takeOver,
                 child: Text('Nhận việc'),
               ),
-            if ((currentUserRole == 'Admin' || currentUserRole == 'Nhân viên phần mềm' || currentUserRole == 'Nhân viên phần cứng') && data['isTakeOver'] == true && data['isDone'] == false)
+            if ((currentUserRole == 'Admin' || currentUserRole == 'Tổ phần mềm' || currentUserRole == 'Tổ phần cứng') && data['isTakeOver'] == true && data['isDone'] == false)
               ElevatedButton(
                 onPressed: markDone,
                 child: Text('Hoàn thành'),

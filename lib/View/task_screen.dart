@@ -50,9 +50,8 @@ class _TaskScreenState extends State<TaskScreen> {
     if (task != null) assignedTo = task['assignedTo'];
 
     final usersSnapshot = await users
-        .where('role', whereIn: ['Nhân viên phần mềm', 'Nhân viên phần cứng'])
+        .where('role', whereIn: ['Tổ phần mềm', 'Tổ phần cứng'])
         .get();
-
     await showDialog(
       context: context,
       builder: (_) {

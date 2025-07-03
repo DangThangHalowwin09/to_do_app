@@ -8,8 +8,10 @@ import '../screen/blog_screen.dart';
 import '../screen/statistics_screen.dart';
 import 'area_manager_screen.dart';
 import 'error_screen.dart';
+import 'group_manager_screen.dart';
 import 'login_screen.dart';
 import 'member_manager_screen.dart';
+import 'coming_soon_screen.dart';
 
 final AuthService _authService = AuthService();
 
@@ -119,16 +121,6 @@ class AdminScreen extends StatelessWidget {
                   },
                 ),*/
                 _buildGridItem(
-                  icon: Icons.bar_chart,
-                  label: 'Thống kê',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
-                    );
-                  },
-                ),
-                _buildGridItem(
                   icon: Icons.people,
                   label: 'Nhân viên',
                   onTap: () {
@@ -139,8 +131,8 @@ class AdminScreen extends StatelessWidget {
                   },
                 ),
                 _buildGridItem(
-                  icon: Icons.domain,
-                  label: 'Khu vực',
+                  icon: Icons.local_hospital,
+                  label: 'Các khoa',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -148,6 +140,27 @@ class AdminScreen extends StatelessWidget {
                     );
                   },
                 ),
+                _buildGridItem(
+                  icon: Icons.domain,
+                  label: 'Khu vực',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const GroupManagementScreen()),
+                    );
+                  },
+                ),
+                /*_buildGridItem(
+                  icon: Icons.bar_chart,
+                  label: 'Thống kê',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
+                      //MaterialPageRoute(builder: (_) => const StatisticsScreen()),
+                    );
+                  },
+                ),*/
               ],
             ),
           ),
@@ -563,7 +576,7 @@ class SoftwareScreen extends StatelessWidget {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+                      MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
                     );
                   },
                 ),
@@ -677,7 +690,7 @@ class DoctorScreen extends StatelessWidget {
                   label: 'Nhân viên',
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const ErrorScreen()),
+                    MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
                   ),
                 ),
                 _buildGridItem(
