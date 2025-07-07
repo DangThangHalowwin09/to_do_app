@@ -75,7 +75,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
             const SizedBox(height: 16),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('groups').snapshots(),
+                stream: FirebaseFirestore.instance.collection('groups').orderBy('name').snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());

@@ -17,6 +17,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  final TextEditingController _areaSearchController = TextEditingController();
+
   String _selectedRole = 'User';
   bool _isLoading = false;
   bool isPasswordHidden = true;
@@ -31,13 +33,18 @@ class _SignupScreenState extends State<SignupScreen> {
     super.initState();
     fetchAreaList(); // gọi khi màn hình khởi tạo
   }
+  @override
+  void dispose() {
+    _areaSearchController.dispose();
+    super.dispose();
+  }
 
   Future<void> fetchAreaList() async {
-    final snapshot = await FirebaseFirestore.instance.collection('areas').get();
-    final snapshotGroup = await FirebaseFirestore.instance.collection('groups').get();
+    final snapshot = await FirebaseFirestore.instance.collection('areas').orderBy('name').get();
+    final snapshotGroup = await FirebaseFirestore.instance.collection('groups').orderBy('name').get();
     setState(() {
       _areaOptions = snapshot.docs.map((doc) => doc['name'].toString()).toList();
-      _areaGroupOptions = snapshot.docs.map((doc) => doc['name'].toString()).toList();
+      _areaGroupOptions = snapshotGroup.docs.map((doc) => doc['name'].toString()).toList();
     });
   }
 
@@ -126,7 +133,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedRole = newValue!;
-                    _selectedAreas.clear(); // reset khi đổi role
+                    _selectedAreas.clear();
+                    _selectedAreasGroup.clear();// reset khi đổi role
                   });
                 },
                 items: [
@@ -149,7 +157,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 if (_areaGroupOptions.isEmpty)
                   const Text('Đang tải danh sách khu vực...')
                 else
-                  ..._areaGroupOptions.map((area) => CheckboxListTile(
+                  ...([..._areaGroupOptions]..sort()).map((area) => CheckboxListTile(
                     title: Text(area),
                     value: _selectedAreasGroup.contains(area),
                     onChanged: (bool? selected) {
@@ -166,13 +174,36 @@ class _SignupScreenState extends State<SignupScreen> {
               if (_selectedRole == 'Y bác sỹ') ...[
                 const SizedBox(height: 16),
                 const Text(
-                  'Chọn khu vực hỗ trợ:',
+                  'Chọn khoa:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
+
+                const SizedBox(height: 8),
+
+                // Ô tìm kiếm
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
+                  child: TextField(
+                    controller: _areaSearchController,
+                    decoration: const InputDecoration(
+                      labelText: 'Tìm khu vực...',
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (_) => setState(() {}), // để cập nhật filter
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Danh sách lọc + checkbox
                 if (_areaOptions.isEmpty)
                   const Text('Đang tải danh sách khu vực...')
                 else
-                  ..._areaOptions.map((area) => CheckboxListTile(
+                  ..._areaOptions
+                      .where((area) =>
+                      area.toLowerCase().contains(_areaSearchController.text.toLowerCase()))
+                      .map((area) => CheckboxListTile(
                     title: Text(area),
                     value: _selectedAreas.contains(area),
                     onChanged: (bool? selected) {
@@ -186,6 +217,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     },
                   )),
               ],
+
               const SizedBox(height: 20),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())

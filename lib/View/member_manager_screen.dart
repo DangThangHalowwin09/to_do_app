@@ -9,7 +9,7 @@ class MembersScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Danh sách thành viên')),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        stream: FirebaseFirestore.instance.collection('users').orderBy('name').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -69,31 +69,59 @@ class MembersScreen extends StatelessWidget {
                       decoration: const InputDecoration(labelText: 'Vai trò'),
                     ),
                     if (_roleController.text == 'Tổ phần cứng')
-                      FutureBuilder<QuerySnapshot>(
-                        future: FirebaseFirestore.instance.collection('areas').get(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) return const CircularProgressIndicator();
-                          final allAreas = snapshot.data!.docs.map((doc) => doc['name'].toString()).toList();
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: allAreas.map((area) {
-                              return CheckboxListTile(
-                                title: Text(area),
-                                value: _selectedAreas.contains(area),
-                                onChanged: (selected) {
-                                  setState(() {
-                                    if (selected == true) {
-                                      _selectedAreas.add(area);
-                                    } else {
-                                      _selectedAreas.remove(area);
-                                    }
-                                  });
-                                },
-                              );
-                            }).toList(),
-                          );
-                        },
-                      )
+                      Text('Nhóm khu vực đảm nhiệm: '),
+                    FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance.collection('groups').orderBy('name').get(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) return const CircularProgressIndicator();
+                        final allAreas = snapshot.data!.docs.map((doc) => doc['name'].toString()).toList();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: allAreas.map((area) {
+                            return CheckboxListTile(
+                              title: Text(area),
+                              value: _selectedAreas.contains(area),
+                              onChanged: (selected) {
+                                setState(() {
+                                  if (selected == true) {
+                                    _selectedAreas.add(area);
+                                  } else {
+                                    _selectedAreas.remove(area);
+                                  }
+                                });
+                              },
+                            );
+                          }).toList(),
+                        );
+                      },
+                      ),
+                    if (_roleController.text == 'Y bác sỹ')
+                      Text('Khu vực phụ trách: '),
+                    FutureBuilder<QuerySnapshot>(
+                      future: FirebaseFirestore.instance.collection('areas').orderBy('name').get(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) return const CircularProgressIndicator();
+                        final allAreas = snapshot.data!.docs.map((doc) => doc['name'].toString()).toList();
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: allAreas.map((area) {
+                            return CheckboxListTile(
+                              title: Text(area),
+                              value: _selectedAreas.contains(area),
+                              onChanged: (selected) {
+                                setState(() {
+                                  if (selected == true) {
+                                    _selectedAreas.add(area);
+                                  } else {
+                                    _selectedAreas.remove(area);
+                                  }
+                                });
+                              },
+                            );
+                          }).toList(),
+                        );
+                      },
+                    )
                   ],
                 ),
               ),
