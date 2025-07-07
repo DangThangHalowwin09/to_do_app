@@ -14,6 +14,7 @@ class AuthService {
     required String password,
     required String role,
     required List<String>? areas,
+    required List<String>? group,
   }) async {
     try {
       // Create user in Firebase Authentication with email and password

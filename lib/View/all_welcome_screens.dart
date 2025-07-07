@@ -417,13 +417,13 @@ class HardwareScreen extends StatelessWidget {
                     );
                   },
                 ),
-                _buildGridItem(
+       /*         _buildGridItem(
                   icon: Icons.calendar_today,
                   label: 'Lịch trực',
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+                      MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
                     );
                   },
                 ),
@@ -436,7 +436,7 @@ class HardwareScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
                     );
                   },
-                ),
+                ),*/
               ],
             ),
           ),
@@ -562,7 +562,7 @@ class SoftwareScreen extends StatelessWidget {
                 ),
                 _buildGridItem(
                   icon: Icons.person,
-                  label: 'Cập nhật TK',
+                  label: 'Tài Khoản',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -570,7 +570,7 @@ class SoftwareScreen extends StatelessWidget {
                     );
                   },
                 ),
-                _buildGridItem(
+                /*_buildGridItem(
                   icon: Icons.calendar_today,
                   label: 'Lịch trực',
                   onTap: () {
@@ -579,7 +579,7 @@ class SoftwareScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
                     );
                   },
-                ),
+                ),*/
               ],
             ),
           ),
@@ -687,10 +687,25 @@ class DoctorScreen extends StatelessWidget {
                 ),
                 _buildGridItem(
                   icon: Icons.people,
-                  label: 'Nhân viên',
+                  label: 'Tài Khoản',
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+                  ),
+                ),
+                _buildGridItem(
+                  icon: Icons.inventory_2,
+                  label: 'Kho',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
+                  ),
+                ),  _buildGridItem(
+                  icon: Icons.access_time,
+                  label: 'Trực IT',
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
                   ),
                 ),
                 _buildGridItem(

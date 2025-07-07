@@ -22,7 +22,9 @@ class _SignupScreenState extends State<SignupScreen> {
   bool isPasswordHidden = true;
 
   List<String> _selectedAreas = [];
+  List<String> _selectedAreasGroup = [];
   List<String> _areaOptions = [];
+  List<String> _areaGroupOptions = [];
 
   @override
   void initState() {
@@ -32,8 +34,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Future<void> fetchAreaList() async {
     final snapshot = await FirebaseFirestore.instance.collection('areas').get();
+    final snapshotGroup = await FirebaseFirestore.instance.collection('groups').get();
     setState(() {
       _areaOptions = snapshot.docs.map((doc) => doc['name'].toString()).toList();
+      _areaGroupOptions = snapshot.docs.map((doc) => doc['name'].toString()).toList();
     });
   }
 
@@ -48,6 +52,7 @@ class _SignupScreenState extends State<SignupScreen> {
       password: _passwordController.text,
       role: _selectedRole,
       areas: _selectedRole == 'Tổ phần cứng' ? _selectedAreas : [],
+      group: _selectedRole == 'Y bác sỹ' ? _selectedAreasGroup : [],
     );
 
     setState(() {
@@ -136,6 +141,29 @@ class _SignupScreenState extends State<SignupScreen> {
                 )).toList(),
               ),
               if (_selectedRole == 'Tổ phần cứng') ...[
+                const SizedBox(height: 16),
+                const Text(
+                  'Chọn khu vực hỗ trợ:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                if (_areaGroupOptions.isEmpty)
+                  const Text('Đang tải danh sách khu vực...')
+                else
+                  ..._areaGroupOptions.map((area) => CheckboxListTile(
+                    title: Text(area),
+                    value: _selectedAreasGroup.contains(area),
+                    onChanged: (bool? selected) {
+                      setState(() {
+                        if (selected == true) {
+                          _selectedAreasGroup.add(area);
+                        } else {
+                          _selectedAreasGroup.remove(area);
+                        }
+                      });
+                    },
+                  )),
+              ],
+              if (_selectedRole == 'Y bác sỹ') ...[
                 const SizedBox(height: 16),
                 const Text(
                   'Chọn khu vực hỗ trợ:',
