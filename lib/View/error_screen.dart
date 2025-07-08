@@ -256,6 +256,12 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _locationDetailController = TextEditingController();
+  final TextEditingController _urgencyReasonController = TextEditingController();
+
+  String? _urgencyLevel;
+
   String? _errorType; // "Báo lỗi phần mềm" hoặc "Báo lỗi phần cứng"
   DateTime? _timeErrorStart;
 
