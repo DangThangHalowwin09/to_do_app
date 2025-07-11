@@ -33,18 +33,18 @@ class MembersScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(role),
-                    if (role == 'Tổ phần cứng' && groups.isNotEmpty) ...[
-                      SizedBox(width: 6),
-                      Icon(Icons.memory, size: 16, color: Colors.grey),
-                      SizedBox(width: 4),
-                      Text(groups.join(', ')),
+                    if (role == 'Tổ phần cứng') ...[
+                      SizedBox(width: 50),
+                      Icon(Icons.groups, size: 16, color: Colors.grey),
+                      SizedBox(width: 5),
+                      Text(groups.isNotEmpty ? groups.join(', ') : 'Chưa gán nhóm'),
                     ],
 
-                    if (role == 'Y bác sỹ' && areas.isNotEmpty) ...[
-                      SizedBox(width: 6),
+                    if (role == 'Y bác sỹ' ) ...[
+                      SizedBox(width: 80),
                       Icon(Icons.location_on, size: 16, color: Colors.grey),
-                      SizedBox(width: 4),
-                      Text(areas.join(', ')),
+                      SizedBox(width: 5),
+                      Text(areas.isNotEmpty ? areas.join(', ') : 'Chưa gán khoa'),
                     ],
                   ],
                 ),
