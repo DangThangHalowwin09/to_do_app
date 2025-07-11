@@ -23,9 +23,31 @@ class MembersScreen extends StatelessWidget {
               final user = users[index].data() as Map<String, dynamic>;
               final docId = users[index].id;
               final name = user['name'] ?? 'Chưa có tên';
+              final role = user['role'] ?? 'Chưa gắn vị trí';
+              final areas = (user['areas'] as List?)?.cast<String>() ?? [];
+              final groups = (user['groups'] as List?)?.cast<String>() ?? [];
 
               return ListTile(
                 title: Text(name),
+                subtitle: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(role),
+                    if (role == 'Tổ phần cứng' && groups.isNotEmpty) ...[
+                      SizedBox(width: 6),
+                      Icon(Icons.memory, size: 16, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text(groups.join(', ')),
+                    ],
+
+                    if (role == 'Y bác sỹ' && areas.isNotEmpty) ...[
+                      SizedBox(width: 6),
+                      Icon(Icons.location_on, size: 16, color: Colors.grey),
+                      SizedBox(width: 4),
+                      Text(areas.join(', ')),
+                    ],
+                  ],
+                ),
                 trailing: const Icon(Icons.info_outline),
                 onTap: () => _showUserDetailsDialog(context, user, docId),
               );
@@ -36,17 +58,20 @@ class MembersScreen extends StatelessWidget {
     );
   }
 
+
   void _showUserDetailsDialog(BuildContext context, Map<String, dynamic> user, String docId) {
     final role = user['role'] ?? '';
     final areas = user['areas'] ?? [];
+    final groups = user['groups'] ?? [];
     final email = user['email'];
-    final number = user['number'];
     final bio = user['bio'];
+    final phone = user['phone'];
 
     final name = user['name'] ?? 'Không rõ';
     final isHardwareTeam = role == 'Tổ phần cứng';
-    final TextEditingController _roleController = TextEditingController(text: role);
+    //final TextEditingController _roleController = TextEditingController(text: role);
     List<String> _selectedAreas = List<String>.from(areas);
+    List<String> _selectedGroupAreas = List<String>.from(groups);
 
     showDialog(
       context: context,
@@ -61,16 +86,14 @@ class MembersScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (email != null) Text('Email: $email'),
-                    if (number != null) Text('SĐT: $number'),
-                    if (bio != null) Text('Giới thiệu: $bio'),
+                    Text((phone != null) ? 'SĐT:  $bio' : 'SĐT: Chưa có DL'),
+                    Text((bio != null) ? 'Giới thiệu:  $bio' : 'Giới thiệu: Chưa có DL'),
+                    if (role != null) Text('Vị trí: $role'),
                     const SizedBox(height: 10),
-                    TextField(
-                      controller: _roleController,
-                      decoration: const InputDecoration(labelText: 'Vai trò'),
-                    ),
-                    if (_roleController.text == 'Tổ phần cứng')
+
+                    if (role == 'Tổ phần cứng') ...[
                       Text('Nhóm khu vực đảm nhiệm: '),
-                    FutureBuilder<QuerySnapshot>(
+                      FutureBuilder<QuerySnapshot>(
                       future: FirebaseFirestore.instance.collection('groups').orderBy('name').get(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) return const CircularProgressIndicator();
@@ -80,13 +103,13 @@ class MembersScreen extends StatelessWidget {
                           children: allAreas.map((area) {
                             return CheckboxListTile(
                               title: Text(area),
-                              value: _selectedAreas.contains(area),
+                              value: _selectedGroupAreas.contains(area),
                               onChanged: (selected) {
                                 setState(() {
                                   if (selected == true) {
-                                    _selectedAreas.add(area);
+                                    _selectedGroupAreas.add(area);
                                   } else {
-                                    _selectedAreas.remove(area);
+                                    _selectedGroupAreas.remove(area);
                                   }
                                 });
                               },
@@ -95,9 +118,11 @@ class MembersScreen extends StatelessWidget {
                         );
                       },
                       ),
-                    if (_roleController.text == 'Y bác sỹ')
+                  ],
+
+                    if (role == 'Y bác sỹ') ...[
                       Text('Khu vực phụ trách: '),
-                    FutureBuilder<QuerySnapshot>(
+                      FutureBuilder<QuerySnapshot>(
                       future: FirebaseFirestore.instance.collection('areas').orderBy('name').get(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) return const CircularProgressIndicator();
@@ -121,7 +146,8 @@ class MembersScreen extends StatelessWidget {
                           }).toList(),
                         );
                       },
-                    )
+                      )
+                    ],
                   ],
                 ),
               ),
@@ -133,8 +159,9 @@ class MembersScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     await FirebaseFirestore.instance.collection('users').doc(docId).update({
-                      'role': _roleController.text,
-                      'areas': _roleController.text == 'Tổ phần cứng' ? _selectedAreas : [],
+                      //'role': _roleController.text,
+                      'areas': role == 'Y bác sỹ' ? _selectedAreas : [],
+                      'groups': role == 'Tổ phần cứng' ? _selectedGroupAreas : [],
                     });
                     Navigator.pop(context);
                   },

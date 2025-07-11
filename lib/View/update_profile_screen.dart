@@ -14,7 +14,7 @@ class UpdateProfileScreen extends StatefulWidget {
 class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final _nameController = TextEditingController();
   final _bioController = TextEditingController();
-  final _numberController = TextEditingController();
+  final _phoneController = TextEditingController();
   File? _image;
   bool _loading = false;
 
@@ -22,6 +22,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   String? _role;
   List<String> _areas = [];
+  List<String> _groups = [];
 
   @override
   void initState() {
@@ -37,9 +38,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       final data = doc.data()!;
       _nameController.text = data['name'] ?? '';
       _bioController.text = data['bio'] ?? '';
-      _numberController.text = data['number'] ?? '';
+      _phoneController.text = data['phone'] ?? '';
       _role = data['role'] ?? '';
       _areas = List<String>.from(data['areas'] ?? []);
+      _groups = List<String>.from(data['groups'] ?? []);
       setState(() {});
     }
   }
@@ -66,7 +68,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).set({
       'name': _nameController.text.trim(),
       'bio': _bioController.text.trim(),
-      'number': _numberController.text.trim(),
+      'phone': _phoneController.text.trim(),
       'image': imageUrl,
     }, SetOptions(merge: true));
 
@@ -101,7 +103,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
               ),
               const SizedBox(height: 20),
               TextField(
-                controller: _numberController,
+                controller: _phoneController,
                 maxLines: 1,
                 decoration: const InputDecoration(labelText: 'Số điện thoại'),
               ),
@@ -125,7 +127,30 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: const Text(
-                    'Các khu vực đảm nhiệm:',
+                    'Nhóm khu vực đảm nhiệm:',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: _groups
+                      .map((area) => Row(
+                    children: [
+                      const Icon(Icons.location_on, size: 16, color: Colors.blueGrey),
+                      const SizedBox(width: 6),
+                      Text(area),
+                    ],
+                  ))
+                      .toList(),
+                ),
+                ],
+                const SizedBox(height: 20),
+                if (_role == 'Y bác sỹ') ...[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(
+                    'Khoa phòng đảm nhiệm:',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),

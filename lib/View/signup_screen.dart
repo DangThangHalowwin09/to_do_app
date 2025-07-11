@@ -16,6 +16,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   final TextEditingController _areaSearchController = TextEditingController();
 
@@ -57,6 +58,7 @@ class _SignupScreenState extends State<SignupScreen> {
       name: _nameController.text,
       email: _emailController.text,
       password: _passwordController.text,
+      phone: _phoneController.text,
       role: _selectedRole,
       areas: _selectedRole == 'Tổ phần cứng' ? _selectedAreas : [],
       group: _selectedRole == 'Y bác sỹ' ? _selectedAreasGroup : [],
@@ -121,6 +123,14 @@ class _SignupScreenState extends State<SignupScreen> {
                       isPasswordHidden ? Icons.visibility_off : Icons.visibility,
                     ),
                   ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _phoneController,
+                decoration: const InputDecoration(
+                  labelText: 'Phone',
+                  border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
@@ -232,7 +242,7 @@ class _SignupScreenState extends State<SignupScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const Text("Huỷ đăng ký. Về ", style: TextStyle(fontSize: 18)),
+                  const Text("Huỷ đăng ký. Về", style: TextStyle(fontSize: 18)),
                   InkWell(
                     onTap: () => Navigator.pop(context),
                     child: const Text(

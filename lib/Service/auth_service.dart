@@ -12,6 +12,7 @@ class AuthService {
     required String name,
     required String email,
     required String password,
+    required String phone,
     required String role,
     required List<String>? areas,
     required List<String>? group,
@@ -28,8 +29,10 @@ class AuthService {
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
         'name': name.trim(),
         'email': email.trim(),
+        'phone': phone.trim(),
         'role': role, // Role determines if user is Admin or User
         'areas':  areas ?? [],
+        'groups': group ?? [],
         'createAt': FieldValue.serverTimestamp(),
       });
 
