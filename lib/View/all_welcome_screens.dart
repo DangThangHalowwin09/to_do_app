@@ -12,6 +12,10 @@ import 'group_manager_screen.dart';
 import 'login_screen.dart';
 import 'member_manager_screen.dart';
 import 'coming_soon_screen.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'onduty_screen.dart';
+
 
 final AuthService _authService = AuthService();
 
@@ -121,15 +125,26 @@ class AdminScreen extends StatelessWidget {
                   },
                 ),*/
                 _buildGridItem(
-                  icon: Icons.people,
-                  label: 'Nhân viên',
+                  icon: FontAwesomeIcons.userGear,
+                  label: 'NV IT',
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const MembersScreen()),
+                      MaterialPageRoute(builder: (_) => const MembersITScreen()),
                     );
                   },
                 ),
+                _buildGridItem(
+                  icon: FontAwesomeIcons.userDoctor, // ✅ thêm `icon:`
+                  label: 'Bác sỹ',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MembersDoctorScreen()),
+                    );
+                  },
+                ),
+
                 _buildGridItem(
                   icon: Icons.local_hospital,
                   label: 'Các khoa',
@@ -147,6 +162,16 @@ class AdminScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const GroupManagementScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.calendar_today,
+                  label: 'Lịch trực',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const DutyScreen()),
                     );
                   },
                 ),
@@ -627,7 +652,7 @@ class DoctorScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Dành cho Y Bác Sỹ'),
+        title: const Text('Y Bác Sỹ'),
         backgroundColor: const Color(0xFF3A4C7A), // màu giống trong hình
         foregroundColor: Colors.white,
         centerTitle: true,
@@ -643,12 +668,12 @@ class DoctorScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'ĐẶNG QUANG THẮNG',
+                  'USERNAME_HERE',
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
                 SizedBox(height: 12),
                 Text(
-                  'Chào mừng đến với màn hình báo lỗi!',
+                  'Chào mừng đến với màn hình Y Bác Sỹ!',
                   style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -705,7 +730,7 @@ class DoctorScreen extends StatelessWidget {
                   label: 'Trực IT',
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
+                    MaterialPageRoute(builder: (_) => const DutyScreen()),
                   ),
                 ),
                 _buildGridItem(
