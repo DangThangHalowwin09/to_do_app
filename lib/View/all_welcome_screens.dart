@@ -390,18 +390,7 @@ class HardwareScreen extends StatelessWidget {
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               children: [
-                _buildGridItem(
-                  icon: Icons.logout,
-                  label: 'Đăng Xuất',
-                  iconColor: Colors.red,
-                  onTap: () {
-                    _authService.signOut();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    );
-                  },
-                ),
+
                 _buildGridItem(
                   icon: Icons.task,
                   label: 'Nhiệm vụ',
@@ -439,6 +428,28 @@ class HardwareScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.calendar_today,
+                  label: 'Lịch trực',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const DutyScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.logout,
+                  label: 'Đăng Xuất',
+                  iconColor: Colors.red,
+                  onTap: () {
+                    _authService.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
                     );
                   },
                 ),
@@ -544,18 +555,6 @@ class SoftwareScreen extends StatelessWidget {
               mainAxisSpacing: 12,
               children: [
                 _buildGridItem(
-                  icon: Icons.logout,
-                  label: 'Đăng Xuất',
-                  iconColor: Colors.red,
-                  onTap: () {
-                    _authService.signOut();
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    );
-                  },
-                ),
-                _buildGridItem(
                   icon: Icons.task,
                   label: 'Việc phòng IT',
                   onTap: () {
@@ -567,7 +566,7 @@ class SoftwareScreen extends StatelessWidget {
                 ),
                 _buildGridItem(
                   icon: Icons.error,
-                  label: 'Lỗi PM',
+                  label: 'Báo lỗi',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -595,16 +594,29 @@ class SoftwareScreen extends StatelessWidget {
                     );
                   },
                 ),
-                /*_buildGridItem(
+                _buildGridItem(
                   icon: Icons.calendar_today,
                   label: 'Lịch trực',
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
+                      MaterialPageRoute(builder: (_) => const DutyScreen()),
                     );
                   },
-                ),*/
+                ),
+
+                _buildGridItem(
+                  icon: Icons.logout,
+                  label: 'Đăng Xuất',
+                  iconColor: Colors.red,
+                  onTap: () {
+                    _authService.signOut();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    );
+                  },
+                ),
               ],
             ),
           ),

@@ -79,6 +79,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
               final clarifyTitle = data['clarifyTitle'] ?? '';
               final errorType = data['errorType'] ?? '';
               final address = data['address'] ?? '';
+              final phoneContact = data['phoneContact'] ?? '';
               final note = data['note'] ?? '';
               final nameStaff = data['nameStaff'] ?? '';
               final timeErrorStart = (data['timeErrorStart'] as Timestamp?)?.toDate();
@@ -95,6 +96,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
                       Text('Loại: $errorType'),
                       if (address.isNotEmpty) Text('Địa điểm: $address'),
                       Text('Chi tiết: $clarifyTitle'),
+                      Text('SĐT: $phoneContact'),
                       Text('Ghi chú: $note'),
                       Text('Thời gian lỗi: ${timeErrorStart != null ? dateFormat.format(timeErrorStart) : ''}'),
                       if (isTakeOver) Text('Người nhận: $nameStaff'),
@@ -257,13 +259,11 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
   final TextEditingController _noteController = TextEditingController();
 
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _locationDetailController = TextEditingController();
-  final TextEditingController _urgencyReasonController = TextEditingController();
 
   String? _urgencyLevel;
 
   String? _errorType; // "Báo lỗi phần mềm" hoặc "Báo lỗi phần cứng"
-  DateTime? _timeErrorStart;
+ /* DateTime? _timeErrorStart;
 
   Future<void> _pickDateTime() async {
     final pickedDate = await showDatePicker(
@@ -293,10 +293,10 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
         pickedTime.minute,
       );
     });
-  }
+  }*/
 
   Future<void> _submitForm() async {
-    if (!_formKey.currentState!.validate() || _errorType == null || _timeErrorStart == null) {
+    if (!_formKey.currentState!.validate() || _errorType == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Vui lòng điền đầy đủ thông tin.')),
       );
@@ -306,8 +306,9 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
     final data = {
       'errorTitle': _errorTitleController.text,
       'clarifyTitle': _clarifyTitleController.text,
+      'phoneContact': _phoneController.text,
       'address': _errorType == 'Báo lỗi phần cứng' ? _addressController.text : '',
-      'timeErrorStart': Timestamp.fromDate(_timeErrorStart!),
+      'timeErrorStart': Timestamp.now(),//Timestamp.fromDate(_timeErrorStart!),
       'note': _noteController.text,
       'isTakeOver': false,
       'timeTakeOver': null,
@@ -366,6 +367,11 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
                 decoration: InputDecoration(labelText: 'Chi tiết lỗi'),
                 validator: (value) => value!.isEmpty ? 'Không được để trống' : null,
               ),
+              TextFormField(
+                controller: _phoneController,
+                decoration: InputDecoration(labelText: 'SĐT liên hệ'),
+                validator: (value) => value!.isEmpty ? 'Không được để trống' : null,
+              ),
               if (_errorType == 'Báo lỗi phần cứng')
                 TextFormField(
                   controller: _addressController,
@@ -377,7 +383,7 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
                     return null;
                   },
                 ),
-              ListTile(
+              /*ListTile(
                 title: Text(
                   _timeErrorStart == null
                       ? 'Chọn thời gian bắt đầu hỏng'
@@ -385,7 +391,7 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
                 ),
                 trailing: Icon(Icons.calendar_today),
                 onTap: _pickDateTime,
-              ),
+              ),*/
               TextFormField(
                 controller: _noteController,
                 decoration: InputDecoration(labelText: 'Ghi chú'),

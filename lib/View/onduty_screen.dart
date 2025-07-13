@@ -20,7 +20,7 @@ class _DutyScreenState extends State<DutyScreen> {
   int getDutyIdByDate(DateTime date) {
     final DateTime startDuty = DateTime(2025, 7, 5, 8);
     final daysPassed = date.difference(startDuty).inDays;
-    return (daysPassed >= 0) ? daysPassed % 13 : -1;
+    return (daysPassed >= 0) ? daysPassed % 13 + 1 : -1;
   }
 
   Future<Map<String, dynamic>?> getUserInfoById(int id) async {
@@ -61,7 +61,7 @@ class _DutyScreenState extends State<DutyScreen> {
           context: context,
           builder: (_) => AlertDialog(
             title: const Text('Kết quả tra cứu'),
-            content: Text('Ngày ${_formatDateVN(picked)}\nNgười trực: $name\nSố điện thoại: $phone'),
+            content: Text('Từ 08:00, ${_formatDateVN(picked)} \nNgười trực: $name\nSố điện thoại: $phone'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -176,14 +176,8 @@ class _DutyScreenState extends State<DutyScreen> {
       body: Column(
           //mainAxisAlignment: MainAxisAlignment.top,
           children: [
-        TextButton(
-        onPressed: _showDatePicker,
-        child: const Text('Tra lịch trực', style: TextStyle(color: Colors.white)),
-        ),
-      TextButton(
-        onPressed: _showUserMonthPicker,
-        child: const Text('Lịch theo người', style: TextStyle(color: Colors.white)),
-      ),
+            const SizedBox(height: 25),
+
       Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
@@ -193,10 +187,10 @@ class _DutyScreenState extends State<DutyScreen> {
             onPressed: _showDatePicker,
             child: const Text('Tra lịch trực'),
           ),
-          ElevatedButton(
+          /*ElevatedButton(
             onPressed: _showUserMonthPicker,
             child: const Text('Lịch theo người'),
-          ),
+          ),*/
         ],
       ),
     ),
