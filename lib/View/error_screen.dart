@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../utils/helper.dart';
+
 class ErrorScreen extends StatefulWidget {
   const ErrorScreen({super.key});
 
@@ -20,19 +22,14 @@ class _ErrorScreenState extends State<ErrorScreen> {
     _fetchCurrentUserData();
   }
 
-  Future<void> _fetchCurrentUserData() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    if (uid == null) return;
 
-    final snapshot =
-    await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    final data = snapshot.data();
-    if (data != null) {
-      setState(() {
-        _role = data['role'] ?? '';
-        _name = data['name'] ?? '';
-      });
-    }
+  Future<void> _fetchCurrentUserData() async {
+    final data = await GetCurrentUserInfor.fetchCurrentUserData();
+    setState(() {
+      _name = data['name'];
+      _role = data['role'];
+    });
+
   }
 
   Future<void> _takeOverError(DocumentSnapshot errorDoc) async {
@@ -107,12 +104,12 @@ class _ErrorScreenState extends State<ErrorScreen> {
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (_role != 'Y bác sỹ' && !isTakeOver)
+                      if (RoleKey.isITMembers(_role) && !isTakeOver)
                         ElevatedButton(
                           onPressed: () => _takeOverError(doc),
                           child: const Text('Nhận xử lý'),
                         ),
-                      if (_role != 'Y bác sỹ' && isTakeOver && !isDone)
+                      if (RoleKey.isITMembers(_role) && isTakeOver && !isDone)
                         ElevatedButton(
                           onPressed: () => _markAsDone(doc),
                           child: const Text('Hoàn thành'),

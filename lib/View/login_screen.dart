@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../Service/auth_service.dart';
 import '../data/auth_data.dart';
+import '../utils/helper.dart';
 import 'all_welcome_screens.dart';
 
 
@@ -34,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
       email: _emailController.text,
       password: _passwordController.text,
     );
-
+    await UserSession.loadUserData();
     setState(() {
       _isLoading = false; // Hide spinner
     });
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const HardwareScreen(),
+          builder: (_) => HardwareScreen(),
         ),
       );
     }
@@ -175,23 +176,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
           
                     ),
-                    /*InkWell(
+
+                    InkWell(
                       onTap: () {
-                        Navigator.pushReplacement(S
+                        Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const SignupScreen()),
+                          MaterialPageRoute(builder: (_) => const GuestScreen()),
                         );
                       },
                       child: const Text(
-                        "Signup here",
+                        " TK Khách",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
                           letterSpacing: -1,
                         ),
                       ),
-                    ),*/
+                    ),
                   ],
                 ),
               ],
