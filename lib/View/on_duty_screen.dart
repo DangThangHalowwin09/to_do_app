@@ -18,9 +18,9 @@ class _DutyScreenState extends State<DutyScreen> {
   }
 
   int getDutyIdByDate(DateTime date) {
-    final DateTime startDuty = DateTime(2025, 7, 5, 8);
+    final DateTime startDuty = DateTime(2025, 7, 4, 8);
     final daysPassed = date.difference(startDuty).inDays;
-    return (daysPassed >= 0) ? daysPassed % 13 + 1 : -1;
+    return (daysPassed >= 0) ? daysPassed % 13 : -1;
   }
 
   Future<Map<String, dynamic>?> getUserInfoById(int id) async {
