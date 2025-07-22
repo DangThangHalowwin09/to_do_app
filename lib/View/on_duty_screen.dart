@@ -10,11 +10,15 @@ class DutyScreen extends StatefulWidget {
 
 class _DutyScreenState extends State<DutyScreen> {
   int getCurrentDutyId() {
-    final DateTime startDuty = DateTime(2025, 7, 5, 8, 0, 0);
+    final DateTime startDuty = DateTime(2025, 7, 5, 0, 0, 0);
     final DateTime now = DateTime.now();
     final duration = now.difference(startDuty);
     final daysPassed = duration.inHours ~/ 24;
     return daysPassed % 13;
+  }
+
+  int getEarlyCurrentDutyId(int currentID) {
+    return currentID - 1 < 0 ? currentID - 1 : 12;
   }
 
   int getDutyIdByDate(DateTime date) {
@@ -53,15 +57,19 @@ class _DutyScreenState extends State<DutyScreen> {
     );
     if (picked != null) {
       final id = getDutyIdByDate(picked);
+      final moringId = id - 1 < 0 ? 12 : id - 1;
       final user = await getUserInfoById(id);
-      if (user != null) {
+      final beforeUser = await getUserInfoById(moringId);
+      if (user != null && beforeUser != null) {
         final name = user['name'] ?? 'Không có tên';
+        final b_name = beforeUser['name'] ?? 'Không có tên';
         final phone = user['phone'] ?? 'Chưa có số';
+        final b_phone = beforeUser['phone'] ?? 'Chưa có số';
         showDialog(
           context: context,
           builder: (_) => AlertDialog(
             title: const Text('Kết quả tra cứu'),
-            content: Text('Từ 08:00, ${_formatDateVN(picked)} \nNgười trực: $name\nSố điện thoại: $phone'),
+            content: Text('Trước 08:00, ${_formatDateVN(picked)} \nNgười trực: $b_name\nSố điện thoại: $b_phone\n\nTừ 16:00, ${_formatDateVN(picked)} \nNgười trực: $name\nSố điện thoại: $phone'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -162,8 +170,9 @@ class _DutyScreenState extends State<DutyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final int idDuty = getCurrentDutyId();
 
+    final int idDuty = getCurrentDutyId();
+    final int idEarlyDuty = getEarlyCurrentDutyId(idDuty);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thông báo trực'),
@@ -196,75 +205,132 @@ class _DutyScreenState extends State<DutyScreen> {
     ),
     const SizedBox(height: 20),
 
-      FutureBuilder<Map<String, dynamic>?>(
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FutureBuilder<Map<String, dynamic>?>(
+                  future: getUserInfoById(idDuty - 1 < 0 ? 12 : idDuty - 1),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-        future: getUserInfoById(idDuty),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+                    final data = snapshot.data;
+                    if (data == null) {
+                      return const Center(child: Text('Không tìm thấy nhân viên (ca trước)'));
+                    }
 
-          final data = snapshot.data;
-          if (data == null) {
-            return const Center(child: Text('Không tìm thấy nhân viên'));
-          }
+                    final userName = data['name'] ?? 'Không có tên';
+                    final phoneRaw = data['phone'];
+                    final phoneNumber = (phoneRaw == null || phoneRaw.toString().trim().isEmpty)
+                        ? 'Chưa có số'
+                        : phoneRaw.toString();
 
-          final userName = data['name'] ?? 'Không có tên';
-          final phoneRaw = data['phone'];
-          final phoneNumber = (phoneRaw == null || phoneRaw.toString().trim().isEmpty)
-              ? 'Chưa có số'
-              : phoneRaw.toString();
-
-          return Center(
-
-            child: Card(
-              margin: const EdgeInsets.all(24),
-              elevation: 8,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.schedule, size: 80, color: Colors.blue),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Nhân viên trực hôm nay:',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      userName,
-                      style: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      phoneNumber,
-                      style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
-                    ),
-
-                   /* const SizedBox(height: 2),
-                    Text(
-                      '(ID: $idDuty)',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),*/
-                    const SizedBox(height: 5),
-                    Text(
-                      'Từ 08:00 ${_formatDateVN(DateTime.now())}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    Text(
-                      'Đến 08:00 ${_formatDateVN(DateTime.now().add(Duration(days: 1)))}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
+                    return Card(
+                      margin: const EdgeInsets.all(24),
+                      elevation: 8,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.light_mode, size: 50, color: Colors.deepPurple),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Nhân viên trực ca sáng:',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              userName,
+                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              phoneNumber,
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              'Từ 00:00 ${_formatDateVN(DateTime.now())}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              'Đến 08:00 ${_formatDateVN(DateTime.now())}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-            ),
-          );
-        },
-      ),
-      ]
+
+                /// Ca hiện tại
+                FutureBuilder<Map<String, dynamic>?>(
+                  future: getUserInfoById(idDuty),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final data = snapshot.data;
+                    if (data == null) {
+                      return const Center(child: Text('Không tìm thấy nhân viên'));
+                    }
+
+                    final userName = data['name'] ?? 'Không có tên';
+                    final phoneRaw = data['phone'];
+                    final phoneNumber = (phoneRaw == null || phoneRaw.toString().trim().isEmpty)
+                        ? 'Chưa có số'
+                        : phoneRaw.toString();
+
+                    return Center(
+                      child: Card(
+                        margin: const EdgeInsets.all(24),
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.nightlight_round, size: 80, color: Colors.blue),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Nhân viên trực hôm nay:',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                userName,
+                                style: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                phoneNumber,
+                                style: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                'Từ 16:00 ${_formatDateVN(DateTime.now())}',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              Text(
+                                'Đến 08:00 ${_formatDateVN(DateTime.now().add(Duration(days: 1)))}',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            )
+
+          ]
     )
     );
   }
