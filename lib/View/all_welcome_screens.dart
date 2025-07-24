@@ -394,16 +394,7 @@ class HardwareScreen extends StatelessWidget {
                     );
                   },
                 ),
-                _buildGridItem(
-                  icon: Icons.error,
-                  label: 'Báo lỗi',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
-                    );
-                  },
-                ),
+                
                 _buildGridItem(
                   icon: Icons.error,
                   label: 'Báo lỗi',
