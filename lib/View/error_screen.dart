@@ -29,7 +29,6 @@ class _ErrorScreenState extends State<ErrorScreen> {
       _name = data['name'];
       _role = data['role'];
     });
-
   }
 
   Future<void> _takeOverError(DocumentSnapshot errorDoc) async {

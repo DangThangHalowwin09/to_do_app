@@ -1,5 +1,6 @@
 // This screen handles user login with email and password
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../Service/auth_service.dart';
 import '../data/auth_data.dart';
 import '../utils/helper.dart';
@@ -100,6 +101,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
   bool isPasswordHidden = true;
 
+ /* Future<void> _launchZalo() async {
+    final phoneNumber = '0866573502';
+    final Uri url = Uri.parse('https://zalo.me/$phoneNumber');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      print('Không thể mở $url');
+    }
+  }*/
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,20 +169,20 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Login button or spinner
                 _isLoading
                     ? const CircularProgressIndicator()
-                    : SizedBox(
+                    :  SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: _login, // Call login function
                           child: const Text('Đăng nhập'),
                         ),
                       ),
-          
+
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     const Text(
-                      "Liên hệ Admin nếu chưa có tài khoản!",
+                      "Nếu chưa có tài khoản?",
                       style: TextStyle(fontSize: 15,
                         color: Colors.blue,
                       ),
@@ -185,17 +197,31 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       },
                       child: const Text(
-                        " TK Khách",
+                        " Tài khoản khách",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
                           letterSpacing: -1,
                         ),
+
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 16),
+                /*SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => GuestScreen()),
+                      );
+                    }, // Call login function
+                    child: const Text('Tài khoản Guest'),
+                  ),
+                ),*/
               ],
             ),
           ),

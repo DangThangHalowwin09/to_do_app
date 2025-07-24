@@ -49,7 +49,8 @@ dependencies:
   font_awesome_flutter: ^10.5.0
   flutter_local_notifications: ^18.0.1
   firebase_analytics: ^11.5.2
-
+  flutter_svg: ^2.0.9
+  url_launcher: ^6.2.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

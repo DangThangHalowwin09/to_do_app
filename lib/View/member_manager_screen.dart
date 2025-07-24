@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/helper.dart';
+
 class MembersITScreen extends StatelessWidget {
   const MembersITScreen({super.key});
 
@@ -32,6 +34,7 @@ class MembersITScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
+
                     if (email != null) Text('Email: $email'),
                     Text((phone != null) ? 'SĐT:  $phone' : 'SĐT: Chưa có DL'),
                     Text((bio != null) ? 'Giới thiệu:  $bio' : 'Giới thiệu: Chưa có DL'),
@@ -114,6 +117,201 @@ class MembersITScreen extends StatelessWidget {
                   },
                   child: const Text('Lưu thay đổi'),
                 ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tra cứu nhân viên IT'),
+        elevation: 0, // Tùy chọn: làm phẳng AppBar
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .where('role', whereIn: ['Tổ phần cứng', 'Tổ phần mềm'])
+            .orderBy('role', descending: true) // Thêm lại orderBy, giả định chỉ mục đã tạo
+            // // Thêm lại orderBy, giả định chỉ mục đã tạo
+            .orderBy('groups', descending: false)
+            .orderBy('name', descending: false)
+            .snapshots(),
+        builder: (context, snapshot) {
+          // Xử lý lỗi
+          if (snapshot.hasError) {
+            print('Lỗi Firestore: ${snapshot.error}'); // In lỗi để debug
+            return const Center(
+              child: Text(
+                'Đã xảy ra lỗi khi tải dữ liệu',
+                style: TextStyle(color: Colors.red),
+              ),
+            );
+          }
+
+          // Xử lý trạng thái chờ
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          // Kiểm tra dữ liệu rỗng
+          final users = snapshot.data?.docs ?? [];
+          if (users.isEmpty) {
+            return const Center(
+              child: Text(
+                'Không có nhân viên nào trong danh sách',
+                style: TextStyle(fontSize: 16),
+              ),
+            );
+          }
+
+          // Hiển thị danh sách
+          return ListView.builder(
+            itemCount: users.length,
+            itemBuilder: (context, index) {
+              final user = users[index].data() as Map<String, dynamic>;
+              final docId = users[index].id;
+              final name = user['name'] ?? 'Chưa có tên';
+              final role = user['role'] ?? 'Chưa gắn vị trí';
+              final groups = (user['groups'] as List?)?.cast<String>() ?? [];
+
+              return ListTile(
+                title: Text(
+                  name,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                subtitle: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(role),
+                    if (role == 'Tổ phần cứng') ...[
+                      const SizedBox(width: 10), // Giảm khoảng cách cho gọn
+                      Icon(
+                        role == 'Tổ phần cứng'
+                            ? Icons.hardware
+                            : Icons.code, // Icon phù hợp với vai trò
+                        size: 16,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          groups.isNotEmpty ? groups.join(', ') : 'Chưa gán nhóm',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                trailing: Icon(
+                  Icons.info_outline,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                onTap: () => _showUserDetailsDialog(context, user, docId),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class MembersITScreenForGuest extends StatelessWidget {
+  const MembersITScreenForGuest({super.key});
+
+  // Hàm hiển thị dialog chi tiết người dùng (giả định bạn đã định nghĩa)
+  void _showUserDetailsDialog(BuildContext context, Map<String, dynamic> user, String docId) {
+    final role = user['role'] ?? '';
+    final areas = user['areas'] ?? [];
+    final groups = user['groups'] ?? [];
+    final email = user['email'];
+    final bio = user['bio'];
+    final phone = user['phone'];
+    final idDuty = user['idDuty'];
+
+    final name = user['name'] ?? 'Không rõ';
+    final isHardwareTeam = role == 'Tổ phần cứng';
+    //final TextEditingController _roleController = TextEditingController(text: role);
+    List<String> _selectedAreas = List<String>.from(areas);
+    List<String> _selectedGroupAreas = List<String>.from(groups);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(name),
+              content: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    //if (email != null && RoleKey.isCurrentUserAdmin()) Text('Email: $email'),
+                    Text((phone != null) ? 'SĐT:  $phone' : 'SĐT: Chưa có DL'),
+                    //if(RoleKey.isCurrentUserAdmin()) Text((bio != null) ? 'Giới thiệu:  $bio' : 'Giới thiệu: Chưa có DL'),
+                    //if (role != null && RoleKey.isCurrentUserAdmin()) Text('Vị trí: $role'),
+                    //if (idDuty != null && RoleKey.isCurrentUserAdmin()) Text('Mã trực: $idDuty'),
+                    const SizedBox(height: 10),
+                    if (role == 'Tổ phần cứng') ...[
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Khu vực đảm nhiệm:',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      FutureBuilder<List<String>>(
+                        future: fetchAreaNamesFromGroups(user['groups'].cast<String>()),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          }
+
+                          if (snapshot.hasError) {
+                            return Text('Lỗi: ${snapshot.error}');
+                          }
+
+                          final areas = snapshot.data ?? [];
+                          if (areas.isEmpty) {
+                            return const Text('Không có khu vực nào được giao.');
+                          }
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: areas.map((area) => Text('• $area')).toList(),
+                          );
+                        },
+                      ),
+                    ]
+
+                  ]
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Back'),
+                ),
+                /*ElevatedButton(
+                  onPressed: () async {
+                    await FirebaseFirestore.instance.collection('users').doc(docId).update({
+                      //'role': _roleController.text,
+                      'idDuty': idDuty,
+                      'areas': role == 'Y bác sỹ' ? _selectedAreas : [],
+                      'groups': role == 'Tổ phần cứng' ? _selectedGroupAreas : [],
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Lưu thay đổi'),
+                ),*/
               ],
             );
           },

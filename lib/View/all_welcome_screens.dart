@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/signup_screen.dart';
 import 'package:flutter_to_do_list/View/task_screen.dart';
 import 'package:flutter_to_do_list/View/update_profile_screen.dart';
-import '../Service/auth_service.dart';
 import '../screen/blog_screen.dart';
 import '../screen/statistics_screen.dart';
 import '../utils/helper.dart';
@@ -392,6 +391,16 @@ class HardwareScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const TaskScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.error,
+                  label: 'Báo lỗi',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ErrorScreen()),
                     );
                   },
                 ),
@@ -802,7 +811,7 @@ class GuestScreen extends StatelessWidget {
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               children: [
-                _buildGridItem(
+                /*_buildGridItem(
                   icon: Icons.error,
                   label: 'Báo lỗi',
                   onTap: () {
@@ -821,6 +830,16 @@ class GuestScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const BlogScreen()),
                     );
                   },
+                ),*/
+                _buildGridItem(
+                  icon: FontAwesomeIcons.userGear,
+                  label: 'NV IT',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MembersITScreenForGuest()),
+                    );
+                  },
                 ),
                 _buildGridItem(
                   icon: Icons.calendar_today,
@@ -834,12 +853,12 @@ class GuestScreen extends StatelessWidget {
                 ),
                 _buildGridItem(
                   icon: Icons.logout,
-                  label: 'Đăng Xuất',
+                  label: 'Login',
                   iconColor: Colors.red,
                   onTap: () {
                       AuthHelper.signOutAndRedirectToLogin(context);
                     },
-                    ),
+                ),
               ],
             ),
           ),

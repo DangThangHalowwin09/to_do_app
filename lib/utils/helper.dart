@@ -3,9 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../Service/auth_service.dart';
 import '../View/login_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+
+
 
 class RoleKey {
   static const String admin = 'Admin';
@@ -17,6 +20,15 @@ class RoleKey {
   static const List<String> itMembers = [softTeam, hardTeam];
   static bool isITMembers(String? role){
     return RoleKey.itMembers.contains(role);
+  }
+  static bool isAdmin(String? role){
+    return role == admin;
+  }
+
+  static Future<bool> isCurrentUserAdmin() async {
+    final role = await GetCurrentUserInfor.getRole();
+    print(role);
+    return role == admin; // Giả sử "admin" là String, chứ không phải biến
   }
 
 }
@@ -50,6 +62,13 @@ class GetCurrentUserInfor {
 
     final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     return doc.data()?['role'];
+  }
+  static Future<String?> getName() async {
+    final uid = currentUid;
+    if (uid == null) return null;
+
+    final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    return doc.data()?['name'];
   }
 
   /// Lấy toàn bộ dữ liệu user hiện tại: name, role, email...
@@ -104,5 +123,83 @@ class AuthHelper {
       MaterialPageRoute(builder: (_) => const LoginScreen()),
           (route) => false,
     );
+  }
+}
+
+
+class ContactHelper {
+  static Future<void> makePhoneCall(String phoneNumber) async {
+    final Uri telUri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(telUri)) {
+      await launchUrl(telUri);
+    } else {
+      print('Không thể gọi $phoneNumber');
+    }
+  }
+
+  static Future<void> launchZalo(String phoneNumber) async {
+    final Uri url = Uri.parse('https://zalo.me/$phoneNumber');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      print('Không thể mở Zalo với số $phoneNumber');
+    }
+  }
+
+  static Future<void> launchFacebook(String facebookUrl) async {
+    final Uri url = Uri.parse(facebookUrl);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      print('Không thể mở Facebook $facebookUrl');
+    }
+  }
+
+  static Future<void> launchYouTube(String youtubeUrl) async {
+    final Uri url = Uri.parse(youtubeUrl);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      print('Không thể mở YouTube $youtubeUrl');
+    }
+  }
+}
+Future<List<String>> fetchAreaNamesFromGroups(List<String> groupIds) async {
+  print(groupIds);
+  QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('groups')
+      .where('name', whereIn: groupIds)
+      .get();
+
+  List<String> groupIdsList = snapshot.docs.map((doc) => doc.id).toList();
+
+  try {
+    // Kiểm tra danh sách rỗng
+    if (groupIdsList.isEmpty) {
+      return [];
+    }
+
+    // Firestore giới hạn whereIn tối đa 10 phần tử
+    if (groupIdsList.length > 10) {
+      throw Exception('Danh sách groupIdsList không được vượt quá 10 phần tử');
+    }
+
+
+    // Truy vấn Firestore
+    final snapshot = await FirebaseFirestore.instance
+        .collection('areas')
+        .where('groupId', whereIn: groupIdsList)
+        .get();
+    print('Số lượng tài liệu tìm thấy: ${snapshot.docs.length}');
+    print('Danh sách tài liệu: ${snapshot.docs.map((doc) => doc.data()).toList()}');
+    // Lấy danh sách tên khu vực
+    return snapshot.docs
+        .map((doc) => doc.data()['name'] as String? ?? '')
+        .where((name) => name.isNotEmpty)
+        .toList();
+  } catch (e) {
+    // Xử lý lỗi
+    print('Lỗi khi lấy danh sách khu vực: $e');
+    return [];
   }
 }
