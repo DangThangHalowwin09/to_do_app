@@ -165,7 +165,7 @@ class ContactHelper {
   }
 }
 Future<List<String>> fetchAreaNamesFromGroups(List<String> groupIds) async {
-  print(groupIds);
+
   QuerySnapshot snapshot = await FirebaseFirestore.instance
       .collection('groups')
       .where('name', whereIn: groupIds)
@@ -203,3 +203,21 @@ Future<List<String>> fetchAreaNamesFromGroups(List<String> groupIds) async {
     return [];
   }
 }
+
+class GroupHelper {
+  static Future<String?> getGroupNameByID(String id) async {
+    final doc = await FirebaseFirestore.instance.collection('groups').doc(id).get();
+    return doc.data()?['name'] as String?;
+  }
+
+  static Future<String?> getGroupIDByName(String name) async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('groups')
+        .where('name', isEqualTo: name)
+        .limit(1)
+        .get();
+    return snapshot.docs.isNotEmpty ? snapshot.docs.first.id : null;
+  }
+}
+
+

@@ -69,7 +69,7 @@ class _DutyScreenState extends State<DutyScreen> {
           context: context,
           builder: (_) => AlertDialog(
             title: const Text('Kết quả tra cứu'),
-            content: Text('Trước 08:00, ${_formatDateVN(picked)} \nNgười trực: $b_name\nSố điện thoại: $b_phone\n\nTừ 16:00, ${_formatDateVN(picked)} \nNgười trực: $name\nSố điện thoại: $phone'),
+            content: Text('Trước 08:00, ${_formatDateVN(picked)} \nNgười trực: $b_name\nSố điện thoại: $b_phone\n\nSau 08:00, ${_formatDateVN(picked)} \nNgười trực: $name\nSố điện thoại: $phone'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),

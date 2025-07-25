@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_to_do_list/View/search_area_screen.dart';
 import 'package:flutter_to_do_list/View/signup_screen.dart';
 import 'package:flutter_to_do_list/View/task_screen.dart';
 import 'package:flutter_to_do_list/View/update_profile_screen.dart';
@@ -60,14 +61,7 @@ class AdminScreen extends StatelessWidget {
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               children: [
-                _buildGridItem(
-                  icon: Icons.logout,
-                  label: 'Đăng Xuất',
-                  iconColor: Colors.red,
-                  onTap: () {
-                    AuthHelper.signOutAndRedirectToLogin(context);
-                  },
-                ),
+
                 _buildGridItem(
                   icon: Icons.person_add,
                   label: 'Đăng ký',
@@ -167,6 +161,14 @@ class AdminScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(builder: (_) => const DutyScreen()),
                     );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.logout,
+                  label: 'Đăng Xuất',
+                  iconColor: Colors.red,
+                  onTap: () {
+                    AuthHelper.signOutAndRedirectToLogin(context);
                   },
                 ),
                 /*_buildGridItem(
@@ -394,7 +396,7 @@ class HardwareScreen extends StatelessWidget {
                     );
                   },
                 ),
-                
+
                 _buildGridItem(
                   icon: Icons.error,
                   label: 'Báo lỗi',
@@ -675,16 +677,27 @@ class DoctorScreen extends StatelessWidget {
                   ),
                 ),
                 _buildGridItem(
-                  icon: Icons.build,
-                  label: 'Mẹo PC',
+                  icon: Icons.access_time,
+                  label: 'Trực IT',
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const BlogScreen()),
+                    MaterialPageRoute(builder: (_) => const DutyScreen()),
                   ),
                 ),
+
                 _buildGridItem(
-                  icon: Icons.memory,
-                  label: 'Mẹo PM',
+                  icon: Icons.search,
+                  label: 'NVPT',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SearchAreaScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.build,
+                  label: 'Mẹo PC',
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const BlogScreen()),
@@ -704,13 +717,6 @@ class DoctorScreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
-                  ),
-                ),  _buildGridItem(
-                  icon: Icons.access_time,
-                  label: 'Trực IT',
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const DutyScreen()),
                   ),
                 ),
                 _buildGridItem(
@@ -839,6 +845,16 @@ class GuestScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const DutyScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.search,
+                  label: 'NVPT',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SearchAreaScreen()),
                     );
                   },
                 ),
