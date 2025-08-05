@@ -313,7 +313,7 @@ class _DutyScreenState extends State<DutyScreen> {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                'Từ 16:00 ${_formatDateVN(DateTime.now())}',
+                                'Từ 08:00 ${_formatDateVN(DateTime.now())}',
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                               Text(

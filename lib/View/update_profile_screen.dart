@@ -62,6 +62,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     String? imageUrl;
 
     if (_image != null) {
+      if (!_image!.existsSync()) {
+        print('Error: Image file does not exist at ${_image!.path}');
+        setState(() => _loading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error: Selected image file is invalid')),
+        );
+        return;
+      }
       imageUrl = await UploadService.uploadImage(_image!);
     }
 
