@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 import '../data/firestore.dart';
 
 class Error_Widget extends StatefulWidget {
-  Error _error;
+  final Error _error;
   Error_Widget(this._error, {super.key});
 
   @override
@@ -144,7 +144,7 @@ class _Error_WidgetState extends State<Error_Widget> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => currentUserRole == 'Y bác sỹ' ? Edit_Screen(widget._error) :
-                Edit_Screen_ForIT(widget._error),
+                Edit_Screen_ForIT(),
               ))
 
               ;

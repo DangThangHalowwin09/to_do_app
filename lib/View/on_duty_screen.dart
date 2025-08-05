@@ -172,7 +172,7 @@ class _DutyScreenState extends State<DutyScreen> {
   Widget build(BuildContext context) {
 
     final int idDuty = getCurrentDutyId();
-    final int idEarlyDuty = getEarlyCurrentDutyId(idDuty);
+    //final int idEarlyDuty = getEarlyCurrentDutyId(idDuty);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Thông báo trực'),

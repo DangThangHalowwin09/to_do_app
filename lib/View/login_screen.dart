@@ -1,6 +1,5 @@
 // This screen handles user login with email and password
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../Service/auth_service.dart';
 import '../data/auth_data.dart';
 import '../utils/helper.dart';

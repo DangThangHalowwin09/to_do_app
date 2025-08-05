@@ -256,7 +256,7 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
 
   final TextEditingController _phoneController = TextEditingController();
 
-  String? _urgencyLevel;
+  //String? _urgencyLevel;
 
   String? _errorType; // "Báo lỗi phần mềm" hoặc "Báo lỗi phần cứng"
  /* DateTime? _timeErrorStart;
@@ -325,7 +325,7 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
+    //final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
     return Scaffold(
       appBar: AppBar(title: Text('Báo lỗi')),

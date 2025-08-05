@@ -5,7 +5,7 @@ import '../data/firestore.dart';
 
 
 class Stream_global_note extends StatelessWidget {
-  bool done;
+  final bool done;
   Stream_global_note(this.done, {super.key});
 
   @override

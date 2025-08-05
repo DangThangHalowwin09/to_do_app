@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/const/colors.dart';
-import 'package:flutter_to_do_list/data/firestore.dart';
+//import 'package:flutter_to_do_list/data/firestore.dart';
 import 'package:flutter_to_do_list/model/model.dart';
 
 class Edit_Screen extends StatefulWidget {
-  Error _error;
+  final Error _error;
   Edit_Screen(this._error, {super.key});
 
   @override
@@ -192,8 +192,9 @@ class _Edit_ScreenState extends State<Edit_Screen> {
 }
 
 class Edit_Screen_ForIT extends StatefulWidget {
-  Error _error;
-  Edit_Screen_ForIT(this._error, {super.key});
+
+  Edit_Screen_ForIT({super.key});
+
 
   @override
 

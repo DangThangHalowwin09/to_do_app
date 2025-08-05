@@ -17,7 +17,7 @@ class MembersITScreen extends StatelessWidget {
     final idDuty = user['idDuty'];
 
     final name = user['name'] ?? 'Không rõ';
-    final isHardwareTeam = role == 'Tổ phần cứng';
+    //final isHardwareTeam = role == 'Tổ phần cứng';
     //final TextEditingController _roleController = TextEditingController(text: role);
     List<String> _selectedAreas = List<String>.from(areas);
     List<String> _selectedGroupAreas = List<String>.from(groups);
@@ -231,18 +231,18 @@ class MembersITScreenForGuest extends StatelessWidget {
   // Hàm hiển thị dialog chi tiết người dùng (giả định bạn đã định nghĩa)
   void _showUserDetailsDialog(BuildContext context, Map<String, dynamic> user, String docId) {
     final role = user['role'] ?? '';
-    final areas = user['areas'] ?? [];
-    final groups = user['groups'] ?? [];
-    final email = user['email'];
-    final bio = user['bio'];
+    //final areas = user['areas'] ?? [];
+    //final groups = user['groups'] ?? [];
+    //final email = user['email'];
+    //final bio = user['bio'];
     final phone = user['phone'];
-    final idDuty = user['idDuty'];
+    //final idDuty = user['idDuty'];
 
     final name = user['name'] ?? 'Không rõ';
-    final isHardwareTeam = role == 'Tổ phần cứng';
+    //final isHardwareTeam = role == 'Tổ phần cứng';
     //final TextEditingController _roleController = TextEditingController(text: role);
-    List<String> _selectedAreas = List<String>.from(areas);
-    List<String> _selectedGroupAreas = List<String>.from(groups);
+    //List<String> _selectedAreas = List<String>.from(areas);
+    //List<String> _selectedGroupAreas = List<String>.from(groups);
 
     showDialog(
       context: context,
@@ -427,7 +427,7 @@ class MembersDoctorScreen extends StatelessWidget {
       BuildContext context, Map<String, dynamic> user, String docId) {
     final role = user['role'] ?? '';
     final areas = (user['areas'] as List?)?.cast<String>() ?? [];
-    final groups = (user['groups'] as List?)?.cast<String>() ?? [];
+    //final groups = (user['groups'] as List?)?.cast<String>() ?? [];
     final email = user['email'];
     final bio = user['bio'];
     final phone = user['phone'];
@@ -435,7 +435,7 @@ class MembersDoctorScreen extends StatelessWidget {
     final name = user['name'] ?? 'Không rõ';
 
     List<String> _selectedAreas = List<String>.from(areas);
-    List<String> _selectedGroups = List<String>.from(groups);
+    //List<String> _selectedGroups = List<String>.from(groups);
 
     showDialog(
       context: context,
@@ -578,7 +578,7 @@ class MembersDoctorScreen extends StatelessWidget {
               final docId = users[index].id;
               final name = user['name'] ?? 'Chưa có tên';
               final role = user['role'] ?? 'Chưa gắn vị trí';
-              final idDuty = user['idDuty'] ?? 'Không trực';
+              //final idDuty = user['idDuty'] ?? 'Không trực';
               final areas = (user['areas'] as List?)?.cast<String>() ?? [];
 
               return ListTile(

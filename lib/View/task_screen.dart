@@ -226,9 +226,6 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  Future<void> _markTaskDone(String taskId) async {
-    await tasks.doc(taskId).update({'status': 'done'});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -249,7 +246,7 @@ class _TaskScreenState extends State<TaskScreen> {
             itemCount: docs.length,
             itemBuilder: (_, i) {
               final task = docs[i];
-              final isAssignedToMe = task['assignedTo'] == currentUserId;
+              //final isAssignedToMe = task['assignedTo'] == currentUserId;
 
               return InkWell(
                 onTap: () async {

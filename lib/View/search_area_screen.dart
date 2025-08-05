@@ -32,7 +32,7 @@ class _SearchAreaScreenState extends State<SearchAreaScreen> {
       final Map<String, dynamic> areaMap = {};
 
       for (var doc in areas) {
-        final data = doc.data() as Map<String, dynamic>;
+        final data = doc.data();
         final name = data['name'] as String?;
         final groupDocumentID = data['groupId'];
 
