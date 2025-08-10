@@ -15,7 +15,7 @@ void main() async {
   await initFCM();
 
   runApp(
-    Portal( // 👈 bọc Portal ở đây
+    Portal(
       child: const MyApp(),
     ),
   );

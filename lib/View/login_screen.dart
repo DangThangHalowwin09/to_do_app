@@ -1,4 +1,6 @@
 // This screen handles user login with email and password
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../Service/auth_service.dart';
 import '../data/auth_data.dart';
@@ -36,6 +38,14 @@ class _LoginScreenState extends State<LoginScreen> {
       password: _passwordController.text,
     );
     await UserSession.loadUserData();
+    final String? userId = GetCurrentUserInfor.currentUid; // hoặc bất kỳ cách nào bạn lấy userId
+    final String? fcmToken = await FirebaseMessaging.instance.getToken();
+
+    if (userId != null && fcmToken != null) {
+      HandleFCMToken.saveFcmToken(userId);
+      print('222' + fcmToken);
+    }
+
     setState(() {
       _isLoading = false; // Hide spinner
     });

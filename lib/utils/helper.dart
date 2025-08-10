@@ -1,6 +1,7 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Service/auth_service.dart';
@@ -116,6 +117,7 @@ class AuthHelper {
   /// Đăng xuất Firebase và xoá session, rồi điều hướng về LoginScreen
   static Future<void> signOutAndRedirectToLogin(BuildContext context) async {
     await _authService.signOut();
+    HandleFCMToken.deleteFcmToken(GetCurrentUserInfor.currentUid.toString());
     UserSession.clear();
 
     Navigator.pushAndRemoveUntil(
@@ -221,3 +223,25 @@ class GroupHelper {
 }
 
 
+class HandleFCMToken {
+  static Future<void> saveFcmToken(String userId) async {
+    final token = await FirebaseMessaging.instance.getToken();
+
+    if (token != null) {
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
+        'fcmTokens.$token': true, // lưu dưới dạng map để dễ xoá từng token
+      }, SetOptions(merge: true));
+    }
+  }
+
+  static Future<void> deleteFcmToken(String userId) async {
+    final token = await FirebaseMessaging.instance.getToken();
+
+    if (token != null) {
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'fcmTokens.$token': FieldValue.delete(),
+      });
+    }
+  }
+
+}
