@@ -9,9 +9,9 @@ import 'firebase_msg.dart'; //
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
+  /*await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  );
+  );*/
   await initFCM();
 
   runApp(

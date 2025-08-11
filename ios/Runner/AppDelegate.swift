@@ -11,7 +11,7 @@ import FirebaseCore  // Thêm Firebase
     ) -> Bool {
 
         // Khởi tạo Firebase từ GoogleService-Info.plist
-        FirebaseApp.configure()
+        //FirebaseApp.configure()
 
         // Đăng ký plugin cho flutter_local_notifications
         FlutterLocalNotificationsPlugin.setPluginRegistrantCallback { (registry) in
