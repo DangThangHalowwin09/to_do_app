@@ -181,14 +181,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     const Text(
-                      "Nếu chưa có tài khoản?",
+                      "Nếu chưa có tài khoản? Liên hệ Admin",
                       style: TextStyle(fontSize: 15,
                         color: Colors.blue,
                       ),
-          
                     ),
 
-                    InkWell(
+                    /*InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
@@ -205,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
 
                       ),
-                    ),
+                    ),*/
                   ],
                 ),
                 const SizedBox(height: 16),
