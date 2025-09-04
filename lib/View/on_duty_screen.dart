@@ -81,10 +81,15 @@ class _DutyScreenState extends State<DutyScreen> {
       }
     }
   }
-
   void _showUserMonthPicker() async {
-    final usersSnapshot = await FirebaseFirestore.instance.collection('users').get();
-    final users = usersSnapshot.docs.map((doc) => doc.data()).toList();
+    final usersSnapshot =
+    await FirebaseFirestore.instance.collection('users').get();
+
+    // lọc chỉ những user có idDuty
+    final users = usersSnapshot.docs
+        .map((doc) => doc.data())
+        .where((user) => user['idDuty'] != null)
+        .toList();
 
     Map<String, dynamic>? selectedUser;
     int selectedMonth = DateTime.now().month;
@@ -127,7 +132,9 @@ class _DutyScreenState extends State<DutyScreen> {
             TextButton(
               onPressed: () {
                 if (selectedUser != null) {
-                  final int id = selectedUser!['idDuty'];
+                  final int? id = selectedUser!['idDuty'] as int?;
+                  if (id == null) return; // an toàn
+
                   final now = DateTime.now();
                   final year = now.year;
                   List<String> dutyDays = [];
@@ -140,25 +147,31 @@ class _DutyScreenState extends State<DutyScreen> {
                     }
                   }
 
-                  final dutyText = dutyDays.isEmpty
-                      ? 'Không có lịch trực trong tháng này.'
-                      : 'Các ngày trực trong tháng: ${dutyDays.join(', ')}';
+                  final userName = selectedUser!['name'] ?? 'Không tên';
 
+                  final dutyText = dutyDays.isEmpty
+                      ? 'Không có lịch trực trong tháng này cho $userName.'
+                      : 'Các ngày trực trong tháng $selectedMonth của $userName: ${dutyDays.join(', ')}';
+
+
+                  // đóng dialog chọn người trước
+                  Navigator.pop(context);
+
+                  // mở dialog kết quả (dùng dialogContext an toàn)
                   showDialog(
                     context: context,
-                    builder: (_) => AlertDialog(
+                    builder: (dialogContext) => AlertDialog(
                       title: const Text('Kết quả tra cứu'),
                       content: Text(dutyText),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.pop(dialogContext),
                           child: const Text('OK'),
-                        )
+                        ),
                       ],
                     ),
                   );
                 }
-                Navigator.pop(context);
               },
               child: const Text('Xem'),
             )
@@ -167,6 +180,8 @@ class _DutyScreenState extends State<DutyScreen> {
       ),
     );
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -196,10 +211,10 @@ class _DutyScreenState extends State<DutyScreen> {
             onPressed: _showDatePicker,
             child: const Text('Tra lịch trực'),
           ),
-          /*ElevatedButton(
+          ElevatedButton(
             onPressed: _showUserMonthPicker,
             child: const Text('Lịch theo người'),
-          ),*/
+          ),
         ],
       ),
     ),
