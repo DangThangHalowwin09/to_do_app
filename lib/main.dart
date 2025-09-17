@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/login_screen.dart';
 import 'package:flutter_to_do_list/firebase_options.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:flutter_to_do_list/data_postgreSQL/test_postgres.dart';
 import 'View/roledirection_screen.dart';
 import 'firebase_msg.dart'; //
 
@@ -32,14 +33,15 @@ class MyApp extends StatelessWidget {
         home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
-        if (snapshot.hasData) {
+       /* if (snapshot.hasData) {
 
           return const RoleRedirectScreen();
         // đã đăng nhập
         }
         else {
           return const LoginScreen(); // chưa đăng nhập
-        }
+        }*/
+          return const PatientsScreen();
       },
       ),
     );
