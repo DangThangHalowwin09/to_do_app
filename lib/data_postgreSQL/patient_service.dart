@@ -14,6 +14,4 @@ class PatientService {
       throw Exception("Failed to load patients");
     }
   }
-
-
 }
