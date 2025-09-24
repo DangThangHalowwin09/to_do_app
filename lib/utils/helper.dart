@@ -1,8 +1,11 @@
 
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../Service/auth_service.dart';
 import '../View/login_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -219,5 +222,27 @@ class GroupHelper {
     return snapshot.docs.isNotEmpty ? snapshot.docs.first.id : null;
   }
 }
+class PushNotificationHelper{
+  static Future<void> sendPushMessage(String token, String title, String body) async {
+    const String serverKey = 'YOUR_SERVER_KEY_HERE'; // Server key từ Firebase console
 
+    await http.post(
+      Uri.parse('https://fcm.googleapis.com/fcm/send'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Authorization': 'key=$serverKey',
+      },
+      body: jsonEncode(
+        <String, dynamic>{
+          'notification': <String, dynamic>{
+            'title': title,
+            'body': body,
+          },
+          'priority': 'high',
+          'to': token,
+        },
+      ),
+    );
+  }
+}
 

@@ -1,4 +1,6 @@
 // This screen handles user login with email and password
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import '../Service/auth_service.dart';
 import '../data/auth_data.dart';
@@ -22,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // To show spinner during login
   bool _isLoading = false;
 
+
   // Login function to handle user authentication
   void _login() async {
     AuthenticationRemote().login(_emailController.text, _passwordController.text);
@@ -39,16 +42,16 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = false; // Hide spinner
     });
-
+    await saveTokenToFirestore();
     // Navigate based on role or show error message
-    if (result == 'Admin') {
+    if (result == RoleKey.admin) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (_) => const AdminScreen(),
         ),
       );
-    } else if (result == 'User') {
+    } else if (result == RoleKey.user) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -56,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-    else if (result ==  'Tổ phần cứng') {
+    else if (result ==  RoleKey.hardTeam) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -64,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-    else if (result == 'Tổ phần mềm') {
+    else if (result == RoleKey.softTeam) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -72,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-    else if (result == 'Y bác sỹ') {
+    else if (result == RoleKey.doctor) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -235,5 +238,15 @@ String translateError(String errorCode) {
       return 'Firebase return null string, hãy liên hệ IT';
     default:
       return 'Đăng nhập thất bại, kiểm tra tài khoản hoặc liên hệ với IT, tên lỗi: $errorCode';
+  }
+}
+
+Future<void> saveTokenToFirestore() async {
+  if(GetCurrentUserInfor.currentUid == null) return;
+  String? token = await FirebaseMessaging.instance.getToken();
+  if (token != null) {
+    await FirebaseFirestore.instance.collection('users').doc(GetCurrentUserInfor.currentUid).update({
+      'fcmToken': token,
+    });
   }
 }

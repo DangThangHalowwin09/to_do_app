@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import '../utils/helper.dart';
 import 'local_notifications_service.dart';
 
 class FirebaseMessagingService {
@@ -55,6 +57,9 @@ class FirebaseMessagingService {
       // Handle errors during token refresh
       print('Error refreshing FCM token: $error');
     });
+   /* await FirebaseFirestore.instance.collection('users').doc(GetCurrentUserInfor.currentUid).update({
+      'fcmToken': token,
+    });*/
   }
 
   /// Requests notification permission from the user

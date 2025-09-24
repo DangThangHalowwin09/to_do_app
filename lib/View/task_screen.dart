@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../utils/helper.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen ({super.key});
@@ -147,6 +148,21 @@ class _TaskScreenState extends State<TaskScreen> {
                         await tasks.add(data);
                       } else {
                         await tasks.doc(task.id).update(data);
+                      }
+                      final userDoc = await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(GetCurrentUserInfor.currentUid)
+                          .get();
+
+                      final token = userDoc['fcmToken'];
+
+                      // 3. Gửi thông báo qua FCM
+                      if (token != null) {
+                        await PushNotificationHelper.sendPushMessage(
+                          token,
+                          'Trưởng phòng đã giao bạn nhiệm vụ mới!',
+                          titleController.text,
+                        );
                       }
                       Navigator.pop(context);
                     },
