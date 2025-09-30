@@ -1,5 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
+import '../main.dart';
 import '../utils/helper.dart';
 import 'local_notifications_service.dart';
 
@@ -34,13 +36,18 @@ class FirebaseMessagingService {
     FirebaseMessaging.onMessage.listen(_onForegroundMessage);
 
     // Listen for notification taps when the app is in background but not terminated
-    FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenedApp);
+    //FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenedApp);
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleMessage(message, navigatorKey.currentContext!);
+    });
 
     // Check for initial message that opened the app from terminated state
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
-      _onMessageOpenedApp(initialMessage);
+      _handleMessage(initialMessage, navigatorKey.currentContext!);
     }
+
   }
 
   /// Retrieves and manages the FCM token for push notifications
@@ -89,9 +96,28 @@ class FirebaseMessagingService {
   /// Handles notification taps when app is opened from the background or terminated state
   void _onMessageOpenedApp(RemoteMessage message) {
     print('Notification caused the app to open: ${message.data.toString()}');
+
     // TODO: Add navigation or specific handling based on message data
   }
+
+
+
+  void _handleMessage(RemoteMessage message, BuildContext context) {
+    final screen = message.data[PushNotificationHelper.TypeMessageData];
+    final taskId = message.data[PushNotificationHelper.IdMessageData];
+
+    if (screen == PushNotificationHelper.TaskScreen && taskId != null) {
+      Navigator.pushNamed(
+        context,
+        PushNotificationHelper.TaskScreenRoute,
+        arguments: {PushNotificationHelper.IdMessageData: taskId},
+      );
+    }
+  }
+
+
 }
+
 
 /// Background message handler (must be top-level function or static)
 /// Handles messages when the app is fully terminated
@@ -99,3 +125,4 @@ class FirebaseMessagingService {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('Background message received: ${message.data.toString()}');
 }
+

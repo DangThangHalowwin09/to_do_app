@@ -1,16 +1,15 @@
 
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import '../Service/auth_service.dart';
 import '../View/login_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-
+import 'package:googleapis_auth/auth_io.dart' as auth;
 
 
 class RoleKey {
@@ -212,7 +211,6 @@ class GroupHelper {
     final doc = await FirebaseFirestore.instance.collection('groups').doc(id).get();
     return doc.data()?['name'] as String?;
   }
-
   static Future<String?> getGroupIDByName(String name) async {
     final snapshot = await FirebaseFirestore.instance
         .collection('groups')
@@ -223,26 +221,54 @@ class GroupHelper {
   }
 }
 class PushNotificationHelper{
-  static Future<void> sendPushMessage(String token, String title, String body) async {
-    const String serverKey = 'YOUR_SERVER_KEY_HERE'; // Server key từ Firebase console
+  static const String TaskScreen = "task";
+  static const String ErrorScreen = "error";
+  static const String TypeMessageData = "type";
+  static const String IdMessageData = "id";
+  static const String TaskScreenRoute = '/task';
+  static const String ErrorScreenRoute = '/error';
 
-    await http.post(
-      Uri.parse('https://fcm.googleapis.com/fcm/send'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Authorization': 'key=$serverKey',
-      },
-      body: jsonEncode(
-        <String, dynamic>{
-          'notification': <String, dynamic>{
-            'title': title,
-            'body': body,
-          },
-          'priority': 'high',
-          'to': token,
-        },
-      ),
+  static Future<String> getAccessToken() async {
+    // Load file service account từ assets (service-account.json)
+    final serviceAccount = json.decode(
+      await rootBundle.loadString('assets/test-937d3-firebase-adminsdk-fbsvc-db65272241.json'),
     );
+    final accountCredentials = auth.ServiceAccountCredentials.fromJson(serviceAccount);
+    final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
+    final client = await auth.clientViaServiceAccount(accountCredentials, scopes);
+    final accessToken = client.credentials.accessToken.data;
+    print("22222" + accessToken);
+    client.close();
+    return accessToken;
+  }
+  static Future<void> sendPushMessage(String targetToken, String title, String detail, Map<String, String>? data) async {
+    final accessToken = await getAccessToken();
+    final projectId = "test-937d3"; // ID Firebase Project
+    final url =
+    Uri.parse("https://fcm.googleapis.com/v1/projects/$projectId/messages:send");
+    final body = {
+      "message": {
+        "token": targetToken,
+        "notification": {
+          "title": title,
+          "body": detail
+        },
+        "data": data ?? {},
+      }
+    };
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $accessToken",
+      },
+      body: jsonEncode(body),
+    );
+    print("FCM response: ${response.body}");
   }
 }
+
+
+
+
 

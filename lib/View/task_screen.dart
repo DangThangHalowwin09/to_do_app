@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../utils/helper.dart';
 
+
 class TaskScreen extends StatefulWidget {
   const TaskScreen ({super.key});
   @override
@@ -15,15 +16,26 @@ class _TaskScreenState extends State<TaskScreen> {
       'tasks');
   final CollectionReference users = FirebaseFirestore.instance.collection(
       'users');
-
   String? currentUserRole;
   String? currentUserId;
-
   String? currentUserName;
+  String? _selectedTaskId; // Task được highlight
+  final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     super.initState();
     getCurrentUserInfo();
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Lấy taskId từ arguments khi mở màn hình
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args['taskId'] != null) {
+      setState(() {
+        _selectedTaskId = args['taskId'];
+      });
+    }
   }
 
   Future<void> getCurrentUserInfo() async {
@@ -38,6 +50,18 @@ class _TaskScreenState extends State<TaskScreen> {
         });
       }
     }
+  }
+
+  void _scrollToTask(int index) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          index * 120.0, // 120 = chiều cao mỗi card (ước lượng, có thể chỉnh)
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   Future<void> _showTaskDialog({DocumentSnapshot? task}) async {
@@ -149,6 +173,7 @@ class _TaskScreenState extends State<TaskScreen> {
                       } else {
                         await tasks.doc(task.id).update(data);
                       }
+                      final taskId = tasks.id; // lấy ID trước
                       final userDoc = await FirebaseFirestore.instance
                           .collection('users')
                           .doc(GetCurrentUserInfor.currentUid)
@@ -160,8 +185,12 @@ class _TaskScreenState extends State<TaskScreen> {
                       if (token != null) {
                         await PushNotificationHelper.sendPushMessage(
                           token,
-                          'Trưởng phòng đã giao bạn nhiệm vụ mới!',
+                          "Trưởng phòng đã giao bạn nhiệm vụ mới!",
                           titleController.text,
+                          {
+                            PushNotificationHelper.TypeMessageData : PushNotificationHelper.TaskScreen,
+                            PushNotificationHelper.IdMessageData: taskId,
+                          },
                         );
                       }
                       Navigator.pop(context);
