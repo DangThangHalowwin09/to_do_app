@@ -11,7 +11,6 @@ import 'package:flutter_to_do_list/utils/helper.dart';
 import 'View/error_screen.dart';
 import 'View/roledirection_screen.dart';
 import 'View/task_screen.dart';
-import 'firebase_msg.dart'; //
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void push_notification_setup() async{

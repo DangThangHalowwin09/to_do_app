@@ -176,7 +176,7 @@ class _TaskScreenState extends State<TaskScreen> {
                       final taskId = tasks.id; // lấy ID trước
                       final userDoc = await FirebaseFirestore.instance
                           .collection('users')
-                          .doc(GetCurrentUserInfor.currentUid)
+                          .doc(assignedTo)
                           .get();
 
                       final token = userDoc['fcmToken'];

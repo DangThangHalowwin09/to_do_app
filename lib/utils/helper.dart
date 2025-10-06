@@ -2,14 +2,11 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import '../Service/auth_service.dart';
 import '../View/login_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:googleapis_auth/auth_io.dart' as auth;
 
 
 class RoleKey {
@@ -228,24 +225,9 @@ class PushNotificationHelper{
   static const String TaskScreenRoute = '/task';
   static const String ErrorScreenRoute = '/error';
 
-  static Future<String> getAccessToken() async {
-    // Load file service account từ assets (service-account.json)
-    final serviceAccount = json.decode(
-      await rootBundle.loadString('assets/test-937d3-firebase-adminsdk-fbsvc-db65272241.json'),
-    );
-    final accountCredentials = auth.ServiceAccountCredentials.fromJson(serviceAccount);
-    final scopes = ['https://www.googleapis.com/auth/firebase.messaging'];
-    final client = await auth.clientViaServiceAccount(accountCredentials, scopes);
-    final accessToken = client.credentials.accessToken.data;
-    print("22222" + accessToken);
-    client.close();
-    return accessToken;
-  }
   static Future<void> sendPushMessage(String targetToken, String title, String detail, Map<String, String>? data) async {
-    final accessToken = await getAccessToken();
-    final projectId = "test-937d3"; // ID Firebase Project
-    final url =
-    Uri.parse("https://fcm.googleapis.com/v1/projects/$projectId/messages:send");
+    final url = Uri.parse("http://192.168.1.10:5000/send-notification");
+
     final body = {
       "message": {
         "token": targetToken,
@@ -258,13 +240,11 @@ class PushNotificationHelper{
     };
     final response = await http.post(
       url,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $accessToken",
-      },
+      headers: {"Content-Type": "application/json"},
       body: jsonEncode(body),
     );
-    print("FCM response: ${response.body}");
+
+    print("Kết quả gửi: ${response.body}");
   }
 }
 
