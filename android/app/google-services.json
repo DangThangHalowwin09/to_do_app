@@ -80,6 +80,25 @@
           "other_platform_oauth_client": []
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385662617488:android:8bfb4de2b689b7e1789515",
+        "android_client_info": {
+          "package_name": "com.oncologynghean.ubnamanager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAixd9ASVYMZbA-GkC8n5AihK8GO8S3NQI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
     }
   ],
   "configuration_version": "1"
