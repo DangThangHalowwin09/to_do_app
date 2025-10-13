@@ -11,14 +11,40 @@ import 'package:flutter_to_do_list/utils/helper.dart';
 import 'View/error_screen.dart';
 import 'View/roledirection_screen.dart';
 import 'View/task_screen.dart';
+import 'package:flutter/foundation.dart'; // Cho kIsWeb
+import 'package:universal_platform/universal_platform.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void push_notification_setup() async{
   final localNotificationsService = LocalNotificationsService.instance();
+  if (kIsWeb) {
+    // Chỉ chạy code Firebase Messaging (FCM) cho Web
+    //await setupFCMForWeb();
+  } else if (UniversalPlatform.isAndroid || UniversalPlatform.isIOS || UniversalPlatform.isMacOS) {
+    // Chỉ khởi tạo LocalNotificationsService cho Mobile/Desktop
+    try {
+      await LocalNotificationsService.instance().init();
+    } catch (e) {
+      // BẮT LỖI TẠI ĐÂY để ngăn crash toàn bộ app
+      print("Lỗi khi khởi tạo Local Notifications: $e");
+    }
+  }
   await localNotificationsService.init();
 
   final firebaseMessagingService = FirebaseMessagingService.instance();
-  await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
+  if (kIsWeb) {
+    // Chỉ chạy code Firebase Messaging (FCM) cho Web
+    //await setupFCMForWeb();
+  } else if (UniversalPlatform.isAndroid || UniversalPlatform.isIOS || UniversalPlatform.isMacOS) {
+    // Chỉ khởi tạo LocalNotificationsService cho Mobile/Desktop
+    try {
+      await firebaseMessagingService.init(localNotificationsService: localNotificationsService);
+    } catch (e) {
+      // BẮT LỖI TẠI ĐÂY để ngăn crash toàn bộ app
+      print("Lỗi khi khởi tạo firebaseMassagingService: $e");
+    }
+  }
+
 }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,15 +54,17 @@ void main() async {
   push_notification_setup();
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  // Lấy token của thiết bị
-  String? token = await messaging.getToken();
-  print("FCM Token: $token");
+  if (!kIsWeb) {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    // Lấy token của thiết bị
+    String? token = await messaging.getToken();
+    print("FCM Token: $token");
 
-  // Lắng nghe khi app foreground
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print('Nhận thông báo: ${message.notification?.title}');
-  });
-  //PushNotificationHelper.sendPushMessage(token!);
+    // Lắng nghe khi app foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Nhận thông báo: ${message.notification?.title}');
+    });
+  }
 
   runApp(
     Portal( // 👈 bọc Portal ở đây
@@ -74,4 +102,6 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+
 }
+

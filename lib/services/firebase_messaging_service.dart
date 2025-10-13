@@ -4,6 +4,9 @@ import 'package:flutter/cupertino.dart';
 import '../main.dart';
 import '../utils/helper.dart';
 import 'local_notifications_service.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 
 class FirebaseMessagingService {
   // Private constructor for singleton pattern
@@ -22,6 +25,10 @@ class FirebaseMessagingService {
   Future<void> init({required LocalNotificationsService localNotificationsService}) async {
     // Init local notifications service
     _localNotificationsService = localNotificationsService;
+    if (kIsWeb) {
+      print('🧭 Web detected — skip Firebase Messaging init');
+      return;
+    }
 
     // Handle FCM token
     _handlePushNotificationsToken();
@@ -43,11 +50,11 @@ class FirebaseMessagingService {
     });
 
     // Check for initial message that opened the app from terminated state
-    final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  /*  final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       _handleMessage(initialMessage, navigatorKey.currentContext!);
     }
-
+*/
   }
 
   /// Retrieves and manages the FCM token for push notifications

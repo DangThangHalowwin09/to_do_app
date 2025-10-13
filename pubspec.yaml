@@ -55,6 +55,7 @@ dependencies:
   fuzzy: ^0.5.1
   googleapis: ^14.0.0
   googleapis_auth: ^2.0.0
+  universal_platform: ^1.1.0
 
 dev_dependencies:
   flutter_test:
