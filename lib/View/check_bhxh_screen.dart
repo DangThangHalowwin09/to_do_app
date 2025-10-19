@@ -10,7 +10,7 @@ class CheckBHXHScreen extends StatefulWidget {
 
 class _CheckBHXHScreenState extends State<CheckBHXHScreen> {
   final CollectionReference _errorRef =
-  FirebaseFirestore.instance.collection('errors');
+  FirebaseFirestore.instance.collection('errors_BHYT');
 
   void _deleteError(String docId) async {
     try {
@@ -27,7 +27,8 @@ class _CheckBHXHScreenState extends State<CheckBHXHScreen> {
 
   void _showErrorDetail(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    final List<dynamic> errors = data['errors'] ?? [];
+    //final List<dynamic> errors = data['errors'] ?? [];
+    final String errors = data['error'] ?? 'Không rõ';
     final String name = data['name'] ?? 'Không rõ';
     final String code = data['code'] ?? 'Không rõ';
     final Timestamp updatedAt = data['updatedAt'] ?? Timestamp.now();
@@ -40,12 +41,15 @@ class _CheckBHXHScreenState extends State<CheckBHXHScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("🧍‍♂️ Bệnh nhân: $name"),
-              Text("🩺 Mã bệnh nhân: $code"),
+              Text("🧍‍♂️ BN: $name"),
+              Text("🩺 Mã BN: $code"),
               Text("🕓 Cập nhật: ${updatedAt.toDate()}"),
+
               const SizedBox(height: 10),
+              /*const Text("Danh sách lỗi:", style: TextStyle(fontWeight: FontWeight.bold)),
+              ...errors.map((e) => Text("• $e")).toList(),*/
               const Text("Danh sách lỗi:", style: TextStyle(fontWeight: FontWeight.bold)),
-              ...errors.map((e) => Text("• $e")).toList(),
+              Text("- $errors"),
             ],
           ),
         ),
@@ -104,8 +108,8 @@ class _CheckBHXHScreenState extends State<CheckBHXHScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Mã bệnh nhân: $code"),
-                      Text("Số lỗi: ${errors.length}"),
-                      Text("Cập nhật: ${updatedAt.toDate()}"),
+                      //Text("Số lỗi: ${errors.length}"),
+                      //Text("Cập nhật: ${updatedAt.toDate()}"),
                     ],
                   ),
                   onTap: () => _showErrorDetail(docs[index]),
