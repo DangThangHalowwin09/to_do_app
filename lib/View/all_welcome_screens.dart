@@ -8,6 +8,7 @@ import '../screen/blog_screen.dart';
 import '../screen/statistics_screen.dart';
 import '../utils/helper.dart';
 import 'area_manager_screen.dart';
+import 'check_bhxh_screen.dart';
 import 'error_screen.dart';
 import 'group_manager_screen.dart';
 import 'member_manager_screen.dart';
@@ -92,7 +93,10 @@ class AdminScreen extends StatelessWidget {
                     );
                   },
                 ),
-                /*_buildGridItem(
+
+
+
+            /*_buildGridItem(
                   icon: Icons.computer,
                   label: 'NV P.Cứng',
                   onTap: () {
@@ -164,6 +168,16 @@ class AdminScreen extends StatelessWidget {
                   },
                 ),
                 _buildGridItem(
+                  icon: Icons.health_and_safety_rounded,
+                  label: 'Check BHXH',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CheckBHXHScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
                   icon: Icons.logout,
                   label: 'Đăng Xuất',
                   iconColor: Colors.red,
@@ -171,6 +185,7 @@ class AdminScreen extends StatelessWidget {
                     AuthHelper.signOutAndRedirectToLogin(context);
                   },
                 ),
+
                 /*_buildGridItem(
                   icon: Icons.bar_chart,
                   label: 'Thống kê',
@@ -578,7 +593,16 @@ class SoftwareScreen extends StatelessWidget {
                     );
                   },
                 ),
-
+                _buildGridItem(
+                  icon: Icons.health_and_safety_rounded,
+                  label: 'Check BHXH',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CheckBHXHScreen()),
+                    );
+                  },
+                ),
                 _buildGridItem(
                   icon: Icons.logout,
                   label: 'Đăng Xuất',
@@ -587,6 +611,7 @@ class SoftwareScreen extends StatelessWidget {
                     AuthHelper.signOutAndRedirectToLogin(context);
                   },
                 ),
+
               ],
             ),
           ),
@@ -720,6 +745,16 @@ class DoctorScreen extends StatelessWidget {
                   ),
                 ),
                 _buildGridItem(
+                  icon: Icons.health_and_safety_rounded,
+                  label: 'Check BHXH',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const CheckBHXHScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
                   icon: Icons.logout,
                   label: 'Đăng xuất',
                   iconColor: Colors.red,
@@ -727,6 +762,7 @@ class DoctorScreen extends StatelessWidget {
                     AuthHelper.signOutAndRedirectToLogin(context);
                   },
                 ),
+
               ],
             ),
           ),
