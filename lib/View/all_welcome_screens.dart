@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/search_area_screen.dart';
 import 'package:flutter_to_do_list/View/signup_screen.dart';
+import 'package:flutter_to_do_list/View/statistics_screen.dart';
 import 'package:flutter_to_do_list/View/task_screen.dart';
 import 'package:flutter_to_do_list/View/update_profile_screen.dart';
 import '../screen/blog_screen.dart';
@@ -14,7 +15,6 @@ import 'group_manager_screen.dart';
 import 'member_manager_screen.dart';
 import 'coming_soon_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import 'on_duty_screen.dart';
 
 
@@ -174,6 +174,16 @@ class AdminScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const CheckBHXHScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.health_and_safety_rounded,
+                  label: 'Thống kê',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const StatisticScreen()),
                     );
                   },
                 ),

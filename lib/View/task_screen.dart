@@ -180,7 +180,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           .get();
 
                       final token = userDoc['fcmToken'];
-
+                      print("prepare token");
                       // 3. Gửi thông báo qua FCM
                       if (token != null) {
                         await PushNotificationHelper.sendPushMessage(

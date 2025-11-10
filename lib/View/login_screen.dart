@@ -242,6 +242,7 @@ String translateError(String errorCode) {
 }
 
 Future<void> saveTokenToFirestore() async {
+  print("5555555555");
   if(GetCurrentUserInfor.currentUid == null) return;
   String? token = await FirebaseMessaging.instance.getToken();
   if (token != null) {
@@ -249,4 +250,5 @@ Future<void> saveTokenToFirestore() async {
       'fcmToken': token,
     });
   }
+  print("5555555 + $token");
 }

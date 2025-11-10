@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -65,6 +67,7 @@ void main() async {
       print('Nhận thông báo: ${message.notification?.title}');
     });
   }
+  await StatisticHelper.recordVisit(StatisticHelper.getPlatform());
 
   runApp(
     Portal( // 👈 bọc Portal ở đây
