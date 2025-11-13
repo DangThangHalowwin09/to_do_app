@@ -6,6 +6,7 @@ import '../Service/auth_service.dart';
 import '../data/auth_data.dart';
 import '../utils/helper.dart';
 import 'all_welcome_screens.dart';
+import 'general_information_screen.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
     AuthenticationRemote().login(_emailController.text, _passwordController.text);
     setState(() {
       _isLoading = true; // Show spinner
-      
+
     });
 
     // Call login method from AuthService with user inputs
@@ -83,27 +84,27 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
     }
-   else {
-  ScaffoldMessenger.of(context).showSnackBar(
-  SnackBar(
-  backgroundColor: Colors.black,
-  behavior: SnackBarBehavior.floating,
-  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-  content: Row(
-  children: [
-  Icon(Icons.error_outline, color: Colors.red),
-  const SizedBox(width: 8),
-  Expanded(child: Text('${translateError(result ?? 'Firebase return null')}')),
-  ],
-  ),
-  duration: Duration(seconds: 4),
-  ),
-  );
-  }
+    else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.black,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          content: Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.red),
+              const SizedBox(width: 8),
+              Expanded(child: Text('${translateError(result ?? 'Firebase return null')}')),
+            ],
+          ),
+          duration: Duration(seconds: 4),
+        ),
+      );
+    }
   }
   bool isPasswordHidden = true;
 
- /* Future<void> _launchZalo() async {
+  /* Future<void> _launchZalo() async {
     final phoneNumber = '0866573502';
     final Uri url = Uri.parse('https://zalo.me/$phoneNumber');
 
@@ -124,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(16.0), // Add padding
             child: Column(
               children: [
-                   Image.asset("assets/icon_login.jpg"), // Display login screen image
+                Image.asset("assets/icon_login.jpg"), // Display login screen image
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -172,12 +173,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 _isLoading
                     ? const CircularProgressIndicator()
                     :  SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _login, // Call login function
-                          child: const Text('Đăng nhập'),
-                        ),
-                      ),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _login, // Call login function
+                    child: const Text('Đăng nhập'),
+                  ),
+                ),
 
                 const SizedBox(height: 16),
                 Row(
@@ -188,18 +189,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(fontSize: 15,
                         color: Colors.blue,
                       ),
-          
+
                     ),
 
                     InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const GuestScreen()),
+                          MaterialPageRoute(builder: (_) => const General_Information_Screen()),
                         );
                       },
                       child: const Text(
-                        " Tài khoản khách",
+                        " Về Trang Chủ",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,

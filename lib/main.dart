@@ -11,6 +11,7 @@ import 'package:flutter_to_do_list/services/firebase_messaging_service.dart';
 import 'package:flutter_to_do_list/services/local_notifications_service.dart';
 import 'package:flutter_to_do_list/utils/helper.dart';
 import 'View/error_screen.dart';
+import 'View/general_information_screen.dart';
 import 'View/roledirection_screen.dart';
 import 'View/task_screen.dart';
 import 'package:flutter/foundation.dart'; // Cho kIsWeb
@@ -99,7 +100,7 @@ class MyApp extends StatelessWidget {
         // đã đăng nhập
         }
         else {
-          return const LoginScreen(); // chưa đăng nhập
+          return const General_Information_Screen(); // chưa đăng nhập
         }
       },
       ),

@@ -291,5 +291,8 @@ class StatisticHelper {
   }
 }
 
-
+class AppColors {
+  static const Color red = Color(0xFFCE3531);  // Đỏ
+  static const Color blue = Color(0xFF00408C); // Xanh
+}
 
