@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,6 +25,7 @@ class General_Information_Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -51,7 +53,7 @@ class General_Information_Screen extends StatelessWidget {
                         const Text(
                           "UBNA Manager",
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: AppColors.blue,
                           ),
@@ -60,7 +62,7 @@ class General_Information_Screen extends StatelessWidget {
                         const Text(
                           "Hỗ trợ công việc nhân viên UBNA",
                           style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 14,
                               color: Color(0xFFD01F26),
                           ),
                         ),
@@ -133,8 +135,9 @@ class General_Information_Screen extends StatelessWidget {
               ),
 
               const SizedBox(height: 12),
+              const NewsListWidget(),
 
-              Container(
+              /*Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -148,7 +151,8 @@ class General_Information_Screen extends StatelessWidget {
                     style: TextStyle(color: Colors.black54),
                   ),
                 ),
-              ),
+              ),*/
+
             ],
           ),
         ),
@@ -168,12 +172,23 @@ class General_Information_Screen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
+          color: Colors.white,               // Nền trắng
           borderRadius: BorderRadius.circular(12),
-          color: Colors.blue.shade100,
+          border: Border.all(
+            color: Colors.grey.shade300,    // Viền xám nhạt
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade300,  // Đổ bóng màu ghi
+              blurRadius: 6,
+              offset: const Offset(0, 3),   // Đổ bóng nhẹ xuống dưới
+            ),
+          ],
         ),
         child: Column(
           children: [
-            Icon(icon, size: 32, color: Colors.blue.shade800),
+            Icon(icon, size: 32, color: Colors.blue.shade500),
             const SizedBox(height: 8),
             Text(
               label,
@@ -251,5 +266,79 @@ class AutoImageSlider extends StatelessWidget {
         }).toList(),
       ),
     );
+  }
+}
+
+class NewsListWidget extends StatelessWidget {
+  const NewsListWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('news')
+          .orderBy('createdAt', descending: true)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text("Chưa có bài viết nào"),
+          );
+        }
+
+        final docs = snapshot.data!.docs;
+
+        return ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(), // không cuộn bên trong ScrollView cha
+          itemCount: docs.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final data = docs[index].data();
+
+            return NewsContainer(
+              title: data['title'],
+              imageUrl: convertDriveLinkToDirect(data['imageUrl']),
+              onTap: ()
+              {
+                launchUrl(Uri.parse(data['url']), mode: LaunchMode.externalApplication);
+              },
+
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+String convertDriveLinkToDirect(String url) {
+  try {
+    // Trường hợp link dạng: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+    if (url.contains("drive.google.com/file/d/")) {
+      final id = url.split("drive.google.com/file/d/")[1].split("/")[0];
+      return "https://drive.google.com/uc?export=view&id=$id";
+    }
+
+    // Trường hợp link dạng: https://drive.google.com/open?id=FILE_ID
+    if (url.contains("drive.google.com/open?id=")) {
+      final id = url.split("drive.google.com/open?id=")[1];
+      return "https://drive.google.com/uc?export=view&id=$id";
+    }
+
+    // Trường hợp link dạng: https://drive.google.com/uc?id=FILE_ID&export=download
+    if (url.contains("drive.google.com/uc?id=")) {
+      final id = url.split("drive.google.com/uc?id=")[1].split("&")[0];
+      return "https://drive.google.com/uc?export=view&id=$id";
+    }
+
+    return url; // Không phải link Drive → trả lại bình thường
+  } catch (e) {
+    return url; // Khi lỗi vẫn trả lại link cũ
   }
 }

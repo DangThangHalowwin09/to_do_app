@@ -15,6 +15,7 @@ import 'group_manager_screen.dart';
 import 'member_manager_screen.dart';
 import 'coming_soon_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'news_manager_screen.dart';
 import 'on_duty_screen.dart';
 
 
@@ -178,11 +179,21 @@ class AdminScreen extends StatelessWidget {
                   },
                 ),
                 _buildGridItem(
-                  icon: Icons.health_and_safety_rounded,
-                  label: 'Thống kê',
+                  icon: Icons.newspaper,
+                  label: 'Tin tức',
                   onTap: () {
                     Navigator.push(
                       context,
+                      MaterialPageRoute(builder: (_) => const NewsAdminScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.bar_chart,
+                  label: 'Thống kê',
+                  onTap: () {
+                    Navigator.push(
+                        context,
                       MaterialPageRoute(builder: (_) => const StatisticScreen()),
                     );
                   },
@@ -195,18 +206,6 @@ class AdminScreen extends StatelessWidget {
                     AuthHelper.signOutAndRedirectToLogin(context);
                   },
                 ),
-
-                /*_buildGridItem(
-                  icon: Icons.bar_chart,
-                  label: 'Thống kê',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ComingSoonScreen()),
-                      //MaterialPageRoute(builder: (_) => const StatisticsScreen()),
-                    );
-                  },
-                ),*/
               ],
             ),
           ),

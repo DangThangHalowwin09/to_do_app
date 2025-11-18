@@ -28,7 +28,6 @@ class RoleKey {
 
   static Future<bool> isCurrentUserAdmin() async {
     final role = await GetCurrentUserInfor.getRole();
-    print(role);
     return role == admin; // Giả sử "admin" là String, chứ không phải biến
   }
 
@@ -237,7 +236,7 @@ class PushNotificationHelper{
       Map<String, String>? data,
       ) async {
     try {
-      final url = Uri.parse("http://10.0.2.2:5000/send-notification"); // hoặc IP máy bạn nếu là máy thật
+      final url = Uri.parse("http://192.168.1.10:5000/send-notification"); // hoặc IP máy bạn nếu là máy thật
       final body = {
         "message": {
           "token": targetToken,
@@ -294,5 +293,68 @@ class StatisticHelper {
 class AppColors {
   static const Color red = Color(0xFFCE3531);  // Đỏ
   static const Color blue = Color(0xFF00408C); // Xanh
+}
+class NewsContainer extends StatelessWidget {
+  final String title;
+  final String imageUrl;
+  final VoidCallback onTap;
+
+  const NewsContainer({
+    super.key,
+    required this.title,
+    required this.imageUrl,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                imageUrl,
+                width: 90,
+                height: 70,
+                fit: BoxFit.fitHeight,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 90,
+                  height: 70,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.image_not_supported),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
