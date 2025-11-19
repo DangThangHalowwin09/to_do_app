@@ -358,3 +358,30 @@ class NewsContainer extends StatelessWidget {
   }
 }
 
+class General_Helper{
+  static String convertDriveLinkToDirect(String url) {
+    try {
+      // Trường hợp link dạng: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+      if (url.contains("drive.google.com/file/d/")) {
+        final id = url.split("drive.google.com/file/d/")[1].split("/")[0];
+        return "https://drive.google.com/uc?export=view&id=$id";
+      }
+
+      // Trường hợp link dạng: https://drive.google.com/open?id=FILE_ID
+      if (url.contains("drive.google.com/open?id=")) {
+        final id = url.split("drive.google.com/open?id=")[1];
+        return "https://drive.google.com/uc?export=view&id=$id";
+      }
+
+      // Trường hợp link dạng: https://drive.google.com/uc?id=FILE_ID&export=download
+      if (url.contains("drive.google.com/uc?id=")) {
+        final id = url.split("drive.google.com/uc?id=")[1].split("&")[0];
+        return "https://drive.google.com/uc?export=view&id=$id";
+      }
+
+      return url; // Không phải link Drive → trả lại bình thường
+    } catch (e) {
+      return url; // Khi lỗi vẫn trả lại link cũ
+    }
+  }
+}
