@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../utils/helper.dart';
 import '../general_information_screen.dart';
-import '../login_screen.dart';
+import 'login_screen.dart';
 import '../member_manager_screen.dart';
 import '../on_duty_screen.dart';
 

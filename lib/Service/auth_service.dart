@@ -42,6 +42,62 @@ class AuthService {
     }
   }
 
+
+  Future<String?> signup_with_email_verify({
+    required String name,
+    required String email,
+    required String password,
+    required String phone,
+    required String role,
+    required List<String>? areas,
+    required List<String>? group,
+  }) async {
+    try {
+      // 1. TẠO USER TRONG FIREBASE AUTHENTICATION
+      UserCredential userCredential =
+      await _auth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password.trim(),
+      );
+
+      User? user = userCredential.user;
+
+      if (user != null) {
+        // 2. GỬI EMAIL XÁC MINH
+        await user.sendEmailVerification();
+
+        // 3. LƯU DỮ LIỆU BỔ SUNG VÀO FIRESTORE (Lưu toàn bộ data để không bị mất)
+        // Chúng ta dựa vào cờ 'emailVerified' và hàm login để ngăn chặn truy cập.
+        await _firestore.collection('users').doc(user.uid).set({
+          'name': name.trim(),
+          'email': email.trim(),
+          'phone': phone.trim(),
+          'role': role,
+          'areas': areas ?? [],
+          'groups': group ?? [],
+          'createdAt': FieldValue.serverTimestamp(),
+          'emailVerified': user.emailVerified, // Luôn là false ban đầu
+        });
+
+        // 4. ⚠️ BƯỚC QUAN TRỌNG: ĐĂNG XUẤT NGAY LẬP TỨC
+        // Điều này buộc người dùng phải đăng nhập lại,
+        // kích hoạt kiểm tra emailVerified trong hàm login.
+        await _auth.signOut();
+
+        // 5. Trả về thông báo thành công (không phải null)
+        return "Đăng ký thành công! Vui lòng kiểm tra email để xác minh tài khoản trước khi đăng nhập.";
+
+      } else {
+        return "Lỗi không xác định: Không thể tạo hồ sơ người dùng.";
+      }
+    } on FirebaseAuthException catch (e) {
+      // Xử lý lỗi Firebase Auth (email đã tồn tại, mật khẩu yếu,...)
+      return e.message;
+    } catch (e) {
+      // Xử lý lỗi chung (Firestore, network,...)
+      return e.toString();
+    }
+  }
   // Function to handle user login
   Future<String?> login({
     required String email,
@@ -69,5 +125,43 @@ class AuthService {
   // for user log out
   signOut() async {
     _auth.signOut();
+  }
+
+
+  /// Đăng ký tài khoản bằng email
+  Future<User?> createAccountWithPassword(String email, String password) async {
+    try {
+      UserCredential cred = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return cred.user;
+    } catch (e) {
+      return null;
+    }
+  }
+
+
+  /// Gửi email xác minh
+  Future<bool> sendVerificationEmail() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) return false;
+
+      await user.sendEmailVerification();
+      return true;
+    } catch (e) {
+      print("Lỗi gửi email verify: $e");
+      return false;
+    }
+  }
+
+  /// Kiểm tra email xác minh chưa
+  Future<bool> isEmailVerified() async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+
+    await user.reload();
+    return user.emailVerified;
   }
 }

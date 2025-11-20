@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_to_do_list/View/login_screen.dart';
+import 'package:flutter_to_do_list/View/main_screen/login_screen.dart';
 import 'package:flutter_to_do_list/firebase_options.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_to_do_list/services/firebase_messaging_service.dart';
@@ -12,10 +12,13 @@ import 'package:flutter_to_do_list/services/local_notifications_service.dart';
 import 'package:flutter_to_do_list/utils/helper.dart';
 import 'View/error_screen.dart';
 import 'View/general_information_screen.dart';
+import 'View/main_screen/finish_profile_screen.dart';
 import 'View/roledirection_screen.dart';
 import 'View/task_screen.dart';
 import 'package:flutter/foundation.dart'; // Cho kIsWeb
 import 'package:universal_platform/universal_platform.dart';
+
+import 'View/update_profile_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void push_notification_setup() async{
@@ -89,6 +92,7 @@ class MyApp extends StatelessWidget {
       routes: {
         //'/login': (context) => const LoginScreen(),
         //'/roleRedirect': (context) => const RoleRedirectScreen(),
+        "/updateProfile": (_) => const UpdateProfile_Screen(),
         PushNotificationHelper.TaskScreenRoute: (context) => const TaskScreen(),
         PushNotificationHelper.ErrorScreenRoute: (context) => const ErrorScreen(),
       },

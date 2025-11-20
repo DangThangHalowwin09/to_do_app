@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/all_welcome_screens.dart';
-import '../Service/auth_service.dart';
+import '../../Service/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -24,10 +24,10 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isLoading = false;
   bool isPasswordHidden = true;
 
-  List<String> _selectedAreas = [];
-  List<String> _selectedAreasGroup = [];
-  List<String> _areaOptions = [];
-  List<String> _areaGroupOptions = [];
+  List<String> _selectedAreasForDoctors = [];
+  List<String> _selectedAreasForHardwareTeam = [];
+  List<String> _areaOptionsForDoctors = [];
+  List<String> _areaGroupOptionsForHardwareTeam = [];
 
   @override
   void initState() {
@@ -44,8 +44,8 @@ class _SignupScreenState extends State<SignupScreen> {
     final snapshot = await FirebaseFirestore.instance.collection('areas').orderBy('name').get();
     final snapshotGroup = await FirebaseFirestore.instance.collection('groups').orderBy('name').get();
     setState(() {
-      _areaOptions = snapshot.docs.map((doc) => doc['name'].toString()).toList();
-      _areaGroupOptions = snapshotGroup.docs.map((doc) => doc['name'].toString()).toList();
+      _areaOptionsForDoctors = snapshot.docs.map((doc) => doc['name'].toString()).toList();
+      _areaGroupOptionsForHardwareTeam = snapshotGroup.docs.map((doc) => doc['name'].toString()).toList();
     });
   }
 
@@ -60,8 +60,8 @@ class _SignupScreenState extends State<SignupScreen> {
       password: _passwordController.text,
       phone: _phoneController.text,
       role: _selectedRole,
-      areas: _selectedRole == 'Tổ phần cứng' ? _selectedAreas : [],
-      group: _selectedRole == 'Y bác sỹ' ? _selectedAreasGroup : [],
+      areas: _selectedRole == 'Tổ phần cứng' ? _selectedAreasForDoctors : [],
+      group: _selectedRole == 'Y bác sỹ' ? _selectedAreasForHardwareTeam : [],
     );
 
     setState(() {
@@ -143,8 +143,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedRole = newValue!;
-                    _selectedAreas.clear();
-                    _selectedAreasGroup.clear();// reset khi đổi role
+                    _selectedAreasForDoctors.clear();
+                    _selectedAreasForHardwareTeam.clear();// reset khi đổi role
                   });
                 },
                 items: [
@@ -164,18 +164,18 @@ class _SignupScreenState extends State<SignupScreen> {
                   'Chọn khu vực hỗ trợ:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                if (_areaGroupOptions.isEmpty)
+                if (_areaGroupOptionsForHardwareTeam.isEmpty)
                   const Text('Đang tải danh sách khu vực...')
                 else
-                  ...([..._areaGroupOptions]..sort()).map((area) => CheckboxListTile(
+                  ...([..._areaGroupOptionsForHardwareTeam]..sort()).map((area) => CheckboxListTile(
                     title: Text(area),
-                    value: _selectedAreasGroup.contains(area),
+                    value: _selectedAreasForHardwareTeam.contains(area),
                     onChanged: (bool? selected) {
                       setState(() {
                         if (selected == true) {
-                          _selectedAreasGroup.add(area);
+                          _selectedAreasForHardwareTeam.add(area);
                         } else {
-                          _selectedAreasGroup.remove(area);
+                          _selectedAreasForHardwareTeam.remove(area);
                         }
                       });
                     },
@@ -207,21 +207,21 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(height: 8),
 
                 // Danh sách lọc + checkbox
-                if (_areaOptions.isEmpty)
+                if (_areaOptionsForDoctors.isEmpty)
                   const Text('Đang tải danh sách khu vực...')
                 else
-                  ..._areaOptions
+                  ..._areaOptionsForDoctors
                       .where((area) =>
                       area.toLowerCase().contains(_areaSearchController.text.toLowerCase()))
                       .map((area) => CheckboxListTile(
                     title: Text(area),
-                    value: _selectedAreas.contains(area),
+                    value: _selectedAreasForDoctors.contains(area),
                     onChanged: (bool? selected) {
                       setState(() {
                         if (selected == true) {
-                          _selectedAreas.add(area);
+                          _selectedAreasForDoctors.add(area);
                         } else {
-                          _selectedAreas.remove(area);
+                          _selectedAreasForDoctors.remove(area);
                         }
                       });
                     },

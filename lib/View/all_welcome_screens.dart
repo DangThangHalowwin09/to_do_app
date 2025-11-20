@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/search_area_screen.dart';
-import 'package:flutter_to_do_list/View/signup_screen.dart';
+import 'package:flutter_to_do_list/View/main_screen/signup_screen.dart';
 import 'package:flutter_to_do_list/View/statistics_screen.dart';
 import 'package:flutter_to_do_list/View/task_screen.dart';
 import 'package:flutter_to_do_list/View/update_profile_screen.dart';

@@ -2,11 +2,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import '../Service/auth_service.dart';
-import '../data/auth_data.dart';
-import '../utils/helper.dart';
-import 'all_welcome_screens.dart';
-import 'general_information_screen.dart';
+import 'package:flutter_to_do_list/View/main_screen/sign_up_by_gmail.dart';
+import '../../Service/auth_service.dart';
+import '../../data/auth_data.dart';
+import '../../utils/helper.dart';
+import '../all_welcome_screens.dart';
+import '../general_information_screen.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -200,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         );
                       },
                       child: const Text(
-                        " Về Trang Chủ",
+                        " Về trang chủ",
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -243,7 +244,6 @@ String translateError(String errorCode) {
 }
 
 Future<void> saveTokenToFirestore() async {
-  print("5555555555");
   if(GetCurrentUserInfor.currentUid == null) return;
   String? token = await FirebaseMessaging.instance.getToken();
   if (token != null) {
