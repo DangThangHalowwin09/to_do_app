@@ -1,15 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
-class UpdateProfile_Screen extends StatefulWidget {
-  const UpdateProfile_Screen({super.key});
+import '../../data/auth_data.dart';
+import '../../utils/helper.dart';
+import '../roledirection_screen.dart';
+
+class Finish_Profile_Screen extends StatefulWidget {
+  const Finish_Profile_Screen({super.key});
 
   @override
-  State<UpdateProfile_Screen> createState() => _UpdateProfile_ScreenState();
+  State<Finish_Profile_Screen> createState() => _Finish_Profile_ScreenState();
 }
 
-class _UpdateProfile_ScreenState extends State<UpdateProfile_Screen> {
+class _Finish_Profile_ScreenState extends State<Finish_Profile_Screen> {
   final nameController = TextEditingController();
   //final passwordController = TextEditingController();final confirmController = TextEditingController();
   final phoneController = TextEditingController();
@@ -17,7 +22,7 @@ class _UpdateProfile_ScreenState extends State<UpdateProfile_Screen> {
 
   String selectedRole = "";
   bool loading = false;
-
+  bool _isLoading = false;
   List<String> _areaOptionsForDoctors = [];
   List<String> _areaGroupOptionsForHardwareTeam = [];
   List<String> selectedAreasForDoctor = [];
@@ -43,6 +48,21 @@ class _UpdateProfile_ScreenState extends State<UpdateProfile_Screen> {
     });
   }
 
+  void _login() async {
+    print("4444444444");
+    if(GetCurrentUserInfor.currentUid == null) return;
+    String? token = await FirebaseMessaging.instance.getToken();
+    if (token != null) {
+      await FirebaseFirestore.instance.collection('users').doc(GetCurrentUserInfor.currentUid).update({
+        'fcmToken': token,
+      });
+    }
+    print("5555555 + $token");
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => RoleRedirectScreen()),
+    );
+  }
   void showPopup(String msg) {
     showDialog(
       context: context,
@@ -51,8 +71,8 @@ class _UpdateProfile_ScreenState extends State<UpdateProfile_Screen> {
         content: Text(msg),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("OK"))
+              onPressed: () => _login(),
+              child: const Text(""))
         ],
       ),
     );
@@ -92,8 +112,8 @@ class _UpdateProfile_ScreenState extends State<UpdateProfile_Screen> {
     });
 
     setState(() => loading = false);
-
-    showPopup("Cập nhật hồ sơ thành công!");
+    _login();
+    //showPopup("Cập nhật hồ sơ thành công!");
   }
 
   @override

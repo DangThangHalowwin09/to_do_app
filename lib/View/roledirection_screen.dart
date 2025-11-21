@@ -68,10 +68,11 @@ class _RoleRedirectScreenState extends State<RoleRedirectScreen> {
       );
     } catch (e) {
       // Xử lý lỗi: thông báo hoặc chuyển về login
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Lỗi khi điều hướng: $e")),
+        SnackBar(content: Text("Thông báo: $e")),
       );
-      Navigator.pushReplacementNamed(context, '/login');
+      //Navigator.pushReplacementNamed(context, '/login');
     }
   }
 

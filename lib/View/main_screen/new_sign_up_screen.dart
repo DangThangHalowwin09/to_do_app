@@ -69,9 +69,7 @@ class _SignupEmailScreenState extends State<SignupEmailScreen> {
 
       if (verified) {
         timer.cancel();
-
         if (!mounted) return;
-
         Navigator.pushReplacementNamed(context, "/updateProfile");
       }
     });
@@ -124,8 +122,8 @@ class _SignupEmailScreenState extends State<SignupEmailScreen> {
                 const CircularProgressIndicator(),
                 const SizedBox(height: 16),
                 const Text(
-                  "Chúng tôi đã gửi email xác minh.\n"
-                      "Vui lòng mở email để kích hoạt tài khoản...",
+                  "Email xác minh đã được gửi.\n"
+                      "Sau khi bạn xác nhận, App sẽ điều hướng trang tiếp theo!",
                   textAlign: TextAlign.center,
                 ),
               ],

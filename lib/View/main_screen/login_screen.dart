@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     // Call login method from AuthService with user inputs
-    String? result = await _authService.login(
+    String? result = await _authService.get_login_role(
       email: _emailController.text,
       password: _passwordController.text,
     );

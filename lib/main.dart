@@ -90,9 +90,9 @@ class MyApp extends StatelessWidget {
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
       routes: {
-        //'/login': (context) => const LoginScreen(),
+        '/login': (context) => const LoginScreen(),
         //'/roleRedirect': (context) => const RoleRedirectScreen(),
-        "/updateProfile": (_) => const UpdateProfile_Screen(),
+        "/updateProfile": (_) => const Finish_Profile_Screen(),
         PushNotificationHelper.TaskScreenRoute: (context) => const TaskScreen(),
         PushNotificationHelper.ErrorScreenRoute: (context) => const ErrorScreen(),
       },

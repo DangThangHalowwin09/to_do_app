@@ -99,7 +99,7 @@ class AuthService {
     }
   }
   // Function to handle user login
-  Future<String?> login({
+  Future<String?> get_login_role({
     required String email,
     required String password,
   }) async {
