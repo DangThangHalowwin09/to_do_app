@@ -1,5 +1,6 @@
 // This screen handles user login with email and password
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_to_do_list/View/main_screen/sign_up_by_gmail.dart';
@@ -41,6 +42,16 @@ class _LoginScreenState extends State<LoginScreen> {
       password: _passwordController.text,
     );
     await UserSession.loadUserData();
+    final user = FirebaseAuth.instance.currentUser;
+    final uid = user?.uid;
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    if (!userDoc.exists) {
+      //Nếu người dùng chưa có thông tin trên firebaseFirestore thì sẽ thực hiện di chuyển đến màn UpdateProfile
+
+      Navigator.pushReplacementNamed(context, '/updateProfile');
+      return;
+    }
     setState(() {
       _isLoading = false; // Hide spinner
     });

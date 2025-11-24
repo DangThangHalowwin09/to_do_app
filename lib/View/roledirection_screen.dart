@@ -23,6 +23,7 @@ class _RoleRedirectScreenState extends State<RoleRedirectScreen> {
 
   Future<void> _checkAndRedirect() async {
     await UserSession.loadUserData();
+
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
@@ -35,7 +36,10 @@ class _RoleRedirectScreenState extends State<RoleRedirectScreen> {
       final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!userDoc.exists) {
-        throw Exception("Không tìm thấy người dùng trong Firestore.");
+        //throw Exception("Không tìm thấy người dùng trong Firestore.");
+
+        Navigator.pushReplacementNamed(context, '/updateProfile');
+        return;
       }
 
       final role = userDoc['role'] as String;
