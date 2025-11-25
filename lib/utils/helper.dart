@@ -129,44 +129,58 @@ class AuthHelper {
   }
 }
 
-
 class ContactHelper {
+
+  /// Gọi điện thoại
   static Future<void> makePhoneCall(String phoneNumber) async {
-    final Uri telUri = Uri(scheme: 'tel', path: phoneNumber);
+    final Uri telUri = Uri.parse('tel://$phoneNumber');
+
     if (await canLaunchUrl(telUri)) {
-      await launchUrl(telUri);
+      await launchUrl(telUri, mode: LaunchMode.externalApplication);
     } else {
       print('Không thể gọi $phoneNumber');
     }
   }
 
+
+  /// Mở Zalo (ưu tiên mở app, fallback qua zalo.me)
   static Future<void> launchZalo(String phoneNumber) async {
-    final Uri url = Uri.parse('https://zalo.me/$phoneNumber');
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
+    final Uri zaloApp = Uri.parse('zalo://conversation?phone=$phoneNumber');
+    final Uri zaloWeb = Uri.parse('https://zalo.me/$phoneNumber');
+
+    if (await canLaunchUrl(zaloApp)) {
+      await launchUrl(zaloApp, mode: LaunchMode.externalApplication);
+    } else if (await canLaunchUrl(zaloWeb)) {
+      await launchUrl(zaloWeb, mode: LaunchMode.externalApplication);
     } else {
       print('Không thể mở Zalo với số $phoneNumber');
     }
   }
 
+  /// Mở Facebook
   static Future<void> launchFacebook(String facebookUrl) async {
     final Uri url = Uri.parse(facebookUrl);
+
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
-      print('Không thể mở Facebook $facebookUrl');
+      print('Không thể mở Facebook: $facebookUrl');
     }
   }
 
-  static Future<void> launchYouTube(String youtubeUrl) async {
-    final Uri url = Uri.parse(youtubeUrl);
+  /// Mở bất kỳ app hoặc web theo URL
+  static Future<void> launchApp(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
-      print('Không thể mở YouTube $youtubeUrl');
+      print('Không thể mở: $urlString');
     }
   }
 }
+
+
 Future<List<String>> fetchAreaNamesFromGroups(List<String> groupIds) async {
 
   QuerySnapshot snapshot = await FirebaseFirestore.instance

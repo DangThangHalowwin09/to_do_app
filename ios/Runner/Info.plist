@@ -73,5 +73,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+		<string>zalo</string>
+		<string>fb</string>
+		<string>https</string>
+	</array>
 </dict>
 </plist>
