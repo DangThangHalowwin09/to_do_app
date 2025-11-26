@@ -145,12 +145,10 @@ class AnimatedContactButton {
                 ],
               ),
             ),
-
             const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 18),
           ],
         ),
       ),
     );
   }
-
 }

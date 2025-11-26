@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/animated_contact_button.dart';
+import '../utils/animation_helper.dart';
 import '../utils/helper.dart';
 import 'main_screen/login_screen.dart';
 import 'main_screen/new_sign_up_screen.dart';
@@ -169,14 +170,14 @@ class General_Information_Screen extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton:
-        FloatingActionButton(
-          backgroundColor: Colors.white,
-          child: const Icon(Icons.phone_in_talk, size: 35, color: Colors.blue),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 80),
+        child: VibratingFab(
           onPressed: () {
             AnimatedContactButton.showContactBottomSheet(context);
           },
-        )
+        ),
+      ),
     );
   }
 
