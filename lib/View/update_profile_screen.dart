@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import '../Service/upload_service.dart'; // Hàm upload ảnh lên Firebase Storage
 
 class UpdateProfileScreen extends StatefulWidget {
@@ -46,13 +47,30 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     }
   }
 
-  Future<void> _pickImage() async {
+  //File? _image;
+
+  Future<void> pickImage() async {
     final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() {
-        _image = File(picked.path);
-      });
-    }
+
+    if (picked == null) return;
+
+    // File tạm từ thư viện
+    final tempFile = File(picked.path);
+
+    // Lấy folder an toàn dành cho app
+    final appDir = await getApplicationDocumentsDirectory();
+
+    // Tạo path mới để copy
+    final newPath = '${appDir.path}/${picked.name}';
+
+    // Copy file sang nơi an toàn
+    final savedImage = await tempFile.copy(newPath);
+
+    setState(() {
+      _image = savedImage;  // Đây mới là file dùng để upload
+    });
+
+    print("IMAGE_READY: ${_image!.path}");
   }
 
   Future<void> _saveProfile() async {
@@ -97,7 +115,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           child: Column(
             children: [
               GestureDetector(
-                onTap: _pickImage,
+                onTap: pickImage,
                 child: CircleAvatar(
                   radius: 50,
                   backgroundImage: _image != null ? FileImage(_image!) : null,

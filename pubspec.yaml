@@ -58,6 +58,8 @@ dependencies:
   universal_platform: ^1.1.0
   carousel_slider: ^5.1.1
   webview_flutter: ^4.13.0
+  path_provider: ^2.1.2
+
 
 
 dev_dependencies:
@@ -93,6 +95,10 @@ flutter:
     - assets/cntt.jpg
     - assets/newsite.jpg
     - assets/website.jpg
+    - assets/facebook_nen.jpg
+    - assets/tiktok_nen.jpg
+    - assets/facebook_logo.jpeg
+    - assets/tiktok_logo.jpeg
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

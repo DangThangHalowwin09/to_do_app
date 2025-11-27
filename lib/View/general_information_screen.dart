@@ -239,6 +239,22 @@ class AutoImageSlider extends StatelessWidget {
       "image": "assets/cntt.jpg",
       "link": "http://tailieu.ubna.local:81/"
     },
+    /*{
+      "image": "assets/facebook_logo.jpeg",
+      "link": "https://www.facebook.com/Benhvienungbuounghean"
+    },
+    {
+      "image": "assets/tiktok_logo.jpeg",
+      "link": "https://www.tiktok.com/@benhvienungbuounghean.vn?is_from_webapp=1&sender_device=pc"
+    },*/
+    {
+      "image": "assets/facebook_nen.jpg",
+      "link": "https://www.facebook.com/Benhvienungbuounghean"
+    },
+    {
+      "image": "assets/tiktok_nen.jpg",
+      "link": "https://www.tiktok.com/@benhvienungbuounghean.vn?is_from_webapp=1&sender_device=pc"
+    },
   ];
 
   Future<void> _openLink(String url) async {
