@@ -52,9 +52,9 @@
     </queries>
 
     <application
+        android:usesCleartextTraffic="true"
         android:label="UBNA Manager"
         android:icon="@mipmap/ic_launcher">
-
         <activity
             android:name=".MainActivity"
             android:exported="true"

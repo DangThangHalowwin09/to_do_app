@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../utils/animated_contact_button.dart';
 import '../utils/animation_helper.dart';
 import '../utils/helper.dart';
+import '../utils/ui_helper.dart';
 import 'main_screen/login_screen.dart';
 import 'main_screen/new_sign_up_screen.dart';
 import 'member_manager_screen.dart';
@@ -317,7 +318,8 @@ class NewsListWidget extends StatelessWidget {
         return ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(), // không cuộn bên trong ScrollView cha
-          itemCount: docs.length,
+          //itemCount: docs.length,
+          itemCount: docs.length > 3 ? 3 : docs.length,
           separatorBuilder: (_, __) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             final data = docs[index].data();
@@ -327,7 +329,13 @@ class NewsListWidget extends StatelessWidget {
               imageUrl: convertDriveLinkToDirect(data['imageUrl']),
               onTap: ()
               {
-                launchUrl(Uri.parse(data['url']), mode: LaunchMode.externalApplication);
+                //launchUrl(Uri.parse(data['url']), mode: LaunchMode.externalApplication);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => WebViewScreen(url: data['url']),
+                  ),
+                );
               },
 
             );

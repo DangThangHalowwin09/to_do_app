@@ -1,8 +1,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'helper.dart';
 
@@ -50,6 +50,44 @@ class NewsListWidget extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+class WebViewScreen extends StatefulWidget {
+  final String url; // nhận URL từ bên ngoài
+
+  const WebViewScreen({super.key, required this.url});
+
+  @override
+  State<WebViewScreen> createState() => _WebViewScreenState();
+}
+
+class _WebViewScreenState extends State<WebViewScreen> {
+  late final WebViewController controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse(widget.url)); // dùng URL truyền vào
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('UBNA Manager'),
+        centerTitle: true, // căn giữa
+        backgroundColor: Colors.blue, // màu appbar
+      ),
+      backgroundColor: Colors.blue,
+      body: Container(
+        //color: Colors.blue, // nền ngoài webview
+        child: WebViewWidget(controller: controller),
+      ),
     );
   }
 }
