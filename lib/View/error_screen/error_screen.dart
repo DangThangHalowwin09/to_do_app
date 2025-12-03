@@ -248,48 +248,13 @@ class AddNewErrorScreen extends StatefulWidget {
 
 class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final TextEditingController _errorTitleController = TextEditingController();
   final TextEditingController _clarifyTitleController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
   final TextEditingController _phoneController = TextEditingController();
-
-  //String? _urgencyLevel;
-
   String? _errorType; // "Báo lỗi phần mềm" hoặc "Báo lỗi phần cứng"
- /* DateTime? _timeErrorStart;
-
-  Future<void> _pickDateTime() async {
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _timeErrorStart ?? DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
-    );
-
-    if (pickedDate == null) return;
-
-    final pickedTime = await showTimePicker(
-      context: context,
-      initialTime: _timeErrorStart != null
-          ? TimeOfDay.fromDateTime(_timeErrorStart!)
-          : TimeOfDay.now(),
-    );
-
-    if (pickedTime == null) return;
-
-    setState(() {
-      _timeErrorStart = DateTime(
-        pickedDate.year,
-        pickedDate.month,
-        pickedDate.day,
-        pickedTime.hour,
-        pickedTime.minute,
-      );
-    });
-  }*/
 
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate() || _errorType == null) {
@@ -379,15 +344,7 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
                     return null;
                   },
                 ),
-              /*ListTile(
-                title: Text(
-                  _timeErrorStart == null
-                      ? 'Chọn thời gian bắt đầu hỏng'
-                      : 'Bắt đầu: ${dateFormat.format(_timeErrorStart!)}',
-                ),
-                trailing: Icon(Icons.calendar_today),
-                onTap: _pickDateTime,
-              ),*/
+
               TextFormField(
                 controller: _noteController,
                 decoration: InputDecoration(labelText: 'Ghi chú'),
