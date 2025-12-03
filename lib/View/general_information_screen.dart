@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -345,13 +346,17 @@ class NewsListWidget extends StatelessWidget {
               imageUrl: convertDriveLinkToDirect(data['imageUrl']),
               onTap: ()
               {
-                //launchUrl(Uri.parse(data['url']), mode: LaunchMode.externalApplication);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => WebViewScreen(url: data['url']),
-                  ),
-                );
+                if(kIsWeb){
+                  launchUrl(Uri.parse(data['url']), mode: LaunchMode.externalApplication);
+                }
+                else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => WebViewScreen(url: data['url']),
+                    ),
+                  );
+                }
               },
 
             );
@@ -364,6 +369,9 @@ class NewsListWidget extends StatelessWidget {
 
 String convertDriveLinkToDirect(String url) {
   try {
+    if(kIsWeb){
+      return "https://scontent.fhan5-11.fna.fbcdn.net/v/t39.30808-6/347396968_772569117738434_6061180601087580414_n.png?stp=dst-jpg_tt6&_nc_cat=103&ccb=1-7&_nc_sid=a5f93a&_nc_eui2=AeGInut4yfetmSE9hr5z-z1tDhOzXG5euc0OE7Ncbl65zVN0C6i6IOHwXG4423wvJufuIVWz-EPXU7Z6nRy8yjZb&_nc_ohc=1_dVTGlg7vcQ7kNvwEDN5ob&_nc_oc=AdlD5K1oHdaa9_RTKReipn1KtgFAooCjFBuAK8Vt35CtGGPg9Ci-10xfAmFMTnIErDY&_nc_zt=23&_nc_ht=scontent.fhan5-11.fna&_nc_gid=xAzGQsYgyQZ610vC2-qg9w&oh=00_Afmk42pLqppbQ8L9T2Ck2iQoqojbcgSDKtARMWW2yoCfHA&oe=69356BDC";
+    }
     // Trường hợp link dạng: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
     if (url.contains("drive.google.com/file/d/")) {
       final id = url.split("drive.google.com/file/d/")[1].split("/")[0];
