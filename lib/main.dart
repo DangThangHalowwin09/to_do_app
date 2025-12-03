@@ -10,7 +10,7 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_to_do_list/services/firebase_messaging_service.dart';
 import 'package:flutter_to_do_list/services/local_notifications_service.dart';
 import 'package:flutter_to_do_list/utils/helper.dart';
-import 'View/error_screen.dart';
+import 'View/error_screen/error_screen.dart';
 import 'View/general_information_screen.dart';
 import 'View/main_screen/finish_profile_screen.dart';
 import 'View/roledirection_screen.dart';

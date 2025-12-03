@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../utils/helper.dart';
+import '../../utils/helper.dart';
 
 class ErrorScreen extends StatefulWidget {
   const ErrorScreen({super.key});

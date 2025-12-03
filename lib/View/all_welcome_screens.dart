@@ -10,7 +10,7 @@ import '../screen/statistics_screen.dart';
 import '../utils/helper.dart';
 import 'area_manager_screen.dart';
 import 'check_bhxh_screen.dart';
-import 'error_screen.dart';
+import 'error_screen/error_screen.dart';
 import 'group_manager_screen.dart';
 import 'member_manager_screen.dart';
 import 'coming_soon_screen.dart';
