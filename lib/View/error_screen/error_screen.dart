@@ -52,74 +52,81 @@ class _ErrorScreenState extends State<ErrorScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Danh sách lỗi')),
-      body: StreamBuilder<QuerySnapshot>(
-        stream:
-        FirebaseFirestore.instance.collection('errors').orderBy('timeErrorStart', descending: true).snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Column(
+        children: [
+          
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream:
+              FirebaseFirestore.instance.collection('errors').orderBy('timeErrorStart', descending: true).snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          final docs = snapshot.data?.docs ?? [];
+                final docs = snapshot.data?.docs ?? [];
 
-          if (docs.isEmpty) {
-            return const Center(child: Text('Không có lỗi nào'));
-          }
+                if (docs.isEmpty) {
+                  return const Center(child: Text('Không có lỗi nào'));
+                }
 
-          return ListView.builder(
-            itemCount: docs.length,
-            itemBuilder: (context, index) {
-              final doc = docs[index];
-              final data = doc.data() as Map<String, dynamic>;
-              final errorTitle = data['errorTitle'] ?? '';
-              final clarifyTitle = data['clarifyTitle'] ?? '';
-              final errorType = data['errorType'] ?? '';
-              final address = data['address'] ?? '';
-              final phoneContact = data['phoneContact'] ?? '';
-              final note = data['note'] ?? '';
-              final nameStaff = data['nameStaff'] ?? '';
-              final timeErrorStart = (data['timeErrorStart'] as Timestamp?)?.toDate();
-              final isTakeOver = data['isTakeOver'] ?? false;
-              final isDone = data['isDone'] ?? false;
+                return ListView.builder(
+                  itemCount: docs.length,
+                  itemBuilder: (context, index) {
+                    final doc = docs[index];
+                    final data = doc.data() as Map<String, dynamic>;
+                    final errorTitle = data['errorTitle'] ?? '';
+                    final clarifyTitle = data['clarifyTitle'] ?? '';
+                    final errorType = data['errorType'] ?? '';
+                    final address = data['address'] ?? '';
+                    final phoneContact = data['phoneContact'] ?? '';
+                    final note = data['note'] ?? '';
+                    final nameStaff = data['nameStaff'] ?? '';
+                    final timeErrorStart = (data['timeErrorStart'] as Timestamp?)?.toDate();
+                    final isTakeOver = data['isTakeOver'] ?? false;
+                    final isDone = data['isDone'] ?? false;
 
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: ListTile(
-                  title: Text(errorTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Loại: $errorType'),
-                      if (address.isNotEmpty) Text('Địa điểm: $address'),
-                      Text('Chi tiết: $clarifyTitle'),
-                      Text('SĐT: $phoneContact'),
-                      Text('Ghi chú: $note'),
-                      Text('Thời gian lỗi: ${timeErrorStart != null ? dateFormat.format(timeErrorStart) : ''}'),
-                      if (isTakeOver) Text('Người nhận: $nameStaff'),
-                      if (isDone) const Text('✅ Đã hoàn thành'),
-                    ],
-                  ),
-                  isThreeLine: true,
-                  trailing: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (RoleKey.isITMembers(_role) && !isTakeOver)
-                        ElevatedButton(
-                          onPressed: () => _takeOverError(doc),
-                          child: const Text('Nhận xử lý'),
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: ListTile(
+                        title: Text(errorTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Loại: $errorType'),
+                            if (address.isNotEmpty) Text('Địa điểm: $address'),
+                            Text('Chi tiết: $clarifyTitle'),
+                            Text('SĐT: $phoneContact'),
+                            Text('Ghi chú: $note'),
+                            Text('Thời gian lỗi: ${timeErrorStart != null ? dateFormat.format(timeErrorStart) : ''}'),
+                            if (isTakeOver) Text('Người nhận: $nameStaff'),
+                            if (isDone) const Text('✅ Đã hoàn thành'),
+                          ],
                         ),
-                      if (RoleKey.isITMembers(_role) && isTakeOver && !isDone)
-                        ElevatedButton(
-                          onPressed: () => _markAsDone(doc),
-                          child: const Text('Hoàn thành'),
+                        isThreeLine: true,
+                        trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (RoleKey.isITMembers(_role) && !isTakeOver)
+                              ElevatedButton(
+                                onPressed: () => _takeOverError(doc),
+                                child: const Text('Nhận xử lý'),
+                              ),
+                            if (RoleKey.isITMembers(_role) && isTakeOver && !isDone)
+                              ElevatedButton(
+                                onPressed: () => _markAsDone(doc),
+                                child: const Text('Hoàn thành'),
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: _role == 'Y bác sỹ'
           ? FloatingActionButton(
