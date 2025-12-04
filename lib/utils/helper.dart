@@ -104,6 +104,7 @@ class UserSession {
   static String? name;
   static String? role;
   static String? email;
+  static String? phone;
   static List<String?> areas = [];
 
   /// Load thông tin người dùng từ Firestore và lưu lại
@@ -118,7 +119,7 @@ class UserSession {
       role = data['role'] ?? '';
       email = data['email'] ?? '';
       areas = List<String>.from(data['areas'] ?? []);
-
+      phone = data['phone'] ?? '';
     }
   }
 

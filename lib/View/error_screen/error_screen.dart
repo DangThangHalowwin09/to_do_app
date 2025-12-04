@@ -89,7 +89,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
     setState(() {
       _staffList = result;
       _loadingStaff = false;
-      print(result);
+      //print(result);
     });
   }
 
@@ -123,7 +123,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Danh sách lỗi')),
+      appBar: AppBar(title: const Text('Hỗ trợ lỗi cần hỗ trợ')),
       body: Column(
         children: [
           if(_role == 'Y bác sỹ')
@@ -138,7 +138,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Liên hệ nhân viên IT phụ trách",
+            "Liên hệ nhân viên IT phụ trách khi cấp thiết",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -239,7 +239,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
                     final timeErrorStart = (data['timeErrorStart'] as Timestamp?)?.toDate();
                     final isTakeOver = data['isTakeOver'] ?? false;
                     final isDone = data['isDone'] ?? false;
-
+                    final nameDoctor = data['nameDoctor'] ?? '';
                     return Card(
                       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: ListTile(
@@ -248,13 +248,14 @@ class _ErrorScreenState extends State<ErrorScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Loại: $errorType'),
-                            if (address.isNotEmpty) Text('Địa điểm: $address'),
+                            if (address.isNotEmpty) Text('Phòng bị hỏng: $address'),
                             Text('Chi tiết: $clarifyTitle'),
                             Text('SĐT: $phoneContact'),
                             Text('Ghi chú: $note'),
                             Text('Thời gian lỗi: ${timeErrorStart != null ? dateFormat.format(timeErrorStart) : ''}'),
                             if (isTakeOver) Text('Người nhận: $nameStaff'),
                             if (isDone) const Text('✅ Đã hoàn thành'),
+                            Text('Người báo: $nameDoctor')
                           ],
                         ),
                         isThreeLine: true,
@@ -414,7 +415,7 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
-  final TextEditingController _phoneController = TextEditingController();
+  //final TextEditingController _phoneController = TextEditingController();
   String? _errorType; // "Báo lỗi phần mềm" hoặc "Báo lỗi phần cứng"
 
   Future<void> _submitForm() async {
@@ -428,7 +429,7 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
     final data = {
       'errorTitle': _errorTitleController.text,
       'clarifyTitle': _clarifyTitleController.text,
-      'phoneContact': _phoneController.text,
+      'phoneContact': UserSession.phone,//_phoneController.text,
       'address': _errorType == 'Báo lỗi phần cứng' ? _addressController.text : '',
       'timeErrorStart': Timestamp.now(),//Timestamp.fromDate(_timeErrorStart!),
       'note': _noteController.text,
@@ -438,6 +439,7 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
       'timeDone': null,
       'nameStaff': '', // sẽ cập nhật khi NV phần mềm/cứng nhận xử lý
       'errorType': _errorType,
+      'nameDoctor': UserSession.name,
     };
 
     await FirebaseFirestore.instance.collection('errors').add(data);
@@ -461,6 +463,16 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
           key: _formKey,
           child: ListView(
             children: [
+              TextFormField(
+                controller: _errorTitleController,
+                decoration: InputDecoration(labelText: 'Tiêu đề lỗi'),
+                validator: (value) => value!.isEmpty ? 'Không được để trống' : null,
+              ),
+              TextFormField(
+                controller: _clarifyTitleController,
+                decoration: InputDecoration(labelText: 'Chi tiết lỗi'),
+                validator: (value) => value!.isEmpty ? 'Không được để trống' : null,
+              ),
               DropdownButtonFormField<String>(
                 value: _errorType,
                 decoration: InputDecoration(labelText: 'Loại lỗi'),
@@ -479,25 +491,10 @@ class _AddNewErrorScreenState extends State<AddNewErrorScreen> {
                 },
                 validator: (value) => value == null ? 'Chọn loại lỗi' : null,
               ),
-              TextFormField(
-                controller: _errorTitleController,
-                decoration: InputDecoration(labelText: 'Tiêu đề lỗi'),
-                validator: (value) => value!.isEmpty ? 'Không được để trống' : null,
-              ),
-              TextFormField(
-                controller: _clarifyTitleController,
-                decoration: InputDecoration(labelText: 'Chi tiết lỗi'),
-                validator: (value) => value!.isEmpty ? 'Không được để trống' : null,
-              ),
-              TextFormField(
-                controller: _phoneController,
-                decoration: InputDecoration(labelText: 'SĐT liên hệ'),
-                validator: (value) => value!.isEmpty ? 'Không được để trống' : null,
-              ),
               if (_errorType == 'Báo lỗi phần cứng')
                 TextFormField(
                   controller: _addressController,
-                  decoration: InputDecoration(labelText: 'Địa điểm lỗi'),
+                  decoration: InputDecoration(labelText: 'Cụ thể khoa/phòng có lỗi'),
                   validator: (value) {
                     if (_errorType == 'Báo lỗi phần cứng' && value!.isEmpty) {
                       return 'Vui lòng nhập địa điểm';
