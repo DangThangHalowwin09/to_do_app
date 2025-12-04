@@ -16,10 +16,86 @@ class _ErrorScreenState extends State<ErrorScreen> {
   String? _role;
   String? _name;
 
+  List<Map<String, String>> _staffList = [];
+  bool _loadingStaff = false;
+  Map<String, dynamic> _areaMap = {};
   @override
   void initState() {
     super.initState();
+    _loadAreas();
     _fetchCurrentUserData();
+    _loadITStaffForDoctor();
+  }
+  Future<void> _loadAreas() async {
+  //  setState(() => _isLoading = true);
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('areas').get();
+      final areas = snapshot.docs;
+
+      final List<String> suggestions = [];
+      final Map<String, dynamic> areaMap = {};
+
+      for (var doc in areas) {
+        final data = doc.data();
+        final name = data['name'] as String?;
+        final groupDocumentID = data['groupId'];
+
+        if (name != null) {
+          suggestions.add(name);
+          if (groupDocumentID != null) {
+            areaMap[name] = groupDocumentID;
+          }
+        }
+      }
+
+      setState(() {
+        //_areaSuggestions = suggestions;
+        _areaMap = areaMap;
+      });
+    } catch (e) {
+      print('Lỗi khi load areas: $e');
+
+    } finally {
+      //setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadITStaffForDoctor() async {
+    final doctorData = await GetCurrentUserInfor.fetchCurrentUserDataExtend();
+    final areas = List<String>.from(doctorData['areas'] ?? []);
+    print (areas);
+
+    List<Map<String, String>> result = [];
+    print(_areaMap);
+
+    for (final area in areas) {
+      final groupIdRaw = _areaMap[area];
+      if (groupIdRaw == null) continue;
+
+      final groupID = await GroupHelper.getGroupNameByID(groupIdRaw);
+      if (groupID == null) continue;
+
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('groups', arrayContains: groupID)
+          .get();
+
+      for (final doc in snapshot.docs) {
+        result.add({
+          "name": doc["name"] ?? "",
+          "phone": doc["phone"] ?? "",
+          //"area": area,
+        });
+      }
+      //_staffList = result;
+      //print(result);
+    }
+
+    setState(() {
+      _staffList = result;
+      _loadingStaff = false;
+      print(result);
+    });
   }
 
 
@@ -30,6 +106,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
       _role = data['role'];
     });
   }
+
 
   Future<void> _takeOverError(DocumentSnapshot errorDoc) async {
     await errorDoc.reference.update({
@@ -54,7 +131,52 @@ class _ErrorScreenState extends State<ErrorScreen> {
       appBar: AppBar(title: const Text('Danh sách lỗi')),
       body: Column(
         children: [
-          
+          if(_role == 'Y bác sỹ')
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              color: Colors.blue.shade50,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Nhân viên IT phụ trách",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    if(_loadingStaff)
+                      const Center(child: CircularProgressIndicator())
+                    else if(_staffList.isEmpty)
+                      const Text("Không có nhân viên IT trong khu vực bạn")
+                    else
+                      Column(
+                        children: _staffList.map((staff) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  staff["name"] ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  staff["phone"] ?? "",
+                                  style: const TextStyle(fontSize: 15),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+
+                      )
+                  ]
+
+              )
+            ),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream:

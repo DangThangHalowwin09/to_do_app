@@ -53,8 +53,27 @@ class GetCurrentUserInfor {
     } else {
       return {};
     }
+
   }
 
+  static Future<Map<String, dynamic>> fetchCurrentUserDataExtend() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return {};
+
+    final snapshot = await FirebaseFirestore.instance.collection('users').doc(
+        uid).get();
+    final data = snapshot.data();
+
+    if (data != null) {
+      return {
+        'name': data['name'] ?? '',
+        'role': data['role'] ?? '',
+        'areas': List<String>.from(data['areas'] ?? []),
+      };
+    } else {
+      return {};
+    }
+  }
   /// Lấy vai trò người dùng hiện tại từ Firestore
   static Future<String?> getRole() async {
     final uid = currentUid;
