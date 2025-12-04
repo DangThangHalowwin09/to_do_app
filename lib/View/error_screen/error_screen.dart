@@ -22,7 +22,6 @@ class _ErrorScreenState extends State<ErrorScreen> {
   @override
   void initState() {
     super.initState();
-    _loadAreas();
     _fetchCurrentUserData();
     _loadITStaffForDoctor();
   }
@@ -31,10 +30,8 @@ class _ErrorScreenState extends State<ErrorScreen> {
     try {
       final snapshot = await FirebaseFirestore.instance.collection('areas').get();
       final areas = snapshot.docs;
-
       final List<String> suggestions = [];
       final Map<String, dynamic> areaMap = {};
-
       for (var doc in areas) {
         final data = doc.data();
         final name = data['name'] as String?;
@@ -53,7 +50,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
         _areaMap = areaMap;
       });
     } catch (e) {
-      print('Lỗi khi load areas: $e');
+      //print('Lỗi khi load areas: $e');
 
     } finally {
       //setState(() => _isLoading = false);
@@ -61,12 +58,13 @@ class _ErrorScreenState extends State<ErrorScreen> {
   }
 
   Future<void> _loadITStaffForDoctor() async {
+    await _loadAreas();
     final doctorData = await GetCurrentUserInfor.fetchCurrentUserDataExtend();
     final areas = List<String>.from(doctorData['areas'] ?? []);
-    print (areas);
+    //print ( '222 + $areas');
 
     List<Map<String, String>> result = [];
-    print(_areaMap);
+    //print('3333 + $_areaMap');
 
     for (final area in areas) {
       final groupIdRaw = _areaMap[area];
@@ -84,11 +82,8 @@ class _ErrorScreenState extends State<ErrorScreen> {
         result.add({
           "name": doc["name"] ?? "",
           "phone": doc["phone"] ?? "",
-          //"area": area,
         });
       }
-      //_staffList = result;
-      //print(result);
     }
 
     setState(() {
@@ -132,52 +127,92 @@ class _ErrorScreenState extends State<ErrorScreen> {
       body: Column(
         children: [
           if(_role == 'Y bác sỹ')
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              color: Colors.blue.shade50,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Nhân viên IT phụ trách",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    if(_loadingStaff)
-                      const Center(child: CircularProgressIndicator())
-                    else if(_staffList.isEmpty)
-                      const Text("Không có nhân viên IT trong khu vực bạn")
-                    else
-                      Column(
-                        children: _staffList.map((staff) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(vertical: 6),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  staff["name"] ?? "",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Text(
-                                  staff["phone"] ?? "",
-                                  style: const TextStyle(fontSize: 15),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-
-                      )
-                  ]
-
-              )
+      Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Liên hệ nhân viên IT phụ trách",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-          Expanded(
+          ),
+          const SizedBox(height: 12),
+
+          if (_loadingStaff)
+            const Center(child: CircularProgressIndicator())
+          else if (_staffList.isEmpty)
+            const Text(
+              "Không tìm thấy dữ liệu nhân viên.",
+              style: TextStyle(color: Colors.black54),
+            )
+          else
+            Column(
+              children: _staffList.map((staff) {
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 4,
+                        offset: Offset(0, 2),
+                      )
+                    ],
+                  ),
+                  child: ListTile(
+                    contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.blue.shade100,
+                      child: const Icon(
+                        Icons.person,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    title: Text(
+                      staff["name"] ?? "",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    trailing: InkWell(
+                      onTap: () {
+                        //callPhone(staff["phone"] ?? "");
+                        ContactHelper.makePhoneCall(staff["phone"] ?? "");
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.green.shade100,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.call,
+                          color: Colors.green,
+                          size: 22,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+        ],
+      ),
+    ),
+
+    Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream:
               FirebaseFirestore.instance.collection('errors').orderBy('timeErrorStart', descending: true).snapshots(),
@@ -185,13 +220,10 @@ class _ErrorScreenState extends State<ErrorScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-
                 final docs = snapshot.data?.docs ?? [];
-
                 if (docs.isEmpty) {
                   return const Center(child: Text('Không có lỗi nào'));
                 }
-
                 return ListView.builder(
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
