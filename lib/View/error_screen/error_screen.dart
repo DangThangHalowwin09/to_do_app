@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -123,7 +124,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Hỗ trợ lỗi cần hỗ trợ')),
+      appBar: AppBar(title: const Text('Báo lỗi')),
       body: Column(
         children: [
           if(_role == 'Y bác sỹ')
@@ -138,7 +139,14 @@ class _ErrorScreenState extends State<ErrorScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            "Liên hệ nhân viên IT phụ trách khi cấp thiết",
+            "Thực hiện gọi nhân viên IT phụ trách khi cấp thiết",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Text(
+            "Khi không cấp thiết, nhấn button để điển form hỗ trợ",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -188,9 +196,20 @@ class _ErrorScreenState extends State<ErrorScreen> {
                     ),
                     trailing: InkWell(
                       onTap: () {
-                        //callPhone(staff["phone"] ?? "");
                         ContactHelper.makePhoneCall(staff["phone"] ?? "");
+
+                        final Map<String, Object> params = {
+                          "doctor_name": _name ?? "",
+                          "it_staff_name": staff["name"] ?? "",
+                          "timestamp": DateTime.now().toIso8601String(),
+                        };
+
+                        FirebaseAnalytics.instance.logEvent(
+                          name: "call_IT_staff",
+                          parameters: params, // Map<String, Object>
+                        );
                       },
+
                       child: Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
