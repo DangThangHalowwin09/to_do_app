@@ -73,7 +73,7 @@ class _TaskScreenState extends State<TaskScreen> {
     String? assignedTo;
 
     if (task != null) assignedTo = task['assignedTo'];
-
+    bool _isSaving = false;
     final usersSnapshot = await users
         .where('role', whereIn: ['Tổ phần mềm', 'Tổ phần cứng'])
         .get();
@@ -177,49 +177,104 @@ class _TaskScreenState extends State<TaskScreen> {
                     child: Text('Hủy'),
                   ),
                   ElevatedButton(
-                    child: Text('Lưu'),
-                    onPressed: () async {
+                    child: _isSaving
+                        ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                        : Text('Lưu'),
+                    onPressed: _isSaving
+                        ? null
+                        : () async {
+                      // ===== 1. Validate =====
+                      if (titleController.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Vui lòng nhập tiêu đề")),
+                        );
+                        return;
+                      }
+
+                      if (descriptionController.text.trim().isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Vui lòng nhập mô tả")),
+                        );
+                        return;
+                      }
+
+                      if (endTime == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Vui lòng chọn Deadline")),
+                        );
+                        return;
+                      }
+
+                      if (assignedTo == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Vui lòng chọn người nhận")),
+                        );
+                        return;
+                      }
+
+                      // ===== 2. Set loading =====
+                      setState(() => _isSaving = true);
+
+                      // ===== 3. Chuẩn bị dữ liệu lưu =====
                       final data = {
-                        'title': titleController.text,
-                        'description': descriptionController.text,
-                        'startTime': Timestamp.fromDate( startTime ??
-                            DateTime.now()),
-                        'endTime': Timestamp.fromDate(
-                            endTime ?? DateTime.now()),
+                        'title': titleController.text.trim(),
+                        'description': descriptionController.text.trim(),
+                        'startTime': Timestamp.fromDate(startTime ?? DateTime.now()),
+                        'endTime': Timestamp.fromDate(endTime!),
                         'assignedTo': assignedTo,
                         'status': task?['status'] ?? 'pending',
-                        'completedAt': task?['completedAt'], // <--- thêm dòng này
+                        'completedAt': task?['completedAt'],
                       };
 
+                      // ===== 4. Lưu vào Firestore =====
                       if (task == null) {
                         await tasks.add(data);
                       } else {
                         await tasks.doc(task.id).update(data);
                       }
-                      final taskId = tasks.id; // lấy ID trước
+
+                      // ===== 5. Lấy FCM token an toàn =====
                       final userDoc = await FirebaseFirestore.instance
                           .collection('users')
                           .doc(assignedTo)
                           .get();
 
-                      final token = userDoc['fcmToken'];
-                      print("prepare token");
+                      final userData = userDoc.data() as Map<String, dynamic>?;
 
-                      // 3. Gửi thông báo qua FCM
-                      if (token != null) {
+                      final token = userData?['fcmToken']; // <-- an toàn, không crash
+
+                      // ===== 6. Gửi thông báo =====
+                      if (token != null && token.isNotEmpty) {
                         await PushNotificationHelper.sendPushMessage(
                           token,
                           "Trưởng phòng đã giao bạn nhiệm vụ mới!",
-                          titleController.text,
+                          titleController.text.trim(),
                           {
-                            PushNotificationHelper.TypeMessageData : PushNotificationHelper.TaskScreen,
-                            PushNotificationHelper.IdMessageData: taskId,
+                            PushNotificationHelper.TypeMessageData:
+                            PushNotificationHelper.TaskScreen,
+                            PushNotificationHelper.IdMessageData: tasks.id,
                           },
                         );
+                      } else {
+                        print("⚠ User chưa có fcmToken → Không gửi thông báo");
                       }
-                      Navigator.pop(context);
+
+                      // ===== 7. Tắt loading & pop =====
+                      if (mounted) {
+                        setState(() => _isSaving = false);
+                        Navigator.pop(context);
+                      }
                     },
-                  ),
+                  )
+
+
                 ],
               ),
         );
