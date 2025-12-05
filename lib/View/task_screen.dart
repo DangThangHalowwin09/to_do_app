@@ -80,7 +80,8 @@ class _TaskScreenState extends State<TaskScreen> {
     await showDialog(
       context: context,
       builder: (_) {
-        final dateFormat = DateFormat('dd/MM/yyyy'); // định dạng ngày
+        //final dateFormat = DateFormat('dd/MM/yyyy'); // định dạng ngày
+        final dateFormat = DateFormat('HH:mm, dd-MM-yyyy');
 
         return StatefulBuilder(
           builder: (context, setState) =>
@@ -98,7 +99,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         controller: descriptionController,
                         decoration: InputDecoration(labelText: 'Cụ thể'),
                       ),
-                      ListTile(
+                      /*ListTile(
                         title: Text(
                           startTime == null
                               ? 'Chọn thời gian bắt đầu'
@@ -115,26 +116,48 @@ class _TaskScreenState extends State<TaskScreen> {
                             setState(() => startTime = picked);
                           }
                         },
-                      ),
-                      ListTile(
-                        title: Text(
-                          endTime == null
-                              ? 'Chọn thời gian kết thúc'
-                              : 'Kết thúc: ${dateFormat.format(endTime!)}',
-                        ),
-                        onTap: () async {
-                          final picked = await showDatePicker(
-                            context: context,
-                            initialDate: endTime ?? DateTime.now(),
-                            firstDate: DateTime(2020),
-                            lastDate: DateTime(2100),
-                          );
-                          if (picked != null) {
-                            setState(() => endTime = picked);
-                          }
-                        },
-                      ),
-                      DropdownButtonFormField<String>(
+                      ),*/
+                  ListTile(
+                    title: Text(
+                      endTime == null
+                          ? 'Chọn Deadline:'
+                          : 'Deadline: ${dateFormat.format(endTime!)}',
+                    ),
+                    onTap: () async {
+                      // B1: chọn ngày
+                      final pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: endTime ?? DateTime.now(),
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2100),
+                      );
+
+                      if (pickedDate == null) return;
+
+                      // B2: chọn giờ
+                      final pickedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.fromDateTime(endTime ?? DateTime.now()),
+                      );
+
+                      if (pickedTime == null) return;
+
+                      // B3: gộp ngày + giờ thành một DateTime
+                      final combined = DateTime(
+                        pickedDate.year,
+                        pickedDate.month,
+                        pickedDate.day,
+                        pickedTime.hour,
+                        pickedTime.minute,
+                      );
+
+                      setState(() {
+                        endTime = combined;
+                      });
+                    },
+                  ),
+
+                  DropdownButtonFormField<String>(
                         value: assignedTo,
                         items: usersSnapshot.docs.map((doc) {
                           return DropdownMenuItem(
@@ -159,8 +182,8 @@ class _TaskScreenState extends State<TaskScreen> {
                       final data = {
                         'title': titleController.text,
                         'description': descriptionController.text,
-                        'startTime': Timestamp.fromDate(
-                            startTime ?? DateTime.now()),
+                        'startTime': Timestamp.fromDate( startTime ??
+                            DateTime.now()),
                         'endTime': Timestamp.fromDate(
                             endTime ?? DateTime.now()),
                         'assignedTo': assignedTo,
@@ -181,6 +204,7 @@ class _TaskScreenState extends State<TaskScreen> {
 
                       final token = userDoc['fcmToken'];
                       print("prepare token");
+
                       // 3. Gửi thông báo qua FCM
                       if (token != null) {
                         await PushNotificationHelper.sendPushMessage(
@@ -238,8 +262,26 @@ class _TaskScreenState extends State<TaskScreen> {
                 Text('📋 Mô tả:', style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(task['description']),
                 SizedBox(height: 8),
-                Text('🕒 Bắt đầu: ${dateFormat.format(startTime)}'),
-                Text('🕒 Kết thúc: ${dateFormat.format(endTime)}'),
+                //Text('🕒 Bắt đầu: ${dateFormat.format(startTime)}'),
+                Text(
+                  startTime == null
+                      ? '🕒 Chưa có:'
+                      : '🕒 Ngày giao: ${dateFormat.format(startTime!)}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  endTime == null
+                      ? '🕒 Chưa đặt Deadline:'
+                      : '🕒 Deadline: ${dateFormat.format(endTime!)}',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+
                 SizedBox(height: 8),
                 Text('👤 Người được giao: $assignedToName'),
                 Text('📌 Trạng thái: ${status ?? 'Chưa xác định'}'),
@@ -292,7 +334,6 @@ class _TaskScreenState extends State<TaskScreen> {
             itemBuilder: (_, i) {
               final task = docs[i];
               //final isAssignedToMe = task['assignedTo'] == currentUserId;
-
               return InkWell(
                 onTap: () async {
                   print("onTap called, role: $currentUserRole"); // test
@@ -310,11 +351,41 @@ class _TaskScreenState extends State<TaskScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text("${task['description']}"),
-                        Text("Bắt đầu: ${DateFormat('dd/MM/yyyy').format(
+                        Text("Giao vào: ${DateFormat('HH:mm, dd/MM/yyyy').format(
                             task['startTime'].toDate())}"),
-                        Text("Kết thúc: ${DateFormat('dd/MM/yyyy').format(
+                        Text("Deadline: ${DateFormat('HH:mm, dd/MM/yyyy').format(
                             task['endTime'].toDate())}"),
                         Text("Trạng thái: ${task['status']}"),
+
+                        //Text("Người nhận: ${task['assignedTo']}"),
+                        FutureBuilder<DocumentSnapshot>(
+                          future: FirebaseFirestore.instance
+                              .collection("users")
+                              .doc(task['assignedTo'])
+                              .get(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const SizedBox(
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              );
+                            }
+
+                            if (snapshot.hasError) {
+                              return const Text("Lỗi tải dữ liệu");
+                            }
+
+                            if (!snapshot.hasData || !snapshot.data!.exists) {
+                              return const Text("Không tìm thấy thông tin người dùng");
+                            }
+
+                            final data = snapshot.data!.data() as Map<String, dynamic>;
+                            final name = data["name"] ?? "Không có tên";
+
+                            return Text("Người được giao: $name");
+                          },
+                        ),
+
                       ],
                     ),
                   ),
