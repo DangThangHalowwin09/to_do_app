@@ -9,6 +9,7 @@ import '../screen/blog_screen.dart';
 import '../screen/statistics_screen.dart';
 import '../utils/helper.dart';
 import 'area_manager_screen.dart';
+import 'auth_related_screen/change_password_screen.dart';
 import 'check_bhxh_screen.dart';
 import 'error_screen/error_screen.dart';
 import 'group_manager_screen.dart';
@@ -195,6 +196,16 @@ class AdminScreen extends StatelessWidget {
                     Navigator.push(
                         context,
                       MaterialPageRoute(builder: (_) => const StatisticScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.bar_chart,
+                  label: 'Thống kê',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
                     );
                   },
                 ),
@@ -760,6 +771,16 @@ class DoctorScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const CheckBHXHScreen()),
+                    );
+                  },
+                ),
+                _buildGridItem(
+                  icon: Icons.health_and_safety_rounded,
+                  label: 'Đổi MK',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ChangePasswordScreen()),
                     );
                   },
                 ),

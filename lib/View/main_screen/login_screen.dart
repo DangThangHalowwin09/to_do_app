@@ -44,14 +44,31 @@ class _LoginScreenState extends State<LoginScreen> {
     await UserSession.loadUserData();
     final user = FirebaseAuth.instance.currentUser;
     final uid = user?.uid;
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
 
-    if (!userDoc.exists) {
-      //Nếu người dùng chưa có thông tin trên firebaseFirestore thì sẽ thực hiện di chuyển đến màn UpdateProfile
-
-      Navigator.pushReplacementNamed(context, '/updateProfile');
+// 1️⃣ Nếu document KHÔNG tồn tại → quay về login
+  /*  if (!userDoc.exists) {
+      Navigator.pushReplacementNamed(context, '/login');
       return;
+    }*/
+
+    if(userDoc.exists){
+      final data = userDoc.data() as Map<String, dynamic>? ?? {};
+
+// 3️⃣ Check các field bắt buộc
+      final String name = (data['name'] ?? '').toString().trim();
+      final String role = (data['role'] ?? '').toString().trim();
+
+// 4️⃣ Nếu thiếu thông tin profile → sang UpdateProfile
+      if (name.isEmpty || role.isEmpty) {
+        Navigator.pushReplacementNamed(context, '/updateProfile');
+        return;
+      }
     }
+// 2️⃣ Lấy data an toàn
     setState(() {
       _isLoading = false; // Hide spinner
     });
