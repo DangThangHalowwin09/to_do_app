@@ -1,135 +1,59 @@
-//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
-import '../main.dart';
-import '../utils/helper.dart';
+
+import '../core/constants/app_routes.dart';
+import '../core/navigation.dart';
+import '../core/utils/app_logger.dart';
+import 'auth_service.dart';
 import 'local_notifications_service.dart';
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
 
-
+/// Nhận push notification (FCM) trên Android/iOS.
 class FirebaseMessagingService {
-  // Private constructor for singleton pattern
-  FirebaseMessagingService._internal();
+  FirebaseMessagingService._();
+  static final FirebaseMessagingService instance = FirebaseMessagingService._();
 
-  // Singleton instance
-  static final FirebaseMessagingService _instance = FirebaseMessagingService._internal();
+  final _messaging = FirebaseMessaging.instance;
 
-  // Factory constructor to provide singleton instance
-  factory FirebaseMessagingService.instance() => _instance;
+  Future<void> init() async {
+    await LocalNotificationsService.instance.init();
 
-  // Reference to local notifications service for displaying notifications
-  LocalNotificationsService? _localNotificationsService;
+    final settings = await _messaging.requestPermission(alert: true, badge: true, sound: true);
+    AppLog.d('Quyền thông báo: ${settings.authorizationStatus}');
 
-  /// Initialize Firebase Messaging and sets up all message listeners
-  Future<void> init({required LocalNotificationsService localNotificationsService}) async {
-    // Init local notifications service
-    _localNotificationsService = localNotificationsService;
-    if (kIsWeb) {
-      print('🧭 Web detected — skip Firebase Messaging init');
-      return;
-    }
-
-    // Handle FCM token
-    _handlePushNotificationsToken();
-
-    // Request user permission for notifications
-    _requestPermission();
-
-    // Register handler for background messages (app terminated)
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    // Listen for messages when the app is in foreground
+    FirebaseMessaging.onBackgroundMessage(_onBackgroundMessage);
     FirebaseMessaging.onMessage.listen(_onForegroundMessage);
-
-    // Listen for notification taps when the app is in background but not terminated
-    //FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenedApp);
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _handleMessage(message, navigatorKey.currentContext!);
-    });
-
-    // Check for initial message that opened the app from terminated state
-  /*  final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-    if (initialMessage != null) {
-      _handleMessage(initialMessage, navigatorKey.currentContext!);
-    }
-*/
+    FirebaseMessaging.onMessageOpenedApp.listen(_openScreenFor);
+    _messaging.onTokenRefresh.listen((_) => AuthService().saveFcmToken());
   }
 
-  /// Retrieves and manages the FCM token for push notifications
-  Future<void> _handlePushNotificationsToken() async {
-    // Get the FCM token for the device
-    final token = await FirebaseMessaging.instance.getToken();
-    print('Push notifications token: $token');
-
-    // Listen for token refresh events
-    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-      print('FCM token refreshed: $fcmToken');
-      // TODO: optionally send token to your server for targeting this device
-    }).onError((error) {
-      // Handle errors during token refresh
-      print('Error refreshing FCM token: $error');
-    });
-   /* await FirebaseFirestore.instance.collection('users').doc(GetCurrentUserInfor.currentUid).update({
-      'fcmToken': token,
-    });*/
-  }
-
-  /// Requests notification permission from the user
-  Future<void> _requestPermission() async {
-    // Request permission for alerts, badges, and sounds
-    final result = await FirebaseMessaging.instance.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    // Log the user's permission decision
-    print('User granted permission: ${result.authorizationStatus}');
-  }
-
-  /// Handles messages received while the app is in the foreground
   void _onForegroundMessage(RemoteMessage message) {
-    print('Foreground message received: ${message.data.toString()}');
-    final notificationData = message.notification;
-    if (notificationData != null) {
-      // Display a local notification using the service
-      _localNotificationsService?.showNotification(
-          notificationData.title, notificationData.body, message.data.toString());
+    final notification = message.notification;
+    if (notification == null) return;
+    LocalNotificationsService.instance.show(
+      title: notification.title,
+      body: notification.body,
+      payload: message.data.toString(),
+    );
+  }
+
+  /// Bấm vào thông báo khi app đang chạy nền → mở màn hình tương ứng.
+  void _openScreenFor(RemoteMessage message) {
+    final type = message.data[PushDataKeys.type];
+    final id = message.data[PushDataKeys.id];
+    if (id == null) return;
+
+    final route = switch (type) {
+      PushDataKeys.taskType => AppRoutes.task,
+      PushDataKeys.errorType => AppRoutes.error,
+      _ => null,
+    };
+    if (route != null) {
+      navigatorKey.currentState?.pushNamed(route, arguments: {PushDataKeys.id: id});
     }
   }
-
-  /// Handles notification taps when app is opened from the background or terminated state
-  void _onMessageOpenedApp(RemoteMessage message) {
-    print('Notification caused the app to open: ${message.data.toString()}');
-
-    // TODO: Add navigation or specific handling based on message data
-  }
-
-
-
-  void _handleMessage(RemoteMessage message, BuildContext context) {
-    final screen = message.data[PushNotificationHelper.TypeMessageData];
-    final taskId = message.data[PushNotificationHelper.IdMessageData];
-
-    if (screen == PushNotificationHelper.TaskScreen && taskId != null) {
-      Navigator.pushNamed(
-        context,
-        PushNotificationHelper.TaskScreenRoute,
-        arguments: {PushNotificationHelper.IdMessageData: taskId},
-      );
-    }
-  }
-
-
 }
 
-
-/// Background message handler (must be top-level function or static)
-/// Handles messages when the app is fully terminated
+/// Phải là hàm top-level để chạy được khi app đã bị tắt hẳn.
 @pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print('Background message received: ${message.data.toString()}');
+Future<void> _onBackgroundMessage(RemoteMessage message) async {
+  AppLog.d('Background message: ${message.data}');
 }
-

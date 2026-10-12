@@ -1,104 +1,63 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../core/utils/app_logger.dart';
+
+/// Hiển thị thông báo cục bộ (dùng khi nhận push lúc app đang mở).
 class LocalNotificationsService {
-  // Private constructor for singleton pattern
-  LocalNotificationsService._internal();
+  LocalNotificationsService._();
+  static final LocalNotificationsService instance = LocalNotificationsService._();
 
-  //Singleton instance
-  static final LocalNotificationsService _instance = LocalNotificationsService._internal();
-
-  //Factory constructor to return singleton instance
-  factory LocalNotificationsService.instance() => _instance;
-
-  //Main plugin instance for handling notifications
-  late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
-
-  //Android-specific initialization settings using app launcher icon
-  final _androidInitializationSettings = const AndroidInitializationSettings('@mipmap/ic_launcher');
-
-  //iOS-specific initialization settings with permission requests
-  final _iosInitializationSettings = const DarwinInitializationSettings(
-    requestAlertPermission: true,
-    requestBadgePermission: true,
-    requestSoundPermission: true,
-  );
-
-  //Android notification channel configuration
-  final _androidChannel = const AndroidNotificationChannel(
+  static const _channel = AndroidNotificationChannel(
     'channel_id',
     'Channel name',
     description: 'Android push notification channel',
     importance: Importance.max,
   );
 
-  //Flag to track initialization status
-  bool _isFlutterLocalNotificationInitialized = false;
+  final _plugin = FlutterLocalNotificationsPlugin();
+  bool _initialized = false;
+  int _nextId = 0;
 
-  //Counter for generating unique notification IDs
-  int _notificationIdCounter = 0;
-
-  /// Initializes the local notifications plugin for Android and iOS.
   Future<void> init() async {
-    // Check if already initialized to prevent redundant setup
-    if (_isFlutterLocalNotificationInitialized) {
-      return;
-    }
+    if (_initialized) return;
 
-    // Create plugin instance
-    _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-    // Combine platform-specific settings
-    final initializationSettings = InitializationSettings(
-      android: _androidInitializationSettings,
-      iOS: _iosInitializationSettings,
+    await _plugin.initialize(
+      const InitializationSettings(
+        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        iOS: DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        ),
+      ),
+      onDidReceiveNotificationResponse: (response) {
+        AppLog.d('Notification được bấm: ${response.payload}');
+      },
     );
 
-    // Initialize plugin with settings and callback for notification taps
-    await _flutterLocalNotificationsPlugin.initialize(initializationSettings,
-        onDidReceiveNotificationResponse: (NotificationResponse response) {
-          // Handle notification tap in foreground
-          print('Foreground notification has been tapped: ${response.payload}');
-        });
-
-    // Create Android notification channel
-    await _flutterLocalNotificationsPlugin
+    await _plugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(_androidChannel);
+        ?.createNotificationChannel(_channel);
 
-    // Mark initialization as complete
-    _isFlutterLocalNotificationInitialized = true;
+    _initialized = true;
   }
 
-  /// Show a local notification with the given title, body, and payload.
-  Future<void> showNotification(
-      String? title,
-      String? body,
-      String? payload,
-      ) async {
-    // Android-specific notification details
-    AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      _androidChannel.id,
-      _androidChannel.name,
-      channelDescription: _androidChannel.description,
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-
-    // iOS-specific notification details
-    const iosDetails = DarwinNotificationDetails();
-
-    // Combine platform-specific details
-    final notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
-    // Display the notification
-    await _flutterLocalNotificationsPlugin.show(
-      _notificationIdCounter++,
+  Future<void> show({String? title, String? body, String? payload}) async {
+    if (!_initialized) return;
+    await _plugin.show(
+      _nextId++,
       title,
       body,
-      notificationDetails,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          _channel.id,
+          _channel.name,
+          channelDescription: _channel.description,
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: const DarwinNotificationDetails(),
+      ),
       payload: payload,
     );
   }
