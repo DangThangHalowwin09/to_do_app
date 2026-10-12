@@ -59,7 +59,7 @@ class _BlogScreenState extends State<BlogScreen> {
                     'created_at': FieldValue.serverTimestamp(),
                   });
                 }
-                Navigator.of(context).pop();
+                if (context.mounted) Navigator.of(context).pop();
               }
             },
           ),

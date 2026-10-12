@@ -9,7 +9,7 @@ import 'screens/auth/login_screen.dart';
 import 'screens/errors/error_screen.dart';
 import 'screens/general_information_screen.dart';
 import 'screens/role_redirect_screen.dart';
-import 'screens/task_screen.dart';
+import 'screens/tasks/task_screen.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

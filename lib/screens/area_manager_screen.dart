@@ -58,7 +58,7 @@ class _AreaManagerScreenState extends State<AreaManagerScreen> {
             TextField(controller: controller, decoration: const InputDecoration(labelText: "Tên khu vực")),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: selectedGroup,
+              initialValue: selectedGroup,
               items: _groups.map((group) {
                 return DropdownMenuItem(
                   value: group.id,
@@ -80,7 +80,7 @@ class _AreaManagerScreenState extends State<AreaManagerScreen> {
                   'name': newName,
                   'groupId': selectedGroup,
                 });
-                Navigator.pop(context);
+                if (mounted) Navigator.pop(context);
               }
             },
             child: const Text("Lưu"),
@@ -138,7 +138,7 @@ class _AreaManagerScreenState extends State<AreaManagerScreen> {
                   ),
                   const SizedBox(height: 10),
                   DropdownButtonFormField<String>(
-                    value: _selectedGroupId,
+                    initialValue: _selectedGroupId,
                     items: _groups.map((group) {
                       return DropdownMenuItem<String>(
                         value: group.id,

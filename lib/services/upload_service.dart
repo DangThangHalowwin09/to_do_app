@@ -1,48 +1,24 @@
-import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
-class UploadService {static Future<String> uploadImage(File image) async {
-  try {
-    // Verify file exists and is readable
-    if (!image.existsSync()) {
-      throw Exception('File does not exist at path: ${image.path}');
-    }
+import '../core/utils/app_logger.dart';
 
-    final extension = image.path.split('.').last;
-    final fileName = '${const Uuid().v4()}.$extension';
-    final ref = FirebaseStorage.instance.ref().child('blog_images/$fileName');
+class UploadService {
+  UploadService._();
 
-    print('[UploadService] Starting upload: $fileName');
-
-    // Start the upload task
-    final uploadTask = ref.putFile(image);
-
-    // Wait for the upload to complete and check its state
-    final taskSnapshot = await uploadTask;
-    if (taskSnapshot.state == TaskState.success) {
-      // Upload successful, get the download URL
-      final downloadUrl = await ref.getDownloadURL();
-      print('[UploadService] Upload successful: $downloadUrl');
-      return downloadUrl;
-    } else {
-      // Upload failed
-      throw Exception('Upload failed with state: ${taskSnapshot.state}');
-    }
-  } catch (e) {
-    print('[UploadService] Error uploading image: $e');
-    throw Exception('Failed to upload image to Firebase: $e');
-  }
-}
-
-  static Future<void> deleteImage(String imageUrl) async {
+  /// Tải ảnh lên Firebase Storage (chạy được cả mobile lẫn web) và trả về link tải về.
+  static Future<String> uploadImage(XFile image) async {
     try {
-      final ref = FirebaseStorage.instance.refFromURL(imageUrl);
-      await ref.delete();
-      print('[UploadService] Đã xóa ảnh: $imageUrl');
+      final bytes = await image.readAsBytes();
+      final extension = image.name.contains('.') ? image.name.split('.').last.toLowerCase() : 'jpg';
+      final ref = FirebaseStorage.instance.ref('blog_images/${const Uuid().v4()}.$extension');
+
+      await ref.putData(bytes, SettableMetadata(contentType: 'image/$extension'));
+      return await ref.getDownloadURL();
     } catch (e) {
-      print('[UploadService] Lỗi khi xóa ảnh: $e');
-      throw Exception('Lỗi xóa ảnh: $e');
+      AppLog.e('Tải ảnh lên thất bại', e);
+      rethrow;
     }
   }
 }

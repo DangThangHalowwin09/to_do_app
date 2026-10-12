@@ -14,7 +14,7 @@ import '../news_manager_screen.dart';
 import '../on_duty_screen.dart';
 import '../search_area_screen.dart';
 import '../statistics_screen.dart';
-import '../task_screen.dart';
+import '../tasks/task_screen.dart';
 import '../update_profile_screen.dart';
 
 /// Một ô chức năng trên màn hình chính.
@@ -38,7 +38,7 @@ class HomeMenu {
   final String title;
   final String welcome;
 
-  /// Dòng chào cố định; mặc định là "Xin chào: <tên người dùng>".
+  /// Dòng chào cố định; mặc định là "Xin chào: (tên người dùng)".
   final String? greeting;
   final List<HomeMenuItem> items;
 

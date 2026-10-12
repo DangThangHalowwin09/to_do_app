@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_to_do_list/core/utils/app_logger.dart';
 import 'package:flutter_to_do_list/repositories/group_repository.dart';
 
 class SearchAreaScreen extends StatefulWidget {
-  const SearchAreaScreen({Key? key}) : super(key: key);
+  const SearchAreaScreen({super.key});
 
   @override
   State<SearchAreaScreen> createState() => _SearchAreaScreenState();
@@ -49,7 +50,7 @@ class _SearchAreaScreenState extends State<SearchAreaScreen> {
         _areaMap = areaMap;
       });
     } catch (e) {
-      print('Lỗi khi load areas: $e');
+      AppLog.e('Lỗi khi load areas', e);
       _showDialog(
         title: 'Lỗi',
         content: 'Không thể tải dữ liệu khu vực. Vui lòng kiểm tra kết nối.',
@@ -98,7 +99,7 @@ class _SearchAreaScreenState extends State<SearchAreaScreen> {
         );
       }
     } catch (e) {
-      print('Lỗi khi tìm nhân viên: $e');
+      AppLog.e('Lỗi khi tìm nhân viên', e);
       _showDialog(
         title: 'Lỗi',
         content: 'Có lỗi xảy ra khi tra cứu nhân viên.',
@@ -122,7 +123,6 @@ class _SearchAreaScreenState extends State<SearchAreaScreen> {
               label: const Text('Gọi'),
               onPressed: () {
                 final uri = Uri(scheme: 'tel', path: phoneNumber);
-                print(uri);
                 launchUrl(uri);
               },
             ),
