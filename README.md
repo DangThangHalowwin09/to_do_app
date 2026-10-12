@@ -30,6 +30,23 @@ flutter pub get
 flutter analyze
 flutter test
 flutter run
-# Máy chủ gửi thông báo đẩy (mặc định http://192.168.1.10:5000):
-flutter run --dart-define=PUSH_SERVER_URL=http://<ip>:5000
+```
+
+## Thông báo đẩy (push)
+
+App chỉ **nhận** thông báo (`services/firebase_messaging_service.dart`). Việc **gửi** do Cloud Functions
+trong `functions/` đảm nhiệm, tự chạy khi dữ liệu Firestore thay đổi:
+
+| Sự kiện | Ai nhận |
+| --- | --- |
+| Có phiếu `errors` mới | Tổ phần mềm (lỗi phần mềm) / Tổ phần cứng phụ trách khu vực của bác sỹ (lỗi phần cứng) |
+| IT nhận xử lý / hoàn thành phiếu | Bác sỹ đã báo lỗi |
+| Giao việc `tasks` mới hoặc đổi người nhận | Người được giao |
+
+Token thiết bị lưu ở `users/{uid}.fcmTokens` (mảng, nhiều thiết bị). Triển khai (một lần, cần gói Blaze):
+
+```bash
+npm install -g firebase-tools && firebase login
+cd functions && npm install && npm test && cd ..
+firebase deploy --only functions
 ```

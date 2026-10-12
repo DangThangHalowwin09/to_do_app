@@ -3,15 +3,31 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/user_role.dart';
 import '../../services/auth_service.dart';
+import '../../services/firebase_messaging_service.dart';
 import '../../services/user_session.dart';
 import '../auth/login_screen.dart';
 import 'home_menu.dart';
 
 /// Màn hình chính sau đăng nhập; nội dung phụ thuộc vào vai trò ([HomeMenu.of]).
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.role});
 
   final UserRole role;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Nếu người dùng mở app bằng cách bấm thông báo, chuyển thẳng tới màn hình liên quan.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final route = FirebaseMessagingService.instance.takePendingRoute();
+      if (route != null && mounted) Navigator.pushNamed(context, route);
+    });
+  }
 
   Future<void> _confirmSignOut(BuildContext context) async {
     final confirmed = await showDialog<bool>(
@@ -37,7 +53,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final menu = HomeMenu.of(role);
+    final menu = HomeMenu.of(widget.role);
     final greeting = menu.greeting ?? 'Xin chào: ${UserSession.instance.name}';
 
     return Scaffold(

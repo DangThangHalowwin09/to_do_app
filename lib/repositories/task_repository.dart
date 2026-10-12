@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../core/constants/app_routes.dart';
 import '../core/constants/user_role.dart';
 import '../models/task_item.dart';
-import '../services/push_notification_sender.dart';
 
 class TaskRepository {
   TaskRepository._();
@@ -35,38 +33,21 @@ class TaskRepository {
       'assignedTo': assignedTo,
     };
 
-    final String id;
+    // Thông báo cho người được giao do Cloud Function `onTaskCreated/onTaskUpdated` gửi.
     if (taskId == null) {
-      final ref = await _tasks.add({
+      await _tasks.add({
         ...data,
         'startTime': Timestamp.now(),
         'status': TaskItem.statusPending,
         'completedAt': null,
       });
-      id = ref.id;
     } else {
-      id = taskId;
-      await _tasks.doc(id).update(data);
+      await _tasks.doc(taskId).update(data);
     }
-
-    await _notifyAssignee(assignedTo, title, id);
   }
 
   static Future<void> markDone(String taskId) => _tasks.doc(taskId).update({
         'status': TaskItem.statusDone,
         'completedAt': Timestamp.now(),
       });
-
-  static Future<void> _notifyAssignee(String uid, String title, String taskId) async {
-    final user = await _db.collection('users').doc(uid).get();
-    final token = user.data()?['fcmToken'] as String?;
-    if (token == null || token.isEmpty) return;
-
-    await PushNotificationSender.send(
-      targetToken: token,
-      title: 'Trưởng phòng đã giao bạn nhiệm vụ mới!',
-      body: title,
-      data: {PushDataKeys.type: PushDataKeys.taskType, PushDataKeys.id: taskId},
-    );
-  }
 }

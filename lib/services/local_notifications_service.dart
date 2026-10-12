@@ -1,16 +1,17 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import '../core/utils/app_logger.dart';
-
-/// Hiển thị thông báo cục bộ (dùng khi nhận push lúc app đang mở).
+/// Hiển thị thông báo cục bộ (dùng khi nhận push lúc app đang mở trên Android).
 class LocalNotificationsService {
   LocalNotificationsService._();
   static final LocalNotificationsService instance = LocalNotificationsService._();
 
+  /// Phải trùng `default_notification_channel_id` trong AndroidManifest và `channelId` trong Cloud Functions.
+  static const channelId = 'channel_id';
+
   static const _channel = AndroidNotificationChannel(
-    'channel_id',
-    'Channel name',
-    description: 'Android push notification channel',
+    channelId,
+    'Thông báo công việc',
+    description: 'Báo lỗi mới, giao việc và cập nhật xử lý',
     importance: Importance.max,
   );
 
@@ -18,21 +19,21 @@ class LocalNotificationsService {
   bool _initialized = false;
   int _nextId = 0;
 
-  Future<void> init() async {
+  /// [onTap] nhận `payload` khi người dùng bấm vào thông báo đang hiển thị.
+  Future<void> init({required void Function(String? payload) onTap}) async {
     if (_initialized) return;
 
     await _plugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        // Quyền iOS do FirebaseMessaging.requestPermission xin, tránh hỏi hai lần.
         iOS: DarwinInitializationSettings(
-          requestAlertPermission: true,
-          requestBadgePermission: true,
-          requestSoundPermission: true,
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
         ),
       ),
-      onDidReceiveNotificationResponse: (response) {
-        AppLog.d('Notification được bấm: ${response.payload}');
-      },
+      onDidReceiveNotificationResponse: (response) => onTap(response.payload),
     );
 
     await _plugin

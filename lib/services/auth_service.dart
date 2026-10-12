@@ -90,25 +90,33 @@ class AuthService {
     return _auth.currentUser?.emailVerified ?? false;
   }
 
-  /// Lưu FCM token của thiết bị vào hồ sơ để server biết gửi thông báo cho ai.
+  /// Thêm FCM token của thiết bị này vào `users/{uid}.fcmTokens`.
+  /// Dùng mảng để một người đăng nhập trên nhiều thiết bị (điện thoại + máy tính bảng) đều nhận được.
   Future<void> saveFcmToken() async {
     final uid = _auth.currentUser?.uid;
     if (uid == null || kIsWeb) return;
     try {
       final token = await FirebaseMessaging.instance.getToken();
       if (token == null) return;
-      await _firestore.collection('users').doc(uid).update({'fcmToken': token});
+      await _firestore.collection('users').doc(uid).update({
+        'fcmTokens': FieldValue.arrayUnion([token]),
+      });
     } catch (e) {
       AppLog.e('Không lưu được FCM token', e);
     }
   }
 
-  /// Xoá token (để thiết bị không nhận thông báo của tài khoản cũ), xoá phiên và đăng xuất.
+  /// Gỡ token của thiết bị này (để không nhận thông báo của tài khoản cũ), xoá phiên và đăng xuất.
   Future<void> signOut() async {
     final uid = _auth.currentUser?.uid;
-    if (uid != null) {
+    if (uid != null && !kIsWeb) {
       try {
-        await _firestore.collection('users').doc(uid).update({'fcmToken': ''});
+        final token = await FirebaseMessaging.instance.getToken();
+        if (token != null) {
+          await _firestore.collection('users').doc(uid).update({
+            'fcmTokens': FieldValue.arrayRemove([token]),
+          });
+        }
       } catch (e) {
         AppLog.e('Không xoá được FCM token', e);
       }

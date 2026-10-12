@@ -45,6 +45,7 @@ class _AddErrorScreenState extends State<AddErrorScreen> {
         errorType: _errorType!,
         location: _errorType == _hardware ? _locationController.text.trim() : '',
         note: _noteController.text.trim(),
+        reporterUid: session.uid ?? '',
         reporterName: session.name,
         reporterPhone: session.phone,
       );

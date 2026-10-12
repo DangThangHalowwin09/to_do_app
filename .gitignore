@@ -49,3 +49,6 @@ android/app/my-release-key.keystore
 # Build/deploy artifacts
 postgres_api/build/
 .firebase/
+
+# Cloud Functions
+functions/node_modules/

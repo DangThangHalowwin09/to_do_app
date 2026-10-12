@@ -15,6 +15,7 @@ class ErrorReportRepository {
     required String errorType,
     required String location,
     required String note,
+    required String reporterUid,
     required String reporterName,
     required String reporterPhone,
   }) {
@@ -24,6 +25,7 @@ class ErrorReportRepository {
       'errorType': errorType,
       'address': location,
       'note': note,
+      'reporterUid': reporterUid,
       'nameDoctor': reporterName,
       'phoneContact': reporterPhone,
       'timeErrorStart': FieldValue.serverTimestamp(),

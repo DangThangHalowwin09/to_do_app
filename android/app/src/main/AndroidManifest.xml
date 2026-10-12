@@ -3,6 +3,9 @@
     <!-- Quyền internet (bắt buộc cho url_launcher) -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Android 13+ bắt buộc khai báo thì mới được hỏi quyền và hiển thị thông báo -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <!-- KHAI BÁO CÁC APP/INTENT CẦN QUÉT (THAY THẾ QUERY_ALL_PACKAGES) -->
     <queries>
         <!-- Mở Zalo -->
@@ -75,6 +78,11 @@
             </intent-filter>
 
         </activity>
+
+        <!-- Thông báo FCM khi app ở nền dùng kênh "độ ưu tiên cao" (tạo trong LocalNotificationsService) -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="channel_id" />
 
         <meta-data
             android:name="flutterEmbedding"
