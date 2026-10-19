@@ -69,3 +69,14 @@ Cấu hình **Settings → Secrets and variables → Actions → New repository 
 
 Chưa có secret keystore thì bản build dùng khoá debug (không dùng để phát hành). Phiên bản Flutter ghim ở
 biến `FLUTTER_VERSION` trong các workflow; đổi cho khớp máy bạn khi nâng cấp.
+
+## Công cụ cho Claude Code
+
+Dự án có sẵn (commit trong repo, ai clone về cũng dùng được):
+- `.claude/skills/ui-ux-pro-max/` — skill tư vấn thiết kế UI/UX (nguồn: nextlevelbuilder/ui-ux-pro-max-skill, giấy phép MIT, commit `56ea9cf`). Hỗ trợ stack Flutter.
+- `.mcp.json` — Playwright MCP để Claude mở trình duyệt và kiểm thử bản web.
+
+Để dùng cho **mọi dự án** trên máy bạn: `bash scripts/setup-claude-tools.sh`.
+
+Kiểm thử bản web Flutter bằng Playwright: Flutter web vẽ lên canvas nên cần bật cây "semantics" (Claude sẽ
+bấm nút "Enable accessibility" ở góc trang) hoặc chạy với `--web-renderer html` trên bản Flutter còn hỗ trợ.
