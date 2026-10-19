@@ -50,3 +50,22 @@ npm install -g firebase-tools && firebase login
 cd functions && npm install && npm test && cd ..
 firebase deploy --only functions
 ```
+
+## CI/CD (GitHub Actions)
+
+| Workflow | Khi nào chạy | Làm gì |
+| --- | --- | --- |
+| `ci.yml` | mỗi push / pull request | `flutter analyze`, `flutter test`, test Cloud Functions |
+| `build-android.yml` | chạy tay hoặc đẩy tag `v*` | build APK + AAB (tải ở mục Artifacts của lần chạy) |
+| `deploy-functions.yml` | push vào nhánh chính khi `functions/` đổi, hoặc chạy tay | deploy Cloud Functions |
+
+Cấu hình **Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret | Dùng cho | Cách tạo |
+| --- | --- | --- |
+| `FIREBASE_SERVICE_ACCOUNT` | deploy Functions | Nội dung file JSON của service account chỉ có quyền deploy Functions |
+| `ANDROID_KEYSTORE_BASE64` | ký bản release | `base64 -w0 my-release-key.keystore` |
+| `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | ký bản release | Thông tin trong `android/key.properties` của bạn |
+
+Chưa có secret keystore thì bản build dùng khoá debug (không dùng để phát hành). Phiên bản Flutter ghim ở
+biến `FLUTTER_VERSION` trong các workflow; đổi cho khớp máy bạn khi nâng cấp.
