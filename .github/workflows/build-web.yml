@@ -1,0 +1,54 @@
+name: Build Web
+
+# Build bản web và đăng lên GitHub Pages để xem thử.
+# Cần bật một lần: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+on:
+  workflow_dispatch:
+  push:
+    branches: ['claude/optimistic-carson-tqoubf'] # TẠM THỜI: xoá sau khi merge
+    paths-ignore: ['functions/**', 'README.md']
+
+env:
+  FLUTTER_VERSION: 3.35.7
+
+concurrency:
+  group: web-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      # Pages phục vụ dưới /<tên repo>/ nên cần base-href tương ứng.
+      - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+      - name: Upload web build (tải về xem offline nếu không dùng Pages)
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+          retention-days: 14
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # Không làm hỏng cả workflow nếu chưa bật Pages / chưa cho phép nhánh này deploy.
+    continue-on-error: true
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
