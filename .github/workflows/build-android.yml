@@ -52,6 +52,24 @@ jobs:
       - run: flutter build apk --release
       - run: flutter build appbundle --release
 
+      # Kiểm tra APK hợp lệ trước khi tải lên: zip nguyên vẹn, có chữ ký, đọc được manifest.
+      - name: Verify APK
+        run: |
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          ls -l "$APK"
+          sha256sum "$APK"
+          unzip -tq "$APK"
+          BT="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" | head -8
+          "$BT/aapt" dump badging "$APK" | grep -E "^(package|sdkVersion|targetSdkVersion|native-code)"
+
+      # Gói riêng chỉ chứa APK (nhẹ, để cài thử trên điện thoại).
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
       - uses: actions/upload-artifact@v4
         with:
           name: android-release
