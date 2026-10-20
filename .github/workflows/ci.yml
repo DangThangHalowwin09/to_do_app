@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, 'claude/optimistic-carson-tqoubf'] # nhánh claude/... là TẠM THỜI
   pull_request:
 
 concurrency:

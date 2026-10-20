@@ -5,6 +5,8 @@ on:
   workflow_dispatch:
   push:
     tags: ['v*']
+    # TẠM THỜI: build mỗi lần đẩy lên nhánh làm việc này (xoá dòng dưới sau khi đã merge).
+    branches: ['claude/optimistic-carson-tqoubf']
 
 env:
   FLUTTER_VERSION: 3.35.7
