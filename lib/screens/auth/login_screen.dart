@@ -70,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -81,8 +80,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    Image.asset('assets/icon_login.jpg'),
-                    const Text('Đăng nhập', style: TextStyle(fontSize: 24, color: Colors.blue)),
+                    ExcludeSemantics(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: Image.asset('assets/icon_login.jpg', height: 160, fit: BoxFit.cover, width: double.infinity),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text('Đăng nhập', style: Theme.of(context).textTheme.titleLarge),
+                    const SizedBox(height: 4),
+                    Text('Dành cho cán bộ, nhân viên Bệnh viện Ung bướu Nghệ An', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodySmall),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _emailController,

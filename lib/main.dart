@@ -9,6 +9,7 @@ import 'app.dart';
 import 'core/utils/app_logger.dart';
 import 'firebase_options.dart';
 import 'services/firebase_messaging_service.dart';
+import 'services/onboarding_store.dart';
 import 'services/visit_tracker.dart';
 
 Future<void> main() async {
@@ -18,7 +19,8 @@ Future<void> main() async {
   unawaited(VisitTracker.recordVisit());
   await _initPushNotifications();
 
-  runApp(const Portal(child: MyApp()));
+  final showOnboarding = !await OnboardingStore.hasSeen();
+  runApp(Portal(child: MyApp(showOnboarding: showOnboarding)));
 }
 
 /// Push notification chỉ hỗ trợ app Android/iOS; lỗi ở đây không được làm app không mở được.

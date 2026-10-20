@@ -8,6 +8,7 @@ import '../../core/utils/contact_launcher.dart';
 import '../../repositories/error_report_repository.dart';
 import '../../repositories/staff_repository.dart';
 import '../../services/user_session.dart';
+import '../../widgets/status_chip.dart';
 import 'add_error_screen.dart';
 
 /// Danh sách phiếu báo lỗi. Bác sỹ: gọi nhanh NV IT phụ trách + tạo phiếu. NV IT: nhận xử lý / hoàn thành.
@@ -111,11 +112,24 @@ class _ErrorCard extends StatelessWidget {
     final isTakeOver = data['isTakeOver'] == true;
     final isDone = data['isDone'] == true;
 
+    final status = isDone ? WorkStatus.done : (isTakeOver ? WorkStatus.inProgress : WorkStatus.pending);
+
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: ListTile(
-        isThreeLine: true,
-        title: Text((data['errorTitle'] ?? '') as String, style: const TextStyle(fontWeight: FontWeight.bold)),
+        contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+        title: Padding(
+          padding: const EdgeInsets.only(bottom: 6),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text((data['errorTitle'] ?? '') as String, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              StatusChip(status),
+            ],
+          ),
+        ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -126,16 +140,19 @@ class _ErrorCard extends StatelessWidget {
             Text('Ghi chú: ${data['note'] ?? ''}'),
             Text('Thời gian lỗi: ${time != null ? dateFormat.format(time) : ''}'),
             if (isTakeOver) Text('Người nhận: ${data['nameStaff'] ?? ''}'),
-            if (isDone) const Text('✅ Đã hoàn thành'),
             Text('Người báo: ${data['nameDoctor'] ?? ''}'),
+            if (canHandle && !isDone) ...[
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => isTakeOver ? onDone(id) : onTakeOver(id),
+                  child: Text(isTakeOver ? 'Hoàn thành' : 'Nhận xử lý'),
+                ),
+              ),
+            ],
           ],
         ),
-        trailing: canHandle && !isDone
-            ? FilledButton(
-                onPressed: () => isTakeOver ? onDone(id) : onTakeOver(id),
-                child: Text(isTakeOver ? 'Hoàn thành' : 'Nhận xử lý'),
-              )
-            : null,
       ),
     );
   }

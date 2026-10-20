@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/task_item.dart';
+import '../../core/constants/app_colors.dart';
 import '../../repositories/task_repository.dart';
+import '../../widgets/status_chip.dart';
 import '../../services/user_session.dart';
 import 'task_form_dialog.dart';
 
@@ -101,23 +103,38 @@ class _TaskScreenState extends State<TaskScreen> {
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
                   final task = tasks[index];
+                  final overdue = !task.isDone && task.endTime != null && task.endTime!.isBefore(DateTime.now());
                   return Card(
-                    margin: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     child: ListTile(
                       onTap: () => isAdmin ? _openForm(task) : _openDetail(task),
-                      leading: Icon(
-                        task.isDone ? Icons.check_circle : Icons.pending_actions,
-                        color: task.isDone ? Colors.green : Colors.orange,
+                      title: Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(task.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                            StatusChip(task.isDone ? WorkStatus.done : WorkStatus.pending),
+                          ],
+                        ),
                       ),
-                      title: Text(task.title),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(task.description),
-                          Text('Giao vào: ${_dateText(task.startTime, _listDate)}'),
-                          Text('Deadline: ${_dateText(task.endTime, _listDate)}'),
-                          Text('Trạng thái: ${task.status}'),
+                          const SizedBox(height: 4),
                           Text('Người được giao: ${names[task.assignedTo] ?? '...'}'),
+                          Text('Giao vào: ${_dateText(task.startTime, _listDate)}'),
+                          Text(
+                            overdue
+                                ? 'Quá hạn: ${_dateText(task.endTime, _listDate)}'
+                                : 'Deadline: ${_dateText(task.endTime, _listDate)}',
+                            style: overdue
+                                ? const TextStyle(color: AppColors.urgent, fontWeight: FontWeight.w700)
+                                : null,
+                          ),
                         ],
                       ),
                     ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/user_role.dart';
+import '../../core/theme/app_spacing.dart';
 import '../../services/auth_service.dart';
 import '../../services/firebase_messaging_service.dart';
 import '../../services/user_session.dart';
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _confirmSignOut(BuildContext context) async {
+  Future<void> _confirmSignOut() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -37,11 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
         content: const Text('Bạn có chắc muốn đăng xuất không?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Huỷ')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Đăng xuất')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Đăng xuất')),
         ],
       ),
     );
-    if (confirmed != true || !context.mounted) return;
+    if (confirmed != true || !mounted) return;
 
     final navigator = Navigator.of(context);
     await AuthService().signOut();
@@ -54,48 +55,49 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final menu = HomeMenu.of(widget.role);
-    final greeting = menu.greeting ?? 'Xin chào: ${UserSession.instance.name}';
+    final name = UserSession.instance.name;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(menu.title),
-        backgroundColor: AppColors.header,
-        foregroundColor: Colors.white,
-        centerTitle: true,
-        elevation: 0,
         actions: [
           IconButton(
             tooltip: 'Đăng xuất',
-            icon: const Icon(Icons.logout),
-            onPressed: () => _confirmSignOut(context),
+            icon: const Icon(Icons.logout_rounded),
+            onPressed: _confirmSignOut,
           ),
         ],
       ),
       body: Column(
         children: [
-          _Banner(greeting: greeting, welcome: menu.welcome),
+          _Header(name: name, greeting: menu.greeting, welcome: menu.welcome, roleLabel: widget.role.label),
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 110,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.85,
-              ),
-              itemCount: menu.items.length,
-              itemBuilder: (context, index) {
-                final item = menu.items[index];
-                return _MenuTile(
-                  icon: item.icon,
-                  label: item.label,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => item.screen()),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 720),
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 160,
+                    crossAxisSpacing: AppSpacing.sm + 4,
+                    mainAxisSpacing: AppSpacing.sm + 4,
+                    childAspectRatio: 1.05,
                   ),
-                );
-              },
+                  itemCount: menu.items.length,
+                  itemBuilder: (context, index) {
+                    final item = menu.items[index];
+                    return _MenuTile(
+                      icon: item.icon,
+                      label: item.label,
+                      urgent: item.urgent,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => item.screen()),
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           ),
         ],
@@ -104,26 +106,73 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _Banner extends StatelessWidget {
-  const _Banner({required this.greeting, required this.welcome});
+class _Header extends StatelessWidget {
+  const _Header({required this.name, required this.greeting, required this.welcome, required this.roleLabel});
 
-  final String greeting;
+  final String name;
+  final String? greeting;
   final String welcome;
+  final String roleLabel;
+
+  String get _initials {
+    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    if (parts.isEmpty) return '?';
+    return parts.last.characters.first.toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+
     return Container(
-      color: AppColors.header,
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.lg),
+      decoration: const BoxDecoration(
+        color: AppColors.blue,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(AppSpacing.radiusLg + 4)),
+      ),
+      child: Row(
         children: [
-          Text(greeting, style: const TextStyle(color: Colors.white, fontSize: 16)),
-          const SizedBox(height: 12),
-          Text(
-            welcome,
-            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+          ExcludeSemantics(
+            child: CircleAvatar(
+              radius: 28,
+              backgroundColor: Colors.white,
+              child: Text(
+                _initials,
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: AppColors.blue),
+              ),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  greeting ?? (name.isEmpty ? 'Xin chào' : 'Xin chào, $name'),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: text.titleLarge?.copyWith(color: Colors.white, fontSize: 20),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  welcome,
+                  style: text.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: 0.9)),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    roleLabel,
+                    style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -132,37 +181,54 @@ class _Banner extends StatelessWidget {
 }
 
 class _MenuTile extends StatelessWidget {
-  const _MenuTile({required this.icon, required this.label, required this.onTap});
+  const _MenuTile({required this.icon, required this.label, required this.onTap, required this.urgent});
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final bool urgent;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.blue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+    final color = urgent ? AppColors.urgent : AppColors.blue;
+    final tint = urgent ? AppColors.urgentBg : AppColors.progressBg;
+
+    return Semantics(
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: Material(
+        color: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radius),
+          side: const BorderSide(color: AppColors.border),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.sm + 4),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(color: tint, borderRadius: BorderRadius.circular(AppSpacing.radius)),
+                  child: Icon(icon, size: 28, color: color),
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, height: 1.25),
+                ),
+              ],
             ),
-            child: Icon(icon, size: 28, color: Colors.blue),
           ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -72,7 +72,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(title: const Text('Tạo tài khoản')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

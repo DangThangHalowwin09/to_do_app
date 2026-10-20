@@ -19,11 +19,14 @@ import '../update_profile_screen.dart';
 
 /// Một ô chức năng trên màn hình chính.
 class HomeMenuItem {
-  const HomeMenuItem(this.icon, this.label, this.screen);
+  const HomeMenuItem(this.icon, this.label, this.screen, {this.urgent = false});
 
   final IconData icon;
   final String label;
   final Widget Function() screen;
+
+  /// Chức năng cần nổi bật (ví dụ báo lỗi) → dùng màu đỏ thương hiệu.
+  final bool urgent;
 }
 
 /// Nội dung màn hình chính của từng vai trò. Thêm/bớt chức năng chỉ cần sửa ở đây.
@@ -64,7 +67,7 @@ class HomeMenu {
           items: [
             HomeMenuItem(Icons.person_add, 'Đăng ký', CreateAccountScreen.new),
             HomeMenuItem(Icons.task, 'Giao việc', TaskScreen.new),
-            HomeMenuItem(Icons.error, 'Báo lỗi', ErrorScreen.new),
+            HomeMenuItem(Icons.report_problem_rounded, 'Báo lỗi', ErrorScreen.new, urgent: true),
             HomeMenuItem(FontAwesomeIcons.userGear, 'NV IT', MembersITScreen.new),
             HomeMenuItem(FontAwesomeIcons.userDoctor, 'Bác sỹ', MembersDoctorScreen.new),
             HomeMenuItem(Icons.local_hospital, 'Các khoa', AreaManagerScreen.new),
@@ -82,7 +85,7 @@ class HomeMenu {
           welcome: 'Chào mừng đến với màn hình nhân viên!',
           items: [
             HomeMenuItem(Icons.task, 'Nhiệm vụ phòng IT', TaskScreen.new),
-            HomeMenuItem(Icons.error, 'Nhiệm vụ', ErrorScreen.new),
+            HomeMenuItem(Icons.report_problem_rounded, 'Nhiệm vụ', ErrorScreen.new, urgent: true),
             _changePassword,
           ],
         );
@@ -92,7 +95,7 @@ class HomeMenu {
           welcome: 'Chào mừng đến với màn hình nhân viên phần cứng!',
           items: [
             HomeMenuItem(Icons.task, 'Nhiệm vụ', TaskScreen.new),
-            HomeMenuItem(Icons.error, 'Báo lỗi', ErrorScreen.new),
+            HomeMenuItem(Icons.report_problem_rounded, 'Báo lỗi', ErrorScreen.new, urgent: true),
             HomeMenuItem(Icons.build, 'Mẹo PC', BlogScreen.new),
             HomeMenuItem(Icons.person, 'Tài khoản', UpdateProfileScreen.new),
             _duty,
@@ -105,7 +108,7 @@ class HomeMenu {
           welcome: 'Chào mừng đến với màn hình nhân viên phần mềm!',
           items: [
             HomeMenuItem(Icons.task, 'Việc phòng IT', TaskScreen.new),
-            HomeMenuItem(Icons.error, 'Báo lỗi', ErrorScreen.new),
+            HomeMenuItem(Icons.report_problem_rounded, 'Báo lỗi', ErrorScreen.new, urgent: true),
             HomeMenuItem(Icons.code, 'Mẹo PM', BlogScreen.new),
             HomeMenuItem(Icons.person, 'Tài khoản', UpdateProfileScreen.new),
             _duty,

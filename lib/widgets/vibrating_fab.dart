@@ -31,6 +31,7 @@ class _VibratingFabState extends State<VibratingFab> with SingleTickerProviderSt
       builder: (_, child) => Transform.translate(offset: Offset(_offset.value, 0), child: child),
       child: FloatingActionButton(
         backgroundColor: Colors.white,
+        foregroundColor: Colors.blue,
         tooltip: 'Liên hệ',
         onPressed: widget.onPressed,
         child: const Icon(Icons.phone_in_talk, color: Colors.blue, size: 35),
