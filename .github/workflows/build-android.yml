@@ -14,6 +14,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # cần để đăng bản build lên mục Releases
     steps:
       - uses: actions/checkout@v4
 
@@ -62,6 +64,20 @@ jobs:
           BT="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
           "$BT/apksigner" verify --verbose --print-certs "$APK" | head -8
           "$BT/aapt" dump badging "$APK" | grep -E "^(package|sdkVersion|targetSdkVersion|native-code)"
+
+      # Đăng APK lên Releases (bản "pre-release") để có link tải trực tiếp, không bị nén zip.
+      # Chỉ chạy khi đẩy lên nhánh, không chạy khi chạy tay hoặc đẩy tag (tag tự là bản phát hành).
+      - name: Publish preview release
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="preview-${{ github.run_number }}"
+          cp build/app/outputs/flutter-apk/app-release.apk "ubna-manager-$TAG.apk"
+          gh release create "$TAG" "ubna-manager-$TAG.apk" \
+            --prerelease --target "${{ github.sha }}" \
+            --title "Bản thử $TAG" \
+            --notes "Bản build thử từ commit ${{ github.sha }}. Ký bằng khoá debug, chỉ dùng để kiểm tra."
 
       # Gói riêng chỉ chứa APK (nhẹ, để cài thử trên điện thoại).
       - uses: actions/upload-artifact@v4
