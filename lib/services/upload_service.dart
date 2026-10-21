@@ -8,11 +8,11 @@ class UploadService {
   UploadService._();
 
   /// Tải ảnh lên Firebase Storage (chạy được cả mobile lẫn web) và trả về link tải về.
-  static Future<String> uploadImage(XFile image) async {
+  static Future<String> uploadImage(XFile image, {String folder = 'blog_images'}) async {
     try {
       final bytes = await image.readAsBytes();
       final extension = image.name.contains('.') ? image.name.split('.').last.toLowerCase() : 'jpg';
-      final ref = FirebaseStorage.instance.ref('blog_images/${const Uuid().v4()}.$extension');
+      final ref = FirebaseStorage.instance.ref('$folder/${const Uuid().v4()}.$extension');
 
       await ref.putData(bytes, SettableMetadata(contentType: 'image/$extension'));
       return await ref.getDownloadURL();

@@ -106,6 +106,17 @@ function reminderMessage(kind, title, deadlineText) {
   }
 }
 
+/** Số phút chờ trước khi báo khẩn: phiếu "Khẩn cấp" 5 phút, phiếu thường 15 phút. */
+function escalateAfterMinutes(error) {
+  return error?.priority === 'urgent' ? 5 : 15;
+}
+
+/** Tiêu đề thông báo phiếu mới (phiếu khẩn có tiền tố "KHẨN"). */
+function newErrorTitle(error) {
+  const prefix = error?.priority === 'urgent' ? 'KHẨN – ' : '';
+  return `${prefix}Báo hỏng mới: ${error?.errorTitle ?? ''}`;
+}
+
 /** Phiếu lỗi chưa ai nhận sau `minutes` phút và chưa từng nhắc lại → cần báo khẩn. */
 function shouldEscalate(error, nowMs, minutes) {
   if (!error || error.isTakeOver || error.isDone || error.escalatedAt) return false;
@@ -157,6 +168,8 @@ module.exports = {
   remindersAfter,
   reminderMessage,
   shouldEscalate,
+  escalateAfterMinutes,
+  newErrorTitle,
   ratingDelta,
   formatVnTime,
 };

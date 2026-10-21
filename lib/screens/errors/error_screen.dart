@@ -9,7 +9,9 @@ import '../../repositories/error_report_repository.dart';
 import '../../repositories/rating_repository.dart';
 import '../../repositories/staff_repository.dart';
 import '../../services/user_session.dart';
+import '../../core/constants/app_colors.dart';
 import '../../widgets/feedback.dart';
+import '../../widgets/image_gallery.dart';
 import '../../widgets/star_rating.dart';
 import '../../widgets/status_chip.dart';
 import 'add_error_screen.dart';
@@ -166,6 +168,7 @@ class _ErrorCard extends StatelessWidget {
             children: [
               Text((data['errorTitle'] ?? '') as String, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
               StatusChip(status),
+              if (data['priority'] == ErrorPriority.urgent && !isDone) const _UrgentChip(),
             ],
           ),
         ),
@@ -179,6 +182,10 @@ class _ErrorCard extends StatelessWidget {
             Text('Ghi chú: ${data['note'] ?? ''}'),
             Text('Thời gian lỗi: ${time != null ? dateFormat.format(time) : ''}'),
             if (isTakeOver) Text('Người nhận: ${data['nameStaff'] ?? ''}'),
+            if ((data['imageUrls'] as List?)?.isNotEmpty ?? false) ...[
+              const SizedBox(height: 6),
+              ImageThumbnails(urls: List<String>.from(data['imageUrls'] as List)),
+            ],
             Text('Người báo: ${data['nameDoctor'] ?? ''}'),
             if (data['rating'] is num) ...[
               const SizedBox(height: 4),
@@ -278,6 +285,26 @@ class _StaffPanel extends StatelessWidget {
               );
             },
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UrgentChip extends StatelessWidget {
+  const _UrgentChip();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(color: AppColors.urgentBg, borderRadius: BorderRadius.circular(20)),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.priority_high_rounded, size: 16, color: AppColors.urgent),
+          SizedBox(width: 2),
+          Text('Khẩn cấp', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.urgent)),
         ],
       ),
     );

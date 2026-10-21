@@ -1,5 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+/// Mức độ ưu tiên của phiếu báo hỏng (giá trị lưu ở `errors.priority`).
+class ErrorPriority {
+  ErrorPriority._();
+
+  static const normal = 'normal';
+
+  /// Ảnh hưởng trực tiếp tới người bệnh (phòng mổ, cấp cứu, hồi sức...):
+  /// thông báo ghi "KHẨN", báo khẩn cho toàn bộ IT nếu sau 5 phút chưa ai nhận.
+  static const urgent = 'urgent';
+}
+
 /// Phiếu báo lỗi CNTT (collection `errors`).
 class ErrorReportRepository {
   ErrorReportRepository._();
@@ -16,6 +27,8 @@ class ErrorReportRepository {
     required String location,
     required String note,
     required String reporterUid,
+    String priority = ErrorPriority.normal,
+    List<String> imageUrls = const [],
     required String reporterName,
     required String reporterPhone,
   }) {
@@ -26,6 +39,8 @@ class ErrorReportRepository {
       'address': location,
       'note': note,
       'reporterUid': reporterUid,
+      'priority': priority,
+      'imageUrls': imageUrls,
       'nameDoctor': reporterName,
       'phoneContact': reporterPhone,
       'timeErrorStart': FieldValue.serverTimestamp(),

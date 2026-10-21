@@ -67,6 +67,13 @@ test('shouldEscalate: chưa nhận sau N phút và chưa nhắc', () => {
   assert.equal(lib.shouldEscalate(e(25 * 60), 30 * 60 * 60000, 15), false);
 });
 
+test('phiếu khẩn: báo khẩn sau 5 phút, tiêu đề có KHẨN', () => {
+  assert.equal(lib.escalateAfterMinutes({ priority: 'urgent' }), 5);
+  assert.equal(lib.escalateAfterMinutes({}), 15);
+  assert.equal(lib.newErrorTitle({ priority: 'urgent', errorTitle: 'Máy thở' }), 'KHẨN – Báo hỏng mới: Máy thở');
+  assert.equal(lib.newErrorTitle({ errorTitle: 'Máy in' }), 'Báo hỏng mới: Máy in');
+});
+
 test('ratingDelta: tạo, sửa, đổi người, xoá, dữ liệu sai', () => {
   assert.deepEqual(lib.ratingDelta(undefined, { staffUid: 's', stars: 4 }), { s: { sum: 4, count: 1 } });
   assert.deepEqual(lib.ratingDelta({ staffUid: 's', stars: 4 }, { staffUid: 's', stars: 5 }), { s: { sum: 1, count: 0 } });

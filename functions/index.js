@@ -21,7 +21,7 @@ const APP_WEB_URL = defineString('APP_WEB_URL', { default: 'https://test-937d3.w
 
 const ANDROID_CHANNEL_ID = 'channel_id'; // trùng với kênh tạo trong LocalNotificationsService
 const TIME_ZONE = 'Asia/Ho_Chi_Minh';
-const ESCALATE_AFTER_MINUTES = 15;
+const MIN_ESCALATE_MINUTES = 5; // phiếu khẩn; phiếu thường 15 phút (xem lib.escalateAfterMinutes)
 
 // ---------------------------------------------------------------------------
 // Gửi thông báo: ghi hộp thư + gửi push tới mọi thiết bị, dọn token hết hạn.
@@ -135,7 +135,7 @@ exports.onErrorCreated = onDocumentCreated('errors/{errorId}', async (event) => 
   const where = error.address ? ` tại ${error.address}` : '';
 
   await notifyUsers(recipients.map((u) => u.id), {
-    title: `Báo hỏng mới: ${error.errorTitle ?? ''}`,
+    title: lib.newErrorTitle(error),
     body: `${error.nameDoctor || 'Nhân viên'}${where}: ${error.clarifyTitle ?? ''}`.slice(0, 240),
     type: 'error',
     refId: event.params.errorId,
@@ -166,10 +166,10 @@ exports.onErrorUpdated = onDocumentUpdated('errors/{errorId}', async (event) => 
   }
 });
 
-/** Phiếu chưa ai nhận sau 15 phút → báo khẩn cho toàn bộ IT và Admin (một lần). */
+/** Phiếu chưa ai nhận (khẩn: 5 phút, thường: 15 phút) → báo khẩn cho toàn bộ IT và Admin (một lần). */
 exports.escalateUnclaimedErrors = onSchedule({ schedule: 'every 5 minutes', timeZone: TIME_ZONE }, async () => {
   const now = Date.now();
-  const cutoff = Timestamp.fromMillis(now - ESCALATE_AFTER_MINUTES * 60 * 1000);
+  const cutoff = Timestamp.fromMillis(now - MIN_ESCALATE_MINUTES * 60 * 1000);
   const snapshot = await db
     .collection('errors')
     .where('isTakeOver', '==', false)
@@ -177,7 +177,7 @@ exports.escalateUnclaimedErrors = onSchedule({ schedule: 'every 5 minutes', time
     .where('timeErrorStart', '>=', Timestamp.fromMillis(now - MAX_AGE))
     .get();
 
-  const pending = snapshot.docs.filter((d) => lib.shouldEscalate(d.data(), now, ESCALATE_AFTER_MINUTES));
+  const pending = snapshot.docs.filter((d) => lib.shouldEscalate(d.data(), now, lib.escalateAfterMinutes(d.data())));
   if (pending.length === 0) return;
 
   const recipients = (await usersWithRoles([...IT_ROLES, ROLE.admin])).map((u) => u.id);
@@ -186,7 +186,7 @@ exports.escalateUnclaimedErrors = onSchedule({ schedule: 'every 5 minutes', time
     // Đánh dấu trước khi gửi để lần chạy sau không gửi trùng.
     await doc.ref.update({ escalatedAt: FieldValue.serverTimestamp() });
     await notifyUsers(recipients, {
-      title: `Chưa ai nhận phiếu sau ${ESCALATE_AFTER_MINUTES} phút`,
+      title: `${error.priority === 'urgent' ? 'KHẨN – ' : ''}Chưa ai nhận phiếu sau ${lib.escalateAfterMinutes(error)} phút`,
       body: `${error.errorTitle ?? ''} – ${error.nameDoctor || 'Nhân viên'}${error.address ? `, ${error.address}` : ''}`,
       type: 'error',
       refId: doc.id,
