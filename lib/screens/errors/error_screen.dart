@@ -6,8 +6,11 @@ import 'package:intl/intl.dart';
 import '../../core/utils/app_logger.dart';
 import '../../core/utils/contact_launcher.dart';
 import '../../repositories/error_report_repository.dart';
+import '../../repositories/rating_repository.dart';
 import '../../repositories/staff_repository.dart';
 import '../../services/user_session.dart';
+import '../../widgets/feedback.dart';
+import '../../widgets/star_rating.dart';
 import '../../widgets/status_chip.dart';
 import 'add_error_screen.dart';
 
@@ -24,11 +27,13 @@ class _ErrorScreenState extends State<ErrorScreen> {
   final _dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
   late final Future<List<ItStaff>> _staffFuture =
-      _session.isDoctor ? StaffRepository.forAreas(_session.areas) : Future.value(const []);
+      _session.isClinical ? StaffRepository.forAreas(_session.areas) : Future.value(const []);
 
   Future<void> _run(Future<void> Function() action) async {
     try {
       await action();
+    } on StateError catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (e) {
       AppLog.e('Cập nhật phiếu lỗi thất bại', e);
       if (!mounted) return;
@@ -38,13 +43,35 @@ class _ErrorScreenState extends State<ErrorScreen> {
     }
   }
 
+  Future<void> _rate(String id, Map<String, dynamic> data) async {
+    final staffName = (data['nameStaff'] ?? 'nhân viên IT') as String;
+    final result = await showRatingDialog(
+      context,
+      title: 'Đánh giá $staffName',
+      subtitle: 'Phiếu: ${data['errorTitle'] ?? ''}',
+    );
+    if (result == null || !mounted) return;
+    await runWithFeedback(
+      context,
+      () => RatingRepository.rateError(
+        errorId: id,
+        errorTitle: (data['errorTitle'] ?? '') as String,
+        staffUid: (data['staffUid'] ?? '') as String,
+        staffName: staffName,
+        stars: result.stars,
+        comment: result.comment,
+      ),
+      success: 'Cảm ơn bạn đã đánh giá',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Báo lỗi')),
       body: Column(
         children: [
-          if (_session.isDoctor) _StaffPanel(future: _staffFuture, doctorName: _session.name),
+          if (_session.isClinical) _StaffPanel(future: _staffFuture, doctorName: _session.name),
           Expanded(
             child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
               stream: ErrorReportRepository.watchAll(),
@@ -65,8 +92,16 @@ class _ErrorScreenState extends State<ErrorScreen> {
                     data: docs[index].data(),
                     dateFormat: _dateFormat,
                     canHandle: _session.isItMember,
-                    onTakeOver: (id) => _run(() => ErrorReportRepository.takeOver(id, _session.name)),
+                    onTakeOver: (id) => _run(
+                      () => ErrorReportRepository.takeOver(id, staffUid: _session.uid ?? '', staffName: _session.name),
+                    ),
                     onDone: (id) => _run(() => ErrorReportRepository.markDone(id)),
+                    canRate: (data) =>
+                        data['isDone'] == true &&
+                        data['reporterUid'] == _session.uid &&
+                        data['rating'] == null &&
+                        (data['staffUid'] ?? '') != '',
+                    onRate: _rate,
                   ),
                 );
               },
@@ -74,7 +109,7 @@ class _ErrorScreenState extends State<ErrorScreen> {
           ),
         ],
       ),
-      floatingActionButton: _session.isDoctor
+      floatingActionButton: _session.isClinical
           ? FloatingActionButton.extended(
               onPressed: () => Navigator.push(
                 context,
@@ -96,6 +131,8 @@ class _ErrorCard extends StatelessWidget {
     required this.canHandle,
     required this.onTakeOver,
     required this.onDone,
+    required this.canRate,
+    required this.onRate,
   });
 
   final String id;
@@ -104,6 +141,8 @@ class _ErrorCard extends StatelessWidget {
   final bool canHandle;
   final ValueChanged<String> onTakeOver;
   final ValueChanged<String> onDone;
+  final bool Function(Map<String, dynamic> data) canRate;
+  final void Function(String id, Map<String, dynamic> data) onRate;
 
   @override
   Widget build(BuildContext context) {
@@ -141,6 +180,22 @@ class _ErrorCard extends StatelessWidget {
             Text('Thời gian lỗi: ${time != null ? dateFormat.format(time) : ''}'),
             if (isTakeOver) Text('Người nhận: ${data['nameStaff'] ?? ''}'),
             Text('Người báo: ${data['nameDoctor'] ?? ''}'),
+            if (data['rating'] is num) ...[
+              const SizedBox(height: 4),
+              StarDisplay(value: (data['rating'] as num).toDouble()),
+              if ((data['ratingComment'] ?? '').toString().isNotEmpty) Text('“${data['ratingComment']}”'),
+            ],
+            if (canRate(data)) ...[
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => onRate(id, data),
+                  icon: const Icon(Icons.star_outline_rounded),
+                  label: const Text('Đánh giá nhân viên xử lý'),
+                ),
+              ),
+            ],
             if (canHandle && !isDone) ...[
               const SizedBox(height: 8),
               SizedBox(

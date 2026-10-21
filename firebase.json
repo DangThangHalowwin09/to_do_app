@@ -3,7 +3,11 @@
     {
       "source": "functions",
       "codebase": "default",
-      "ignore": ["node_modules", ".git", "test"]
+      "ignore": [
+        "node_modules",
+        ".git",
+        "test"
+      ]
     }
   ],
   "flutter": {
@@ -71,5 +75,8 @@
         ]
       }
     ]
+  },
+  "firestore": {
+    "indexes": "firestore.indexes.json"
   }
 }

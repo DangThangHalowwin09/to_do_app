@@ -5,14 +5,20 @@ enum UserRole {
   user('User'),
   softTeam('Tổ phần mềm'),
   hardTeam('Tổ phần cứng'),
-  doctor('Y bác sỹ');
+  doctor('Y bác sỹ'),
+  headNurse('Điều dưỡng trưởng'),
+  nurse('Điều dưỡng');
 
   const UserRole(this.label);
 
   final String label;
 
-  /// Nhân viên phòng IT (xử lý báo lỗi).
+  /// Nhân viên phòng IT (nhận và xử lý báo lỗi).
   bool get isItMember => this == softTeam || this == hardTeam;
+
+  /// Nhân viên lâm sàng (bác sỹ, điều dưỡng): thuộc các khoa (`areas`), gửi báo lỗi,
+  /// gọi nhanh IT phụ trách, đánh giá nhân viên IT. Dùng chung một bộ chức năng.
+  bool get isClinical => this == doctor || this == headNurse || this == nurse;
 
   static UserRole? fromLabel(String? label) {
     for (final role in values) {
@@ -22,6 +28,8 @@ enum UserRole {
   }
 
   /// Danh sách nhãn của nhân viên IT, dùng cho truy vấn Firestore.
-  static List<String> get itLabels =>
-      values.where((r) => r.isItMember).map((r) => r.label).toList();
+  static List<String> get itLabels => values.where((r) => r.isItMember).map((r) => r.label).toList();
+
+  /// Danh sách nhãn của nhân viên lâm sàng, dùng cho truy vấn Firestore.
+  static List<String> get clinicalLabels => values.where((r) => r.isClinical).map((r) => r.label).toList();
 }

@@ -17,4 +17,5 @@ class PushDataKeys {
 
   static const String taskType = 'task';
   static const String errorType = 'error';
+  static const String ratingType = 'rating';
 }

@@ -9,6 +9,8 @@ void main() {
       expect(UserRole.fromLabel('Tổ phần mềm'), UserRole.softTeam);
       expect(UserRole.fromLabel('Tổ phần cứng'), UserRole.hardTeam);
       expect(UserRole.fromLabel('Y bác sỹ'), UserRole.doctor);
+      expect(UserRole.fromLabel('Điều dưỡng trưởng'), UserRole.headNurse);
+      expect(UserRole.fromLabel('Điều dưỡng'), UserRole.nurse);
     });
 
     test('fromLabel trả về null với vai trò lạ hoặc rỗng', () {
@@ -21,5 +23,11 @@ void main() {
       expect(UserRole.values.where((r) => r.isItMember), [UserRole.softTeam, UserRole.hardTeam]);
       expect(UserRole.itLabels, ['Tổ phần mềm', 'Tổ phần cứng']);
     });
+  });
+
+  test('bác sỹ, điều dưỡng trưởng, điều dưỡng dùng chung chức năng lâm sàng', () {
+    expect(UserRole.values.where((r) => r.isClinical), [UserRole.doctor, UserRole.headNurse, UserRole.nurse]);
+    expect(UserRole.clinicalLabels, ['Y bác sỹ', 'Điều dưỡng trưởng', 'Điều dưỡng']);
+    expect(UserRole.admin.isClinical, isFalse);
   });
 }

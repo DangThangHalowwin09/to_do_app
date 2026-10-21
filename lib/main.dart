@@ -23,11 +23,12 @@ Future<void> main() async {
   runApp(Portal(child: MyApp(showOnboarding: showOnboarding)));
 }
 
-/// Push notification chỉ hỗ trợ app Android/iOS; lỗi ở đây không được làm app không mở được.
+/// Thông báo đẩy cho Android, iOS và Web; lỗi ở đây không được làm app không mở được.
 Future<void> _initPushNotifications() async {
-  final isMobile = !kIsWeb &&
-      (defaultTargetPlatform == TargetPlatform.android || defaultTargetPlatform == TargetPlatform.iOS);
-  if (!isMobile) return;
+  final supported = kIsWeb ||
+      defaultTargetPlatform == TargetPlatform.android ||
+      defaultTargetPlatform == TargetPlatform.iOS;
+  if (!supported) return;
 
   try {
     await FirebaseMessagingService.instance.init();

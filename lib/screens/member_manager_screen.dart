@@ -40,6 +40,8 @@ enum _Scope {
       case UserRole.hardTeam:
         return groups;
       case UserRole.doctor:
+      case UserRole.headNurse:
+      case UserRole.nurse:
         return areas;
       default:
         return null;
@@ -66,9 +68,9 @@ class MembersDoctorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const _MemberListScreen(
-        title: 'Danh sách Y bác sỹ',
-        emptyText: 'Không có Y bác sỹ trong danh sách',
-        roles: [UserRole.doctor],
+        title: 'Bác sỹ & điều dưỡng',
+        emptyText: 'Chưa có bác sỹ / điều dưỡng trong danh sách',
+        roles: [UserRole.doctor, UserRole.headNurse, UserRole.nurse],
         sortScope: _Scope.areas,
       );
 }

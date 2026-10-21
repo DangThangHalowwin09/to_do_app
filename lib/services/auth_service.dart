@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 
 import '../core/utils/app_logger.dart';
+import 'firebase_messaging_service.dart';
 import 'user_session.dart';
 
 /// Đăng nhập / đăng ký / đăng xuất và các thao tác liên quan tới tài khoản Firebase.
@@ -90,37 +89,12 @@ class AuthService {
     return _auth.currentUser?.emailVerified ?? false;
   }
 
-  /// Thêm FCM token của thiết bị này vào `users/{uid}.fcmTokens`.
-  /// Dùng mảng để một người đăng nhập trên nhiều thiết bị (điện thoại + máy tính bảng) đều nhận được.
-  Future<void> saveFcmToken() async {
-    final uid = _auth.currentUser?.uid;
-    if (uid == null || kIsWeb) return;
-    try {
-      final token = await FirebaseMessaging.instance.getToken();
-      if (token == null) return;
-      await _firestore.collection('users').doc(uid).update({
-        'fcmTokens': FieldValue.arrayUnion([token]),
-      });
-    } catch (e) {
-      AppLog.e('Không lưu được FCM token', e);
-    }
-  }
+  /// Đăng ký thiết bị này nhận thông báo cho tài khoản đang đăng nhập.
+  Future<void> saveFcmToken() => FirebaseMessagingService.instance.registerDevice();
 
-  /// Gỡ token của thiết bị này (để không nhận thông báo của tài khoản cũ), xoá phiên và đăng xuất.
+  /// Gỡ thiết bị (để không nhận thông báo của tài khoản cũ), xoá phiên và đăng xuất.
   Future<void> signOut() async {
-    final uid = _auth.currentUser?.uid;
-    if (uid != null && !kIsWeb) {
-      try {
-        final token = await FirebaseMessaging.instance.getToken();
-        if (token != null) {
-          await _firestore.collection('users').doc(uid).update({
-            'fcmTokens': FieldValue.arrayRemove([token]),
-          });
-        }
-      } catch (e) {
-        AppLog.e('Không xoá được FCM token', e);
-      }
-    }
+    await FirebaseMessagingService.instance.unregisterDevice();
     UserSession.instance.clear();
     await _auth.signOut();
   }

@@ -45,7 +45,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       password: _passwordController.text,
       phone: _phoneController.text,
       role: _role.label,
-      areas: _role == UserRole.doctor ? _areas : const [],
+      areas: _role.isClinical ? _areas : const [],
       groups: _role == UserRole.hardTeam ? _groups : const [],
     );
 

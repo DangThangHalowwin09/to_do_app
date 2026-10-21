@@ -34,22 +34,33 @@ flutter run
 
 ## Thông báo đẩy (push)
 
-App chỉ **nhận** thông báo (`services/firebase_messaging_service.dart`). Việc **gửi** do Cloud Functions
-trong `functions/` đảm nhiệm, tự chạy khi dữ liệu Firestore thay đổi:
+Kiến trúc: **Firestore → Cloud Functions → Firebase Cloud Messaging → Android / iOS / Web**.
+Mọi thông báo đồng thời được lưu vào hộp thư `users/{uid}/notifications` (chuông trên màn hình chính),
+nên người dùng không bỏ lỡ kể cả khi tắt quyền thông báo.
 
-| Sự kiện | Ai nhận |
+| Sự kiện | Người nhận |
 | --- | --- |
-| Có phiếu `errors` mới | Tổ phần mềm (lỗi phần mềm) / Tổ phần cứng phụ trách khu vực của bác sỹ (lỗi phần cứng) |
-| IT nhận xử lý / hoàn thành phiếu | Bác sỹ đã báo lỗi |
-| Giao việc `tasks` mới hoặc đổi người nhận | Người được giao |
+| Có phiếu báo hỏng mới | Tổ phần mềm (lỗi phần mềm) / Tổ phần cứng phụ trách khu vực của người báo (lỗi phần cứng) |
+| Phiếu chưa ai nhận sau 15 phút | Toàn bộ IT + Admin (báo khẩn, một lần) |
+| IT nhận xử lý | Người báo hỏng |
+| IT hoàn thành | Người báo hỏng (kèm lời mời đánh giá) |
+| Giao việc mới / đổi người, hạn | Người được giao |
+| Còn ≤ 24 giờ, ≤ 1 giờ đến hạn | Người được giao |
+| Quá hạn | Người được giao + người giao việc |
 
-Token thiết bị lưu ở `users/{uid}.fcmTokens` (mảng, nhiều thiết bị). Triển khai (một lần, cần gói Blaze):
+Thiết bị đăng ký ở `users/{uid}/devices/{token}` (mỗi máy/trình duyệt một bản ghi, tự gỡ khi đăng xuất,
+token hết hạn được Functions tự dọn).
 
-```bash
-npm install -g firebase-tools && firebase login
-cd functions && npm install && npm test && cd ..
-firebase deploy --only functions
-```
+### Cài đặt một lần
+1. Nâng dự án Firebase lên gói Blaze, rồi `firebase deploy --only functions,firestore:indexes`.
+2. **iOS**: tải APNs Auth Key (.p8) lên Firebase Console → Project settings → Cloud Messaging; trong Xcode
+   bật Capability *Push Notifications* và *Background Modes → Remote notifications* (entitlements đã có sẵn).
+3. **Web**: Firebase Console → Cloud Messaging → *Web Push certificates* → tạo cặp khoá, lưu khoá công khai
+   vào GitHub Secret `FCM_VAPID_KEY` (hoặc build với `--dart-define=FCM_VAPID_KEY=...`). Web push cần trang
+   chạy ở gốc tên miền (Firebase Hosting `https://<project>.web.app`), vì service worker
+   `firebase-messaging-sw.js` phải nằm ở `/`. Bản trên GitHub Pages (`/to_do_app/`) chỉ dùng hộp thư trong app.
+4. Đổi link mở khi bấm thông báo trên web: `firebase functions:config` không cần, đặt tham số
+   `APP_WEB_URL` khi deploy (mặc định `https://test-937d3.web.app`).
 
 ## CI/CD (GitHub Actions)
 

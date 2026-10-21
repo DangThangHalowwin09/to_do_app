@@ -27,7 +27,11 @@ jobs:
           cache: true
       - run: flutter pub get
       # Pages phục vụ dưới /<tên repo>/ nên cần base-href tương ứng.
-      - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+      # FCM_VAPID_KEY (secret, tuỳ chọn): khoá Web Push để bản web nhận thông báo đẩy.
+      - run: >-
+          flutter build web --release
+          --base-href "/${{ github.event.repository.name }}/"
+          --dart-define=FCM_VAPID_KEY=${{ secrets.FCM_VAPID_KEY }}
       - name: Upload web build (tải về xem offline nếu không dùng Pages)
         uses: actions/upload-artifact@v4
         with:

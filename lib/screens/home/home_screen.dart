@@ -5,7 +5,9 @@ import '../../core/constants/user_role.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../services/auth_service.dart';
 import '../../services/firebase_messaging_service.dart';
+import '../../repositories/notification_repository.dart';
 import '../../services/user_session.dart';
+import '../notifications/notification_inbox_screen.dart';
 import '../auth/login_screen.dart';
 import 'home_menu.dart';
 
@@ -61,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(menu.title),
         actions: [
+          _NotificationBell(uid: UserSession.instance.uid),
           IconButton(
             tooltip: 'Đăng xuất',
             icon: const Icon(Icons.logout_rounded),
@@ -230,6 +233,34 @@ class _MenuTile extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Chuông thông báo kèm số chưa đọc.
+class _NotificationBell extends StatelessWidget {
+  const _NotificationBell({required this.uid});
+
+  final String? uid;
+
+  @override
+  Widget build(BuildContext context) {
+    final id = uid;
+    if (id == null) return const SizedBox.shrink();
+    return StreamBuilder<int>(
+      stream: NotificationRepository.watchUnreadCount(id),
+      builder: (context, snapshot) {
+        final count = snapshot.data ?? 0;
+        return IconButton(
+          tooltip: count == 0 ? 'Thông báo' : 'Thông báo, $count chưa đọc',
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationInboxScreen())),
+          icon: Badge(
+            isLabelVisible: count > 0,
+            label: Text(count > 99 ? '99+' : '$count'),
+            child: const Icon(Icons.notifications_rounded),
+          ),
+        );
+      },
     );
   }
 }

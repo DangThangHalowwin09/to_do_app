@@ -18,7 +18,8 @@ class UserSession {
 
   UserRole? get role => UserRole.fromLabel(roleLabel);
   bool get isAdmin => role == UserRole.admin;
-  bool get isDoctor => role == UserRole.doctor;
+  /// Bác sỹ / điều dưỡng: gửi báo lỗi và đánh giá nhân viên IT.
+  bool get isClinical => role?.isClinical ?? false;
   bool get isItMember => role?.isItMember ?? false;
 
   /// Hồ sơ đã đủ tên + vai trò chưa (nếu chưa thì phải qua màn hình hoàn thiện hồ sơ).

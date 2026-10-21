@@ -11,6 +11,8 @@ import '../errors/error_screen.dart';
 import '../group_manager_screen.dart';
 import '../member_manager_screen.dart';
 import '../news_manager_screen.dart';
+import '../notifications/notification_inbox_screen.dart';
+import '../ratings/staff_ratings_screen.dart';
 import '../on_duty_screen.dart';
 import '../search_area_screen.dart';
 import '../statistics_screen.dart';
@@ -57,6 +59,23 @@ class HomeMenu {
     CheckBHXHScreen.new,
   );
 
+  static const _myRatings = HomeMenuItem(Icons.star_rate_rounded, 'Đánh giá của tôi', StaffRatingDetailScreen.mine);
+  static const _notifications = HomeMenuItem(Icons.notifications_rounded, 'Thông báo', NotificationInboxScreen.new);
+
+  /// Bác sỹ, điều dưỡng trưởng, điều dưỡng dùng chung một bộ chức năng.
+  static HomeMenu _clinical(String title) => HomeMenu(
+        title: title,
+        welcome: 'Báo hỏng thiết bị, phần mềm và theo dõi xử lý',
+        items: const [
+          HomeMenuItem(Icons.report_problem_rounded, 'Báo hỏng', ErrorScreen.new, urgent: true),
+          HomeMenuItem(Icons.search, 'NV phụ trách', SearchAreaScreen.new),
+          HomeMenuItem(Icons.star_rate_rounded, 'Đánh giá NV IT', StaffRatingsScreen.new),
+          _notifications,
+          _checkBhxh,
+          _changePassword,
+        ],
+      );
+
   static HomeMenu of(UserRole role) {
     switch (role) {
       case UserRole.admin:
@@ -69,13 +88,15 @@ class HomeMenu {
             HomeMenuItem(Icons.task, 'Giao việc', TaskScreen.new),
             HomeMenuItem(Icons.report_problem_rounded, 'Báo lỗi', ErrorScreen.new, urgent: true),
             HomeMenuItem(FontAwesomeIcons.userGear, 'NV IT', MembersITScreen.new),
-            HomeMenuItem(FontAwesomeIcons.userDoctor, 'Bác sỹ', MembersDoctorScreen.new),
+            HomeMenuItem(FontAwesomeIcons.userDoctor, 'BS & Điều dưỡng', MembersDoctorScreen.new),
             HomeMenuItem(Icons.local_hospital, 'Các khoa', AreaManagerScreen.new),
             HomeMenuItem(Icons.domain, 'Khu vực', GroupManagementScreen.new),
             _duty,
             _checkBhxh,
             HomeMenuItem(Icons.newspaper, 'Tin tức', NewsAdminScreen.new),
             HomeMenuItem(Icons.bar_chart, 'Thống kê', StatisticScreen.new),
+            HomeMenuItem(Icons.star_rate_rounded, 'Đánh giá NV', StaffRatingsScreen.new),
+            _notifications,
             _changePassword,
           ],
         );
@@ -86,6 +107,7 @@ class HomeMenu {
           items: [
             HomeMenuItem(Icons.task, 'Nhiệm vụ phòng IT', TaskScreen.new),
             HomeMenuItem(Icons.report_problem_rounded, 'Nhiệm vụ', ErrorScreen.new, urgent: true),
+            _notifications,
             _changePassword,
           ],
         );
@@ -98,6 +120,8 @@ class HomeMenu {
             HomeMenuItem(Icons.report_problem_rounded, 'Báo lỗi', ErrorScreen.new, urgent: true),
             HomeMenuItem(Icons.build, 'Mẹo PC', BlogScreen.new),
             HomeMenuItem(Icons.person, 'Tài khoản', UpdateProfileScreen.new),
+            _myRatings,
+            _notifications,
             _duty,
             _changePassword,
           ],
@@ -111,21 +135,19 @@ class HomeMenu {
             HomeMenuItem(Icons.report_problem_rounded, 'Báo lỗi', ErrorScreen.new, urgent: true),
             HomeMenuItem(Icons.code, 'Mẹo PM', BlogScreen.new),
             HomeMenuItem(Icons.person, 'Tài khoản', UpdateProfileScreen.new),
+            _myRatings,
+            _notifications,
             _duty,
             _checkBhxh,
             _changePassword,
           ],
         );
       case UserRole.doctor:
-        return const HomeMenu(
-          title: 'Y Bác Sỹ',
-          welcome: 'Các chức năng màn hình Y Bác Sỹ!',
-          items: [
-            HomeMenuItem(Icons.search, 'NVPT', SearchAreaScreen.new),
-            _checkBhxh,
-            _changePassword,
-          ],
-        );
+        return _clinical('Y Bác Sỹ');
+      case UserRole.headNurse:
+        return _clinical('Điều dưỡng trưởng');
+      case UserRole.nurse:
+        return _clinical('Điều dưỡng');
     }
   }
 }

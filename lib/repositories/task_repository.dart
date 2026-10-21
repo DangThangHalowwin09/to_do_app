@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../core/constants/user_role.dart';
 import '../models/task_item.dart';
+import '../services/user_session.dart';
 
 class TaskRepository {
   TaskRepository._();
@@ -40,9 +41,11 @@ class TaskRepository {
         'startTime': Timestamp.now(),
         'status': TaskItem.statusPending,
         'completedAt': null,
+        'createdBy': UserSession.instance.uid,
       });
     } else {
-      await _tasks.doc(taskId).update(data);
+      // Đổi hạn thì cho phép nhắc lại từ đầu.
+      await _tasks.doc(taskId).update({...data, 'reminders': FieldValue.delete()});
     }
   }
 

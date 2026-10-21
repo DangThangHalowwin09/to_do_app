@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../core/constants/user_role.dart';
 
 /// Chọn phạm vi làm việc theo vai trò:
-/// - Y bác sỹ: chọn các khoa (`areas`)
+/// - Bác sỹ / điều dưỡng: chọn các khoa (`areas`)
 /// - Tổ phần cứng: chọn các khu vực hỗ trợ (`groups`)
 /// Các vai trò khác không cần chọn gì.
 class RoleScopePicker extends StatefulWidget {
@@ -88,9 +88,9 @@ class _RoleScopePickerState extends State<RoleScopePicker> {
   @override
   Widget build(BuildContext context) {
     final role = widget.role;
-    if (role != UserRole.doctor && role != UserRole.hardTeam) return const SizedBox.shrink();
+    final isDoctor = role?.isClinical ?? false;
+    if (!isDoctor && role != UserRole.hardTeam) return const SizedBox.shrink();
 
-    final isDoctor = role == UserRole.doctor;
     final title = isDoctor ? 'Chọn khoa:' : 'Chọn khu vực hỗ trợ:';
 
     return Column(

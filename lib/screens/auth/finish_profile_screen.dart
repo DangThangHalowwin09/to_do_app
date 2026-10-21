@@ -55,7 +55,7 @@ class _FinishProfileScreenState extends State<FinishProfileScreen> {
         'name': name,
         'phone': phone,
         'role': role.label,
-        'areas': role == UserRole.doctor ? _areas : <String>[],
+        'areas': role.isClinical ? _areas : <String>[],
         'groups': role == UserRole.hardTeam ? _groups : <String>[],
         'createdAt': FieldValue.serverTimestamp(),
       });

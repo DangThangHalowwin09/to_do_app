@@ -149,7 +149,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   if (_role != null)
                     Text('Thành viên: ${_role!.label}', style: const TextStyle(fontWeight: FontWeight.bold)),
                   if (_role == UserRole.hardTeam) _ScopeList(title: 'Nhóm khu vực đảm nhiệm:', items: _groups),
-                  if (_role == UserRole.doctor) _ScopeList(title: 'Khoa phòng đảm nhiệm:', items: _areas),
+                  if (_role?.isClinical ?? false) _ScopeList(title: 'Khoa phòng đảm nhiệm:', items: _areas),
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
