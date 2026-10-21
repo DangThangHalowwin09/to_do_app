@@ -52,15 +52,18 @@ Thiết bị đăng ký ở `users/{uid}/devices/{token}` (mỗi máy/trình duy
 token hết hạn được Functions tự dọn).
 
 ### Cài đặt một lần
-1. Nâng dự án Firebase lên gói Blaze, rồi `firebase deploy --only functions,firestore:indexes`.
-2. **iOS**: tải APNs Auth Key (.p8) lên Firebase Console → Project settings → Cloud Messaging; trong Xcode
-   bật Capability *Push Notifications* và *Background Modes → Remote notifications* (entitlements đã có sẵn).
-3. **Web**: Firebase Console → Cloud Messaging → *Web Push certificates* → tạo cặp khoá, lưu khoá công khai
-   vào GitHub Secret `FCM_VAPID_KEY` (hoặc build với `--dart-define=FCM_VAPID_KEY=...`). Web push cần trang
-   chạy ở gốc tên miền (Firebase Hosting `https://<project>.web.app`), vì service worker
-   `firebase-messaging-sw.js` phải nằm ở `/`. Bản trên GitHub Pages (`/to_do_app/`) chỉ dùng hộp thư trong app.
-4. Đổi link mở khi bấm thông báo trên web: `firebase functions:config` không cần, đặt tham số
-   `APP_WEB_URL` khi deploy (mặc định `https://test-937d3.web.app`).
+1. Nâng dự án Firebase lên gói **Blaze**.
+2. **Web**: Firebase Console → Project settings → Cloud Messaging → *Web Push certificates* → *Generate key pair*,
+   lưu chuỗi khoá vào GitHub Secret `FCM_VAPID_KEY`. Web push chỉ chạy khi trang nằm ở gốc tên miền
+   (Firebase Hosting), vì service worker `firebase-messaging-sw.js` phải ở `/`.
+3. **Deploy**: workflow `deploy-firebase.yml` deploy Functions + index và đăng web lên Hosting
+   (nhánh chính → trang chính; nhánh khác → kênh xem thử). Cần GitHub Secret `FIREBASE_SERVICE_ACCOUNT`.
+   Lần deploy Functions **đầu tiên** nên chạy trên máy bạn (`firebase deploy --only functions,firestore:indexes`)
+   để Firebase tự bật các API cần thiết.
+4. **Android**: không cần cài thêm (đã khai báo quyền POST_NOTIFICATIONS, kênh và biểu tượng thông báo).
+5. **iOS**: tải APNs Auth Key (.p8) lên Firebase Console → Cloud Messaging; trong Xcode bật
+   *Push Notifications* và *Background Modes → Remote notifications* (entitlements đã có sẵn).
+6. Link mở khi bấm thông báo trên web: tham số `APP_WEB_URL` của Functions (mặc định `https://test-937d3.web.app`).
 
 ## CI/CD (GitHub Actions)
 
@@ -68,13 +71,14 @@ token hết hạn được Functions tự dọn).
 | --- | --- | --- |
 | `ci.yml` | mỗi push / pull request | `flutter analyze`, `flutter test`, test Cloud Functions |
 | `build-android.yml` | chạy tay hoặc đẩy tag `v*` | build APK + AAB (tải ở mục Artifacts của lần chạy) |
-| `deploy-functions.yml` | push vào nhánh chính khi `functions/` đổi, hoặc chạy tay | deploy Cloud Functions |
+| `deploy-firebase.yml` | push vào nhánh chính, hoặc chạy tay | deploy Cloud Functions, index và web lên Firebase Hosting |
 
 Cấu hình **Settings → Secrets and variables → Actions → New repository secret**:
 
 | Secret | Dùng cho | Cách tạo |
 | --- | --- | --- |
-| `FIREBASE_SERVICE_ACCOUNT` | deploy Functions | Nội dung file JSON của service account chỉ có quyền deploy Functions |
+| `FIREBASE_SERVICE_ACCOUNT` | deploy Functions + Hosting | Nội dung file JSON của service account chỉ có quyền deploy Functions |
+| `FCM_VAPID_KEY` | thông báo đẩy trên web | Firebase Console → Cloud Messaging → Web Push certificates |
 | `ANDROID_KEYSTORE_BASE64` | ký bản release | `base64 -w0 my-release-key.keystore` |
 | `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | ký bản release | Thông tin trong `android/key.properties` của bạn |
 

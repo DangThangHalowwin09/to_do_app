@@ -1,0 +1,113 @@
+name: Deploy Firebase
+
+# - Cloud Functions + Firestore indexes (gửi thông báo, nhắc hạn, báo khẩn, cộng điểm đánh giá).
+# - Bản web lên Firebase Hosting:
+#     nhánh master/main  → trang chính  https://<project>.web.app
+#     nhánh khác         → kênh xem thử https://<project>--preview-<mã>.web.app (không đụng trang chính)
+#
+# Secrets cần có (Settings → Secrets and variables → Actions):
+#   FIREBASE_SERVICE_ACCOUNT  JSON của service account dùng để deploy
+#   FCM_VAPID_KEY             khoá Web Push (Firebase Console → Cloud Messaging → Web Push certificates)
+on:
+  push:
+    branches: [master, main, 'claude/optimistic-carson-tqoubf'] # nhánh claude/... là TẠM THỜI
+    paths-ignore: ['README.md', 'test/**']
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-firebase-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FLUTTER_VERSION: 3.35.7
+
+jobs:
+  functions:
+    name: Cloud Functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$SA" ]; then
+            echo "::warning::Chưa có secret FIREBASE_SERVICE_ACCOUNT → bỏ qua deploy."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install and test
+        working-directory: functions
+        run: |
+          npm ci
+          npm test
+
+      - if: steps.check.outputs.ready == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy functions + indexes
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          PROJECT="$(jq -r '.projects.default' .firebaserc)"
+          npx --yes firebase-tools@latest deploy --only functions,firestore:indexes \
+            --project "$PROJECT" --non-interactive --force
+
+  web:
+    name: Web (Firebase Hosting)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          VAPID: ${{ secrets.FCM_VAPID_KEY }}
+        run: |
+          [ -z "$VAPID" ] && echo "::warning::Chưa có secret FCM_VAPID_KEY → bản web sẽ không nhận thông báo đẩy."
+          if [ -z "$SA" ]; then
+            echo "::warning::Chưa có secret FIREBASE_SERVICE_ACCOUNT → chỉ build, không deploy."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter build web --release --dart-define=FCM_VAPID_KEY=${{ secrets.FCM_VAPID_KEY }}
+
+      - if: steps.check.outputs.ready == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy hosting
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          PROJECT="$(jq -r '.projects.default' .firebaserc)"
+          if [ "${{ github.ref_name }}" = "main" ] || [ "${{ github.ref_name }}" = "master" ]; then
+            npx --yes firebase-tools@latest deploy --only hosting --project "$PROJECT" --non-interactive
+            URL="https://$PROJECT.web.app"
+          else
+            OUT="$(npx --yes firebase-tools@latest hosting:channel:deploy preview --expires 30d \
+              --project "$PROJECT" --non-interactive --json)"
+            echo "$OUT"
+            URL="$(echo "$OUT" | jq -r '.result | to_entries[0].value.url')"
+          fi
+          echo "Trang web: $URL"
+          echo "### Trang web: $URL" >> "$GITHUB_STEP_SUMMARY"

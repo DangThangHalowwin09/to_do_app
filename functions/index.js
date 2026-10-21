@@ -8,7 +8,7 @@ const { onSchedule } = require('firebase-functions/v2/scheduler');
 const logger = require('firebase-functions/logger');
 
 const lib = require('./lib');
-const { ROLE, IT_ROLES, HOUR } = lib;
+const { ROLE, IT_ROLES, HOUR, MAX_AGE } = lib;
 
 initializeApp();
 const db = getFirestore();
@@ -74,7 +74,10 @@ async function notifyUsers(userIds, { title, body, type, refId }) {
       tokens: batch.map((o) => o.token),
       notification: { title, body },
       data: { type, id: refId },
-      android: { priority: 'high', notification: { channelId: ANDROID_CHANNEL_ID } },
+      android: {
+        priority: 'high',
+        notification: { channelId: ANDROID_CHANNEL_ID, icon: 'ic_stat_notification', color: '#00408C' },
+      },
       apns: { headers: { 'apns-priority': '10' }, payload: { aps: { sound: 'default' } } },
       webpush: {
         headers: { Urgency: 'high' },
@@ -171,6 +174,7 @@ exports.escalateUnclaimedErrors = onSchedule({ schedule: 'every 5 minutes', time
     .collection('errors')
     .where('isTakeOver', '==', false)
     .where('timeErrorStart', '<=', cutoff)
+    .where('timeErrorStart', '>=', Timestamp.fromMillis(now - MAX_AGE))
     .get();
 
   const pending = snapshot.docs.filter((d) => lib.shouldEscalate(d.data(), now, ESCALATE_AFTER_MINUTES));
@@ -220,6 +224,7 @@ exports.taskDeadlineReminders = onSchedule({ schedule: 'every 15 minutes', timeZ
     .collection('tasks')
     .where('status', '==', 'pending')
     .where('endTime', '<=', Timestamp.fromMillis(now + 24 * HOUR))
+    .where('endTime', '>=', Timestamp.fromMillis(now - MAX_AGE))
     .get();
 
   for (const doc of snapshot.docs) {

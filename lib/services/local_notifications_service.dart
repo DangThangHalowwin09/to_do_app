@@ -1,3 +1,4 @@
+import 'package:flutter/painting.dart' show Color;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Hiển thị thông báo cục bộ (dùng khi nhận push lúc app đang mở trên Android).
@@ -25,7 +26,7 @@ class LocalNotificationsService {
 
     await _plugin.initialize(
       const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        android: AndroidInitializationSettings('ic_stat_notification'),
         // Quyền iOS do FirebaseMessaging.requestPermission xin, tránh hỏi hai lần.
         iOS: DarwinInitializationSettings(
           requestAlertPermission: false,
@@ -56,6 +57,8 @@ class LocalNotificationsService {
           channelDescription: _channel.description,
           importance: Importance.max,
           priority: Priority.high,
+          icon: 'ic_stat_notification',
+          color: const Color(0xFF00408C),
         ),
         iOS: const DarwinNotificationDetails(),
       ),

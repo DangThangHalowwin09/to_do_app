@@ -47,6 +47,8 @@ test('dueReminder: các mốc 24h / 1h / quá hạn, mỗi mốc một lần', (
   assert.equal(lib.dueReminder(task(-1, { h24: true, h1: true }), now), 'overdue');
   assert.equal(lib.dueReminder(task(-1, { overdue: true }), now), null);
   assert.equal(lib.dueReminder({ ...task(-1), status: 'done' }, now), null);
+  // Quá hạn từ lâu (nhiệm vụ cũ) thì không nhắc nữa.
+  assert.equal(lib.dueReminder(task(-25 * HOUR), now), null);
 });
 
 test('remindersAfter đánh dấu cả các mốc xa hơn', () => {
@@ -61,6 +63,8 @@ test('shouldEscalate: chưa nhận sau N phút và chưa nhắc', () => {
   assert.equal(lib.shouldEscalate(e(10), now, 15), false);
   assert.equal(lib.shouldEscalate(e(20, { escalatedAt: 1 }), now, 15), false);
   assert.equal(lib.shouldEscalate(e(20, { isTakeOver: true }), now, 15), false);
+  // Phiếu cũ hơn 24 giờ không báo khẩn (tránh gửi tràn lúc mới deploy).
+  assert.equal(lib.shouldEscalate(e(25 * 60), 30 * 60 * 60000, 15), false);
 });
 
 test('ratingDelta: tạo, sửa, đổi người, xoá, dữ liệu sai', () => {

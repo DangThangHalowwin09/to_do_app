@@ -1,7 +1,7 @@
 // Service worker nhận thông báo đẩy khi trang web UBNA Manager không mở.
 // Phải nằm ở gốc tên miền (ví dụ Firebase Hosting: https://<project>.web.app/firebase-messaging-sw.js).
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/11.9.1/firebase-messaging-compat.js');
 
 // Phải trùng với DefaultFirebaseOptions.web trong lib/firebase_options.dart.
 firebase.initializeApp({

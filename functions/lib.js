@@ -19,6 +19,12 @@ const ERROR_TYPE = {
 const HOUR = 60 * 60 * 1000;
 
 /**
+ * Chỉ nhắc / báo khẩn cho dữ liệu trong khoảng này. Tránh việc lần chạy đầu tiên
+ * (hoặc sau khi Functions tạm dừng) gửi hàng loạt thông báo cho phiếu, nhiệm vụ cũ.
+ */
+const MAX_AGE = 24 * HOUR;
+
+/**
  * Gom token của một người: thiết bị đã đăng ký (`users/{uid}/devices`) + trường cũ
  * `fcmTokens` (mảng) / `fcmToken` (chuỗi) của các bản app trước. Bỏ rỗng và trùng.
  */
@@ -75,7 +81,7 @@ function dueReminder(task, nowMs) {
   if (typeof endMs !== 'number') return null;
   const sent = task.reminders ?? {};
   const left = endMs - nowMs;
-  if (left <= 0) return sent.overdue ? null : 'overdue';
+  if (left <= 0) return sent.overdue || -left > MAX_AGE ? null : 'overdue';
   if (left <= HOUR) return sent.h1 ? null : 'h1';
   if (left <= 24 * HOUR) return sent.h24 ? null : 'h24';
   return null;
@@ -104,7 +110,9 @@ function reminderMessage(kind, title, deadlineText) {
 function shouldEscalate(error, nowMs, minutes) {
   if (!error || error.isTakeOver || error.isDone || error.escalatedAt) return false;
   const created = error.timeErrorStart?.toMillis?.();
-  return typeof created === 'number' && nowMs - created >= minutes * 60 * 1000;
+  if (typeof created !== 'number') return false;
+  const age = nowMs - created;
+  return age >= minutes * 60 * 1000 && age <= MAX_AGE;
 }
 
 /**
@@ -140,6 +148,7 @@ module.exports = {
   IT_ROLES,
   ERROR_TYPE,
   HOUR,
+  MAX_AGE,
   collectTokens,
   pickRecipients,
   isDeadTokenCode,

@@ -7,6 +7,7 @@ import '../../services/auth_service.dart';
 import '../../services/firebase_messaging_service.dart';
 import '../../repositories/notification_repository.dart';
 import '../../services/user_session.dart';
+import '../../widgets/notification_permission_card.dart';
 import '../notifications/notification_inbox_screen.dart';
 import '../auth/login_screen.dart';
 import 'home_menu.dart';
@@ -74,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           _Header(name: name, greeting: menu.greeting, welcome: menu.welcome, roleLabel: widget.role.label),
+          const NotificationPermissionCard(),
           Expanded(
             child: Center(
               child: ConstrainedBox(
